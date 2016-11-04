@@ -1,8 +1,6 @@
-; %include "video.mac"
-
 section .text
 
-; extern game, halt
+extern game
 
 global main
 main:
@@ -14,6 +12,4 @@ main:
   mov al, 0xFF
   out dx, al
 
-  ; jmp game
-
-  ; jmp halt
+  jmp game
