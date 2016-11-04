@@ -31,6 +31,31 @@ $(KERNEL): $(OBJ)
 %.o: %.c
 	$(CC) $(CC_FLAGS) -o $@ $^
 
+# ISO
+
+GENISOIMAGE = genisoimage
+ISO_FLAGS = -R -b boot/grub/stage2_eltorito -no-emul-boot -boot-load-size 4 -boot-info-table
+STAGE2 = stage2_eltorito
+
+ISO = snakasm.iso
+
+iso: $(ISO)
+
+$(ISO): iso/boot/snakasm.elf iso/boot/grub/stage2_eltorito iso/boot/grub/menu.lst
+	$(GENISOIMAGE) $(ISO_FLAGS) -o $@ iso
+
+iso/boot/snakasm.elf: $(KERNEL)
+	@mkdir -p iso/boot
+	cp $< $@
+
+iso/boot/grub/stage2_eltorito: $(STAGE2)
+	@mkdir -p iso/boot/grub
+	cp $< $@
+
+iso/boot/grub/menu.lst: menu.lst
+	@mkdir -p iso/boot/grub
+	cp $< $@
+
 # QEMU
 
 QEMU = qemu-system-i386
@@ -39,5 +64,8 @@ QEMU_FLAGS =
 qemu: $(KERNEL)
 	$(QEMU) $(QEMU_FLAGS) -kernel $<
 
+qemu-iso: $(ISO)
+	$(QEMU) $(QEMU_FLAGS) -cdrom $<
+
 clean:
-	rm -rf $(OBJ)
+	rm -rf $(OBJ) iso
