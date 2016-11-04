@@ -32,8 +32,8 @@ game:
     jmp game.loop
 
 
-draw.black:
-  FILL_SCREEN BG.BLACK
+draw.red:
+  FILL_SCREEN BG.RED
   ret
 
 
@@ -48,7 +48,7 @@ get_input:
     push ax
 
     ; Your bindings here
-    bind KEY.UP, draw.black
+    bind KEY.UP, draw.red
     bind KEY.DOWN, draw.green
 
     add esp, 2 ; free the stack
