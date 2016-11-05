@@ -91,7 +91,7 @@ Para la correcta implementación de la tarea se le brinda una plantilla que cont
     │   ├── keyboard.mac
     │   ├── video.asm
     │   ├── video.mac
-    │   ├── timing.asm
+    │   └── timing.asm
     ├── Makefile
     ├── README.md
     ├── ORIENTACIÓN.md
@@ -215,10 +215,10 @@ $ make qemu-iso
 * Comentar el código abundantemente, cuanto más, mejor.
 * Organizar convenientemente el código en distintos archivos dentro de la carpeta `src`, de acuerdo con la lógica que desarrollen.
 
-## Ayuda
-Todo a sido preparado para que se pueda concentrar en la implementación del proyecto únicamente. De cualquier forma el colectivo de la asignatura está preparado para recibir preguntas de cualquier tipo con respecto al código y las tecnologías que se brindan.
-
 ### Git
 Sistema de control de versiones.
 
 Es altamente recomendada la utilización de esta herramienta dada las ventajas que brinda.
+
+## Ayuda
+Todo a sido preparado para que se pueda concentrar en la implementación del proyecto únicamente. De cualquier forma el colectivo de la asignatura está preparado para recibir preguntas de cualquier tipo con respecto al código y las tecnologías que se brindan.
