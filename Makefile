@@ -66,3 +66,7 @@ qemu-iso: $(ISO)
 
 clean:
 	rm -rf $(OBJ) iso *.elf *.iso
+
+# Run with sudo
+install_dependencies:
+	apt install nasm build-essential qemu-system-x86 genisoimage
