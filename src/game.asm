@@ -5,6 +5,7 @@ section .text
 
 extern clear
 extern scan
+extern calibrate
 
 ; Bind a key to a procedure
 %macro bind 2
@@ -25,9 +26,15 @@ global game
 game:
   ; Initialize game
 
+  FILL_SCREEN BG.BLACK
+
+  ; Calibrate the timing
+  call calibrate
+
   ; Snakasm main loop
   game.loop:
-    call get_input
+    .input:
+      call get_input
 
     ; Main loop.
 
