@@ -12,5 +12,6 @@ clear:
   mov ax, [esp + 4] ; char, attrs
   mov edi, FBUFFER
   mov ecx, COLS * ROWS
+  cld
   rep stosw
   ret
