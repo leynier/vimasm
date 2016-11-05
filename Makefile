@@ -28,9 +28,6 @@ $(KERNEL): $(OBJ)
 %.o: %.asm
 	$(AS) $(AS_FLAGS) -o $@ $^
 
-%.o: %.c
-	$(CC) $(CC_FLAGS) -o $@ $^
-
 # ISO
 
 GENISOIMAGE = genisoimage
@@ -68,4 +65,4 @@ qemu-iso: $(ISO)
 	$(QEMU) $(QEMU_FLAGS) -cdrom $<
 
 clean:
-	rm -rf $(OBJ) iso
+	rm -rf $(OBJ) iso *.elf *.iso
