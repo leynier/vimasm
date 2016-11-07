@@ -14,6 +14,15 @@ Con la idea de preparar un soporte para lo que más adelante será el curso de S
 
 El objetivo es la implementación de un juego tipo "Snake" pero completamente desarrollado en NASM y sin la utilización de un sistema operativo. Para esto se le brinda un API para la interacción con las partes más primitivas de la computadora, en estos momentos completamente desprovista de drivers ni nada por el estilo.
 
+## Dependencias
+Antes de empezar a desarrollar es necesario que tenga instalado todos los programas. Para esto desde un terminal ejecute:
+
+```
+$ sudo make install_dependencies
+```
+
+Debe de estar conectado y con acceso a un repositorio. Luego de esto, no debe haber ningún problema con empezar de inmediato con el resto de su proyecto.
+
 ## Requerimientos
 Los requerimientos básicos (los que garantizan una calificación de 3) del proyecto son los siguientes:
 
