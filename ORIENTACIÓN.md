@@ -1,13 +1,13 @@
 # SNAKASM
 [http://gitlab.matcom.uh.cu/pm1/snakasm.git](http://gitlab.matcom.uh.cu/pm1/snakasm.git)
 
-Proyecto de Programación de Máquinas I.
+## Proyecto de Programación de Máquinas I.
 
-Ciencia de la Computación. Curso 2016-17.
+> Ciencia de la Computación. Curso 2016-17.
 
-![](/home/frnd/Pictures/nibbles.png)
+![](http://wikipedia.matcom.uh.cu/wikipedia_en_all_02_2014/I/media/S/n/a/k/SnakeBBCMicro.png)
 
-[https://wiki.gnome.org/Apps/Nibbles/](https://wiki.gnome.org/Apps/Nibbles/)
+[Snake]( http://wikipedia.matcom.uh.cu/wikipedia_en_all_02_2014/A/html/S/n/a/k/Snake_(video_game).html )
 
 ## Introducción
 El objetivo del proyecto este año sera implementar un juego tipo "Snake" implementado completamente en NASM y sin la utilización de un sistema operativo. Con este objetivo se les brinda esta API para la interacción con las partes de la computadora que van a necesitar (teclado, pantalla, etc).
@@ -24,66 +24,76 @@ Debe de estar conectado y con acceso a un repositorio. Luego de esto, no debe ha
 ## Requerimientos
 Los requerimientos básicos (los que garantizan una calificación de 3) del proyecto son los siguientes:
 
-* Comenzar.
+* Comenzar
 
     Que el juego arranque.
 
-* Visualizar Mapa.
+* Visualizar Mapa
 
-    Este deben tener paredes y espacios en blanco de forma tal que la serpiente pueda moverse y chocar.
+    Este debe tener paredes y espacios en blanco de forma tal que la serpiente pueda moverse y chocar.
 
-* Movimiento con teclas.
+* Movimiento con teclas
 
     4 movimientos básicos, arriba, abajo, derecha e izquierda.
 
-* Comer y crecer.
+* Comer y crecer
 
     Eventualmente hacer aparecer "fruta" en una posición válida (alcanzable) del mapa y cuando la cabeza de la serpiente pase por encima de este, hacer que la longitud de la serpiente aumente.
 
-* Chocar y perder.
+* Chocar y perder
 
-    Si la cabeza de la serpiente se se encuentra en un obstáculo (zona no vacía que no sea una fruta) el juego debe detenerse e indicar que se ha perdido.
+    Si la cabeza de la serpiente se encuentra con un obstáculo (cualquier zona no vacía que no sea una fruta) el juego debe detenerse e indicar que se ha perdido.
 
 * Puntuación.
 
-    Llevar la cuenta de los puntos del jugador y hacérselo saber en algún momento.
+    Llevar la cuenta de los puntos del jugador y hacérselo saber en todo momento.
 
-El cumplimiento de todos estos requerimientos garantizan una nota básica, como se dijo antes. Para alcanzar una nota superior es necesario realizar algunos de estos requerimientos opcionales (es posible lograr más de 5 puntos, calificación que se tendrá en cuenta para la evaluación final de la asignatura).
+Una **correcta** implementación del anterior grupo de funcionalidades le otorgará 3 puntos. Para alcanzar una nota superior es necesario implementar algunas de las siguientes características opcionales.
 
-### Requerimientos opcionales
+### Funcionalidades optativas
+
 Por su nivel de complejidad no todos tienen el mismo "peso":
 
-* Alta puntuación (+0.5)
-
-    Durante el período del juego llevar la cuenta de cuáles han sido las puntuaciones más altas.
-
-* Niveles fijos (+0.5) - Aleatorios jugables (+1)
-
-    Tener la opción de jugar distintos niveles en vez de uno fijo. También es posible que estos niveles se generen de manera aleatoria, pero siempre garantizando que sean jugables, que no haya una zona inaccesible en el mapa.
+Cada funcionalidad otorga una cantidad de puntos determinada, en función de su complejidad. A continuación describimos cada una:
 
 * Dificultad (velocidades, ...) (+0.5)
 
     Tener distintos niveles de dificultad, que afecten la sensación del juego. Una posible idea sería la velocidad de la serpiente.
+ 
+* Niveles fijos (+0.5) - Aleatorios jugables (+1)
+
+    Tener la opción de jugar distintos niveles en vez de uno fijo. También es posible que estos niveles se generen de manera aleatoria, pero siempre garantizando que sean jugables, que no haya una zona inaccesible en el mapa.
+
+* Alta puntuación (+0.5)
+
+    Durante el período del juego llevar la cuenta de cuáles han sido las puntuaciones más altas, y llevar un scoreboard que se muestre de alguna manera, preferiblemente al terminar el juego.
 
 * Title screen con ascii art (+0.5)
 
-    Tener una pantalla de presentación generada con ascci art. (Googlear)
+    Tener una pantalla de presentación generada con [ASCII art](http://wikipedia.matcom.uh.cu/wikipedia_en_all_02_2014/A/html/A/S/C/I/ASCII_art.html).
 
 * Tiempo (modificar la puntuación, ...) (+0.5)
 
-    El tiempo transcurrido debe afectar el modo de juego. Por ejemplo ir disminuyendo la puntuación cada 10 segundos si no se tomado ninguna fruta.
+    El tiempo transcurrido debe afectar el modo de juego. Por ejemplo, ir disminuyendo la puntuación cada 10 segundos si no se comido ninguna fruta.
 
 * Serpientes adicionales (IA ó 2nd player) (+1) (ambos +1.5)
 
-    Tener la posibilidad de jugar con varias serpientes, lo mismo controladas de manera automática que por otro jugador. La implementación de alguno de estos requerimientos aporta 1 punto adicional ó (no el ó de lógica, en todo caso el xor ;-)) 1.5 si se realizan ambos.
+    Tener la posibilidad de jugar con varias serpientes, lo mismo controladas de manera automática que por otro jugador. La implementación de alguno de estos requerimientos aporta 1 punto adicional o (no el `o` de lógica, en todo caso el xor ;-)) 1.5 si se realizan ambos.
 
 * Sonido/Música (+0.5)
 
-    Añadir sonido ó música al juego.
+    Añadir sonido o música al juego.
 
 * Cualquier otro (+?) (consultar con el profesor)
 
-Es muy probable que para realizar (como es devido) algunos de estos requerimientos se necesite de un poco de investigación al respecto. Ej 1. Para poner sonido es necesario leer sobre los "puertos" y como pedir e insertar valores. Ej 2. Las serpientes controladas automáticamente normalmente se quiere que no tengan un movimiento completamente caótico (solución que es perfectamente válida para conseguir los puntos de este requerimiento). Ej 3. Funciones que generen números "ramdom".
+Como puede verse, es posible lograr más de 5 puntos, calificación que se tendrá en cuenta para la evaluación final de la asignatura.
+
+Es muy probable que para realizar (como es debido) algunos de estos requerimientos se necesite de un poco de investigación al respecto. 
+
+* Ej 1. Para poner sonido es necesario leer sobre los "puertos" y cómo pedir e insertar valores. 
+* Ej 2. Las serpientes controladas automáticamente normalmente se quiere que no tengan un movimiento completamente caótico (solución que es perfectamente válida para conseguir los puntos de este requerimiento). 
+* Ej 3. Funciones que generen números "ramdom".
+
 
 ## Estructura del proyecto
 Para la correcta implementación de la tarea se le brinda una plantilla que contiene el código necesario para comenzar a cargar un programa muy básico en una máquina virtual, además de las respectivas funciones para leer del teclado, pintar en la pantalla y consultar el tiempo.
@@ -106,16 +116,18 @@ Para la correcta implementación de la tarea se le brinda una plantilla que cont
     ├── menu.lst
     └── stage2_eltorito
 
+Vale destacar que, aunque estaremos usando una máquina virtual para el desarrollo, este esqueleto contiene todo lo necesario para que al finalizar su proyecto, usted pueda guardar su juego en una memoria y ejecutarlo en su PC real.
+
 ### Código base
 En la carpeta `src` se encuentra el código que se brinda como base para comenzar el proyecto.
 
 * `game.asm`
 
-    Se encuentra el ciclo principal del juego, como ejemplo se ve el código de un programa que cuando se presiona la tecla "arriva" la pantalla se pone de color rojo y cuando se presiona "abajo" de color verde.
+    Se encuentra el ciclo principal del juego, como ejemplo se ve el código de un programa que cuando se presiona la tecla `arriba` la pantalla se pone de color rojo y cuando se presiona "abajo" de color verde.
 
 * `kerboard.asm`
 
-    Se encuentra un procedimiento llamado `scan` que retorna en `al` el byte de la última tecla que se presionó y zero si es la misma.
+    Se encuentra un procedimiento llamado `scan` que retorna en `al` el byte de la última tecla que se presionó y 0 si es la misma.
 
 * `keyboard.mac`
 
@@ -125,25 +137,25 @@ En la carpeta `src` se encuentra el código que se brinda como base para comenza
 
     En este fichero está implementado solo el procedimiento `clear` que recibe una palabra que representa el color con el que pintar toda la pantalla. Es tarea de usted implementar el resto de las funciones que sean necesarias para el trabajo con la pantalla.
 
-    Para manipular la pantalla se utilizará el framebuffer. Básicamente lo que se debe hacer es escribir una dirección de memoria (`0xB8000`) declarada en la macro `FBUFFER`. A partir de esta dirección de memoria es posible utilizar `COLS*ROWS` palabras (2 bytes). En cada "casilla" es posible especificar el caracter (1 byte), el foreground (1 nibble) y el backgroud (1 nibble). Ej. Para representar una a de color rojo y fondo azul se utilizaría
+    Para manipular la pantalla se utilizará el framebuffer. Básicamente lo que se debe hacer es escribir una dirección de memoria (`0xB8000`) declarada en la macro `FBUFFER`. A partir de esta dirección de memoria es posible utilizar `COLS*ROWS` palabras (2 bytes). En cada "casilla" es posible especificar el caracter (1 byte), el foreground (1 nibble) y el background (1 nibble). Ej. Para representar una `a` de color rojo y fondo azul se utilizaría
 
         mov ax, 'a' | FG.RED | BG.BLUE
 
     Para escribir en el pixel `i`, `j` (fila i, columna j) es necesario modificar el valor de la posición `2*(i*COLS + j)`.
 
-    Se recomienda utilizar lo más que se pueda instrucciones de cadena para disminuir la cantidad y aumentar la expresividad del código.
+    Se recomienda utilizar lo más que se pueda instrucciones de cadena para disminuir la longitud del código y aumentar su expresividad.
 
 * `video.mac`
 
-    Macros útiles para el trabajo con el framebuffer. Tamaño de la pantalla y colores para backgroud y foreground.
+    Macros útiles para el trabajo con el framebuffer. Tamaño de la pantalla y colores para background y foreground.
 
 * `timing.asm`
 
     Funciones útiles para el trabajo con el tiempo.
 
-    TODO: Hablar más al respecto.
+    En clases prácticas estaremos entrando más en detalle acerca de este aspecto.
 
-Los demás archivos son utilizados en el proceso de `boot`.
+Los demás archivos son utilizados en el proceso de arranque (*boot*).
 
 * `multiboot.asm`
 
@@ -162,7 +174,7 @@ Existen otros archivos de utilidad en el proyecto no relacionados con el código
 
 * `linker.ld`
 
-    Características a tener en cuenta en el proceso de `link`.
+    Características a tener en cuenta en el proceso de enlace (*linker*).
 
 * `menu.lst`
 
@@ -170,13 +182,13 @@ Existen otros archivos de utilidad en el proyecto no relacionados con el código
 
 * `stage2_eltorito`
 
-    Binario de `grub` para incluirlo dentro del `iso`.
+    Binario de `GRUB` para incluirlo dentro de la imagen de disco que se construye.
 
 * `README.md`
 
     Utilizar este archivo para describir las características propias de su proyecto. Ser lo más claro posible, incluir imágenes y ejemplos.
 
-    Este tipo de archivos es característico en todo tipo de proyectos. Normalmente se usa para explicar el software en caso de que otra persona quiera utilizar este código. Para más información buscar "markdown".
+    Este tipo de archivos es característico en todo tipo de proyectos, y utiliza formato [Markdown](http://wikipedia.matcom.uh.cu/wikipedia_en_all_02_2014/A/html/M/a/r/k/Markdown.html). Normalmente se usa para explicar el software en caso de que otra persona quiera utilizar este código.
 
 * `ORIENTACIÓN.md`
 
@@ -187,15 +199,15 @@ Existen otros archivos de utilidad en el proyecto no relacionados con el código
     Archivos que no se tendrán en cuenta en su repositorio de `git`.
 
 ### Compilación
-El proceso de compilación y ejecución del código está completamente a cargo de `make`. En principio no es necesario cambiar el código del `Makefile`, solo si se quisiera añadir alguna modificación, como compilar ficheros escritos en `C` o añadir más directorios a su proyecto.
+El proceso de compilación y ejecución del código está completamente a cargo de `make`. En principio no es necesario cambiar el código del `Makefile`, solo si se quisiera añadir alguna modificación, como añadir más directorios a su proyecto.
 
-Para compilar el proyecto solo ejecutar `make` en el directorio del proyecto.
+Para compilar el proyecto solo es necesario ejecutar `make` en el directorio del proyecto.
 
 ```
 $ make
 ```
 
-Cualquier archivo que se añada en el directorio `src` automáticamente pasará a formar parte del código fuente de su proyecto, por tanto se compilará y linquerá apropiadamente para crear el programa `snakasm.elf` sin hacer ninguna modificación en el `Makefile`.
+Cualquier archivo que se añada en el directorio `src` automáticamente pasará a formar parte del código fuente de su proyecto, por tanto se ensamblará y enlazará apropiadamente para crear el programa `snakasm.elf` sin hacer ninguna modificación en el `Makefile`.
 
 ### QEMU
 QEMU es donde va a correr su programa de manera virtualizada.
@@ -206,7 +218,7 @@ Para correr y probar su programa ejecutar `make qemu` en una terminal sobre el d
 $ make qemu
 ```
 
-De manera opcional también se puede preparar un iso y realizar el proceso de `boot` utilizando qemu directamente con el iso.
+De manera opcional también se puede preparar un iso y realizar el proceso de arranque utilizando qemu directamente con el iso.
 
 ```
 $ make qemu-iso
@@ -215,7 +227,7 @@ $ make qemu-iso
 ## Especificaciones
 * Los equipos no deben ser de más de dos personas y se recomienda que no sean menos que esta cantidad.
 * No hay ninguna razón para utilizar `C` a no ser que la funcionalidad que se quiera implementar sea lo suficientemente compleja. En cualquier caso consultar con el colectivo de la asignatura su propuesta.
-* TODO: Fecha de entrega
+* La fecha de entrega es el viernes de la semana 16.
 
 ## Recomendaciones
 * No invertir mucho tiempo en tareas que parezcan muy complicadas. Proceder en orden ascendente. Plantearse tareas pequeñas que puedan luego ir escalando.
@@ -228,4 +240,4 @@ Sistema de control de versiones.
 Es altamente recomendada la utilización de esta herramienta dada las ventajas que brinda.
 
 ## Ayuda
-Todo a sido preparado para que se pueda concentrar en la implementación del proyecto únicamente. De cualquier forma el colectivo de la asignatura está preparado para recibir preguntas de cualquier tipo con respecto al código y las tecnologías que se brindan.
+Todo ha sido preparado para que se pueda concentrar en la implementación del proyecto únicamente. De cualquier forma el colectivo de la asignatura está preparado para recibir preguntas de cualquier tipo con respecto al código y las herramientas que se brindan.
