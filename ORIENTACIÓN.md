@@ -260,7 +260,7 @@ links:
 La comunicación con el CMOS se realiza através de los puertos 0x70 y 0x71. El puerto de direccionamiento (0x70) se utiliza para informar a qué registro del CMOS se quiere acceder, mientras que el puerto de datos (0x71) se utiliza para escribir o leer en el registro seleccionado con 0x70. Los registros del CMOS asociados al RTC son:
 
 Register | Contents
---------------------
+---------|----------
  0x00    |  Seconds
  0x02    |  Minutes
  0x04    |  Hours
@@ -321,7 +321,7 @@ links:
 Existen otros dispositivos (`Memory Mapped Devices`) que, a difirencia de utilizar el bus IO, utilizan la `RAM` para su comunicación. La tarjeta gráfica se comunica utilizando una zona de memoria denominada `Frame Buffer`, cuyo tamaño varía dependiendo del modo en que se configure. En el proyecto se utilizará la tarjeta gráfica en modo texto, el cual asume que la pantalla es una matriz de texto con 25 filas y 80 columnas. La codificación de la matriz se realiza utilizando 2 bytes por celda y ubicando en la memoria cada fila una a continuación de otra. El framebuffer está ubicado a partir de la dirección 0xB8000 y tiene una extensión de 25 * 80 * 2 bytes, por lo tanto la celda ubicada en la fila r y la columna c se encuentra en la dirección de memoria 0xB8000 + 80 * r + c. Cada celda se codifica en una palabra (word), el byte menos significativo es exactamente el caracter (chr) que se mostrará en la celda y el más significativo representa el color de la celda. El byte del color almacena en los 4 bits menos significativos (0-3) el color del caracter (fg) y los siguientes 3 bits (4-6) el color de fondo (bg). Por lo tanto, la palabra (word) correspondiente a una celda puede ser representada de la forma ((bg << 12) | (fg << 8) | chr).
 
 Color   | value
----------------
+--------|------
 BLACK   | 0x0
 BLUE    | 0x1
 GREEN   | 0x2
