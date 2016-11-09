@@ -231,3 +231,105 @@ Es altamente recomendada la utilización de esta herramienta dada las ventajas q
 
 ## Ayuda
 Todo a sido preparado para que se pueda concentrar en la implementación del proyecto únicamente. De cualquier forma el colectivo de la asignatura está preparado para recibir preguntas de cualquier tipo con respecto al código y las tecnologías que se brindan.
+
+## Útiles para la implementación
+### I/O Porting
+Un puerto `IO` es una dirección en el bus `IO` de la familia de microprocesadores `x86`. Este bus permite la comunicación con los dispositivos. Para realizar dicha comunicación, `NASM` nos brinda las siguientes instrucciones:
+
+```nasm
+    in reg, addr
+```
+se utiliza para leer del puerto `addr` y escirbir su valor en el registro `reg`.
+El operando `reg` solamente puede ser uno de los registros `al`, `ax` o `eax`
+y `addr` solo puede ser una constante numérica o el registro `dx`.
+
+```nasm
+    out addr, data
+```
+se utiliza para escribir el valor `data` en el puerto `addr`.
+El operando `addr` solo puede ser una constante numérica o el registro `dx`
+y `data` solamente puede ser uno de los registros `al`, `ax` o `eax`.
+
+links:
+*   [http://wiki.osdev.org/I/O_Ports](http://wiki.osdev.org/I/O_Ports)
+
+
+#### CMOS/RTC
+`CMOS` (Complementary-symmetry Metal-Oxide Semiconductor) es una zona de memoria estática, dividida en varios registros, destinada a almacenear la información del `SETUP` del `BIOS` (Basic Input Output System). El CMOS se encuentra dentro de un chip que posee una batería independiente, por lo que retiene la información mientras la computadora está apagada. Este chip también posee otro circuito llamado `RTC` (Real Time Clock), que cuenta la fecha y la hora, y almacena su valor en varios registros del CMOS.
+
+La comunicación con el CMOS se realiza através de los puertos 0x70 y 0x71. El puerto de direccionamiento (0x70) se utiliza para informar a qué registro del CMOS se quiere acceder, mientras que el puerto de datos (0x71) se utiliza para escribir o leer en el registro seleccionado con 0x70. Los registros del CMOS asociados al RTC son:
+
+Register | Contents
+--------------------
+ 0x00    |  Seconds
+ 0x02    |  Minutes
+ 0x04    |  Hours
+ 0x06    |  Weekday
+ 0x07    |  Day of Month
+ 0x08    |  Month
+ 0x09    |  Year
+ 0x32    |  Century (maybe)
+ 0x0A    |  Status Register A
+ 0x0B    |  Status Register B
+
+El registro 0x0A notifica en su 5to bit menos significativo (0x80) cuándo está sucediendo la actualización de los registros del RTC (RTC Update In Progress) y por tanto están en un estado inconsistente. Por lo tanto, antes de hacer una consulta a los registros debería
+esperar a que dicho bit esté activo.
+
+Ej:
+```nasm
+wait_in_progress:
+    mov al, 0XA0
+    in 0x70, al
+    test al, 0x80 ; and lógico que sólo modifica los flags (no modifica los operandos)
+    jnz wait_in_progress
+```
+
+Cada registro tiene un byte de tamaño, por lo que el año no cabe en un solo registro. El siglo es almacenado en el Century Register (0x32) y el resto se almacena en el Tear Register (0x09). Por lo tanto si se quiere obtener el año completo debería calcularse (RealYear = 100 * Century + Year).
+
+Ej: 
+Las siguientes instrucciones guardan en `al` los segundos de la hora actual:
+```nasm
+mov al, 0x00
+out 0x70, al ; seleccionando el registro 0x00 del CMOS
+in al, 0x71  ; leyendo su valor
+```
+links:
+*   [http://wiki.osdev.org/CMOS](http://wiki.osdev.org/CMOS)
+
+
+#### Timing
+Si se quisiera esperar (en un programa) un tiempo determinado, se pudiera ejecutar un ciclo hasta que la diferencia en la hora sea dicho tiempo. Pero la fecha proporcionada por los registros del CMOS tiene una resolución en segundos, lo cual es inútil por si solo cuando queremos esperar milisegundos. Para resolver este problema puede ser utilizada instrucción `rdtsc` (Read Time Stamp Counter), que almacena en `edx:eax` la cantidad de ciclos del reloj que han ocurrido desde que se ha encendido la computadora. A continuación se explica cómo se puede hacer para una cantidad de milisegundos `ms`:
+
+1. Calcular previamente la cantidad de ciclos que han transcurrido durante un segundo (`tps`) utilizando rtdsc y la hora del CMOS (teniendo en cuenta el wait in progress)
+2. A partir del momento en que se desee esperar, contar, dentro de un ciclo, la cantidad de ciclos del reloj transcurridos (`tc`)
+3. Romper el ciclo cuando se cumpla la condición `1000 * tc / tps >= ms`
+
+
+#### Keyboard
+El teclado es otro dispositivo que se comunica através del bus IO. Este dispositivo es extremadamete complejo y sólo nos centraremos en saber cuál tecla fue presionada. Para esto podemos consultar el puerto IO 0x60.
+
+Ej:
+```nasm
+in al, 0x60 ; almacena en al el código de la tecla presionada
+```
+
+links:
+*   [http://wiki.osdev.org/PS/2_Keyboard](http://wiki.osdev.org/PS/2_Keyboard)
+
+
+### Memory Mapped IO - Frame Buffer
+Existen otros dispositivos (`Memory Mapped Devices`) que, a difirencia de utilizar el bus IO, utilizan la `RAM` para su comunicación. La tarjeta gráfica se comunica utilizando una zona de memoria denominada `Frame Buffer`, cuyo tamaño varía dependiendo del modo en que se configure. En el proyecto se utilizará la tarjeta gráfica en modo texto, el cual asume que la pantalla es una matriz de texto con 25 filas y 80 columnas. La codificación de la matriz se realiza utilizando 2 bytes por celda y ubicando en la memoria cada fila una a continuación de otra. El framebuffer está ubicado a partir de la dirección 0xB8000 y tiene una extensión de 25 * 80 * 2 bytes, por lo tanto la celda ubicada en la fila r y la columna c se encuentra en la dirección de memoria 0xB8000 + 80 * r + c. Cada celda se codifica en una palabra (word), el byte menos significativo es exactamente el caracter (chr) que se mostrará en la celda y el más significativo representa el color de la celda. El byte del color almacena en los 4 bits menos significativos (0-3) el color del caracter (fg) y los siguientes 3 bits (4-6) el color de fondo (bg). Por lo tanto, la palabra (word) correspondiente a una celda puede ser representada de la forma ((bg << 12) | (fg << 8) | chr).
+
+Color   | value
+---------------
+BLACK   | 0x0
+BLUE    | 0x1
+GREEN   | 0x2
+CYAN    | 0x3
+RED     | 0x4
+MAGENTA | 0x5
+YELLOW  | 0x6
+GRAY    | 0x7
+
+links:
+*   [https://en.wikipedia.org/wiki/VGA-compatible_text_mode](https://en.wikipedia.org/wiki/VGA-compatible_text_mode)

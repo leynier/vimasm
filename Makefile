@@ -56,7 +56,7 @@ iso/boot/grub/menu.lst: menu.lst
 # QEMU
 
 QEMU = qemu-system-i386
-QEMU_FLAGS =
+QEMU_FLAGS = -soundhw pcspk
 
 qemu: $(KERNEL)
 	$(QEMU) $(QEMU_FLAGS) -kernel $<

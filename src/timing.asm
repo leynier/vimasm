@@ -1,3 +1,19 @@
+; CMOS I/O PORTS
+%define CMOS.ADDR_PORT  0x70
+%define CMOS.DATA_PORT  0x71
+
+; CMOS REGISTERS DATA CONTENT
+%define CMOS.SEC 0x00      ;Seconds
+%define CMOS.MIN 0x02      ;Minutes
+%define CMOS.HOU 0x04      ;Hours
+%define CMOS.WEE 0x06      ;Weekday
+%define CMOS.DOM 0x07      ;Day of Month
+%define CMOS.MON 0x08      ;Month
+%define CMOS.YEA 0x09      ;Year
+%define CMOS.CEN 0x32      ;Century
+%define CMOS.SRA 0x0A      ;Status Register A
+%define CMOS.SRB 0x0B      ;Status Register B
+
 section .data
 
 ; Previous tick count.
