@@ -61,8 +61,7 @@ get_input:
     ; The value of the input is on 'word [esp]'
 
     ; Your bindings here
-    bind KEY.UP, draw.red
-    bind KEY.DOWN, draw.green
+    
 
     add esp, 2 ; free the stack
     ret

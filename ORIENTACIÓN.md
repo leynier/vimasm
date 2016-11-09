@@ -10,12 +10,10 @@ Ciencia de la Computación. Curso 2016-17.
 [https://wiki.gnome.org/Apps/Nibbles/](https://wiki.gnome.org/Apps/Nibbles/)
 
 ## Introducción
-Con la idea de preparar un soporte para lo que más adelante será el curso de Sistemas Operativos el colectivo de la asignatura a decidido orientar un proyecto sin dicho recurso (SO).
-
-El objetivo es la implementación de un juego tipo "Snake" pero completamente desarrollado en NASM y sin la utilización de un sistema operativo. Para esto se le brinda un API para la interacción con las partes más primitivas de la computadora, en estos momentos completamente desprovista de drivers ni nada por el estilo.
+El objetivo del proyecto este año sera implementar un juego tipo "Snake" implementado completamente en NASM y sin la utilización de un sistema operativo. Con este objetivo se les brinda esta API para la interacción con las partes de la computadora que van a necesitar (teclado, pantalla, etc).
 
 ## Dependencias
-Antes de empezar a desarrollar es necesario que tenga instalado todos los programas. Para esto desde un terminal ejecute:
+Para empezar a desarrollar necesitaran algunos programas y bibliotecas:
 
 ```
 $ sudo make install_dependencies
