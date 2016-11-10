@@ -92,7 +92,7 @@ Es muy probable que para realizar (como es debido) algunos de estos requerimient
 
 * Ej 1. Para poner sonido es necesario leer sobre los "puertos" y cómo pedir e insertar valores. 
 * Ej 2. Las serpientes controladas automáticamente normalmente se quiere que no tengan un movimiento completamente caótico (solución que es perfectamente válida para conseguir los puntos de este requerimiento). 
-* Ej 3. Funciones que generen números "ramdom".
+* Ej 3. Funciones que generen números "random".
 
 
 ## Estructura del proyecto
