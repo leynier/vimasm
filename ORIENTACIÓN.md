@@ -330,7 +330,8 @@ links:
 
 
 ### Memory Mapped IO - Frame Buffer
-Existen otros dispositivos (`Memory Mapped Devices`) que, a difirencia de utilizar el bus IO, utilizan la `RAM` para su comunicación. La tarjeta gráfica se comunica utilizando una zona de memoria denominada `Frame Buffer`, cuyo tamaño varía dependiendo del modo en que se configure. En el proyecto se utilizará la tarjeta gráfica en modo texto, el cual asume que la pantalla es una matriz de texto con 25 filas y 80 columnas. La codificación de la matriz se realiza utilizando 2 bytes por celda y ubicando en la memoria cada fila una a continuación de otra. El framebuffer está ubicado a partir de la dirección 0xB8000 y tiene una extensión de 25 * 80 * 2 bytes, por lo tanto la celda ubicada en la fila r y la columna c se encuentra en la dirección de memoria 0xB8000 + (80 * r + c) * 2. Cada celda se codifica en una palabra (word), el byte menos significativo es exactamente el caracter (chr) que se mostrará en la celda y el más significativo representa el color de la celda. El byte del color almacena en los 4 bits menos significativos (0-3) el color del caracter (fg) y los siguientes 3 bits (4-6) el color de fondo (bg). Por lo tanto, la palabra (word) correspondiente a una celda puede ser representada de la forma ((bg << 12) | (fg << 8) | chr).
+Existen otros dispositivos (`Memory Mapped Devices`) que, a difirencia de utilizar el bus IO, utilizan la `RAM` para su comunicación. La tarjeta gráfica se comunica utilizando una zona de memoria denominada `Frame Buffer`, cuyo tamaño varía dependiendo del modo en que se configure. En el proyecto se utilizará la tarjeta gráfica en modo texto, el cual asume que la pantalla es una matriz de texto con 25 filas y 80 columnas. La codificación de la matriz se realiza utilizando 2 bytes por celda y ubicando en la memoria cada fila una a continuación de otra. El framebuffer está ubicado a partir de la dirección 0xB8000 y tiene una extensión de 25 * 80 * 2 bytes, por lo tanto la celda ubicada en la fila r y la columna c se encuentra en la dirección de memoria 0xB8000 + (80 * r + c) * 2. Cada celda se codifica en una palabra (word), el byte menos significativo es exactamente el caracter (chr) que se mostrará en la celda y el más significativo representa el color de la celda. El byte del color almacena en el nibble menos significativo el color del caracter (fg), y en el nible más significativo el color de fondo (bg). Por lo tanto, la palabra (word) correspondiente a una celda puede ser representada de la forma ((bg << 12) | (fg << 8) | chr). Además, el bit más significativo de cada color (fb o bg), al estar activado, indica
+que el color se mostrará en su forma más clara.
 
 Color   | value
 --------|------
@@ -342,6 +343,10 @@ RED     | 0x4
 MAGENTA | 0x5
 YELLOW  | 0x6
 GRAY    | 0x7
+
+```c
+LIGHT_BLUE = BLUE | 0b1000
+```
 
 links:
 *   [https://en.wikipedia.org/wiki/VGA-compatible_text_mode](https://en.wikipedia.org/wiki/VGA-compatible_text_mode)
