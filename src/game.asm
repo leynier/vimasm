@@ -61,7 +61,14 @@ get_input:
     ; The value of the input is on 'word [esp]'
 
     ; Your bindings here
-    
+    cmp al, KEY.UP
+    jne not_up
+    call draw.red
+    not_up:
+    cmp al, KEY.DOWN
+    jne not_down
+    call draw.green
+    not_down:
 
     add esp, 2 ; free the stack
     ret
