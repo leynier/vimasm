@@ -109,7 +109,7 @@ Para la correcta implementación de la tarea se le brinda una plantilla que cont
 
 Vale destacar que, aunque estaremos usando una máquina virtual para el desarrollo, este esqueleto contiene todo lo necesario para que al finalizar su proyecto, usted pueda guardar su juego en una memoria y ejecutarlo en su PC real.
 
-### Código base
+## Código base
 En la carpeta `src` se encuentra el código que se brinda como base para comenzar el proyecto.
 
 * `game.asm`
@@ -158,7 +158,7 @@ Los demás archivos son utilizados en el proceso de arranque (*boot*).
 
     Desaparece el cursor de la pantalla y salta para la etiqueta `game`.
 
-### Otros
+## Otros
 
 Existen otros archivos de utilidad en el proyecto no relacionados con el código fuente.
 
@@ -192,7 +192,7 @@ Existen otros archivos de utilidad en el proyecto no relacionados con el código
 
     El logo de Vim.
 
-### Compilación
+## Compilación
 
 El proceso de compilación y ejecución del código está completamente a cargo de `make`. En principio no es necesario cambiar el código del `Makefile`, solo si se quisiera añadir alguna modificación, como añadir más directorios a su proyecto.
 
@@ -204,7 +204,7 @@ $ make
 
 Cualquier archivo que se añada en el directorio `src` automáticamente pasará a formar parte del código fuente de su proyecto, por tanto se ensamblará y enlazará apropiadamente para crear el programa `vimasm.elf` sin hacer ninguna modificación en el `Makefile`.
 
-### QEMU
+## QEMU
 
 QEMU es donde va a correr su programa de manera virtualizada.
 
@@ -232,7 +232,7 @@ $ make qemu-iso
 * Comentar el código abundantemente, cuanto más, mejor.
 * Organizar convenientemente el código en distintos archivos dentro de la carpeta `src`, de acuerdo con la lógica que desarrollen.
 
-### Git
+## Git
 
 Sistema de control de versiones.
 
@@ -243,10 +243,10 @@ Este proyecto se encuentra en el repositorio [http://gitlab.matcom.uh.cu/pm1/vim
 ## Ayuda
 Todo ha sido preparado para que se pueda concentrar en la implementación del proyecto únicamente. De cualquier forma el colectivo de la asignatura está preparado para recibir preguntas de cualquier tipo con respecto al código y las herramientas que se brindan.
 
-#### Documentación adjunta
+### Documentación adjunta
 Junto con el proyecto se distribuyen varios documentos que pueden resultar de utilidad. Entre ellos se encuentran varios libros que resultan de gran utilidad para comprender Vim y todas su funcionalidades. Además, se incluyen tres documentos creados por el desarrollador del proyecto [Tetrasm](https://github.com/programble/tetrasm), en el cual se inspira este proyecto. Otro de los documentos que se incluyen en la tabla con los códigos de escaneo para reconocer las teclas que se presionan. Uno de los recursos más importantes para comprender Vim, es la propia documentación, intente ejecutar `vimtutor` en una terminal.
 
-#### CMOS/RTC
+### CMOS/RTC
 `CMOS` (Complementary-symmetry Metal-Oxide Semiconductor) es una zona de memoria estática, dividida en varios registros, destinada a almacenear la información del `SETUP` del `BIOS` (Basic Input Output System). El CMOS se encuentra dentro de un chip que posee una batería independiente, por lo que retiene la información mientras la computadora está apagada. Este chip también posee otro circuito llamado `RTC` (Real Time Clock), que cuenta la fecha y la hora, y almacena su valor en varios registros del CMOS.
 
 La comunicación con el CMOS se realiza através de los puertos 0x70 y 0x71. El puerto de direccionamiento (0x70) se utiliza para informar a qué registro del CMOS se quiere acceder, mientras que el puerto de datos (0x71) se utiliza para escribir o leer en el registro seleccionado con 0x70. Los registros del CMOS asociados al RTC son:
@@ -289,7 +289,7 @@ links:
 *   [http://wiki.osdev.org/CMOS](http://wiki.osdev.org/CMOS)
 
 
-#### Timing
+### Timing
 Si se quisiera esperar (en un programa) un tiempo determinado, se pudiera ejecutar un ciclo hasta que la diferencia en la hora sea dicho tiempo. Pero la fecha proporcionada por los registros del CMOS tiene una resolución en segundos, lo cual es inútil por si solo cuando queremos esperar milisegundos. Para resolver este problema puede ser utilizada instrucción `rdtsc` (Read Time Stamp Counter), que almacena en `edx:eax` la cantidad de ciclos del reloj que han ocurrido desde que se ha encendido la computadora. A continuación se explica cómo se puede hacer para una cantidad de milisegundos `ms`:
 
 1. Calcular previamente la cantidad de ciclos que han transcurrido durante un segundo (`tps`) utilizando rtdsc y la hora del CMOS (teniendo en cuenta el wait in progress)
@@ -297,7 +297,7 @@ Si se quisiera esperar (en un programa) un tiempo determinado, se pudiera ejecut
 3. Romper el ciclo cuando se cumpla la condición `1000 * tc / tps >= ms`
 
 
-#### Keyboard
+### Keyboard
 El teclado es otro dispositivo que se comunica através del bus IO. Este dispositivo es extremadamete complejo y sólo nos centraremos en saber cuál tecla fue presionada. Para esto podemos consultar el puerto IO 0x60.
 
 Ej:
@@ -309,7 +309,7 @@ links:
 *   [http://wiki.osdev.org/PS/2_Keyboard](http://wiki.osdev.org/PS/2_Keyboard)
 
 
-#### Memory Mapped IO - Frame Buffer
+### Memory Mapped IO - Frame Buffer
 Existen otros dispositivos (`Memory Mapped Devices`) que, a difirencia de utilizar el bus IO, utilizan la `RAM` para su comunicación. La tarjeta gráfica se comunica utilizando una zona de memoria denominada `Frame Buffer`, cuyo tamaño varía dependiendo del modo en que se configure. En el proyecto se utilizará la tarjeta gráfica en modo texto, el cual asume que la pantalla es una matriz de texto con 25 filas y 80 columnas. La codificación de la matriz se realiza utilizando 2 bytes por celda y ubicando en la memoria cada fila una a continuación de otra. El framebuffer está ubicado a partir de la dirección 0xB8000 y tiene una extensión de 25 * 80 * 2 bytes, por lo tanto la celda ubicada en la fila r y la columna c se encuentra en la dirección de memoria 0xB8000 + (80 * r + c) * 2. Cada celda se codifica en una palabra (word), el byte menos significativo es exactamente el caracter (chr) que se mostrará en la celda y el más significativo representa el color de la celda. El byte del color almacena en el nibble menos significativo el color del caracter (fg), y en el nible más significativo el color de fondo (bg). Por lo tanto, la palabra (word) correspondiente a una celda puede ser representada de la forma ((bg << 12) | (fg << 8) | chr). Además, el bit más significativo de cada color (fb o bg), al estar activado, indica
 que el color se mostrará en su forma más clara.
 
