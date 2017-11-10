@@ -75,7 +75,7 @@ Cada funcionalidad otorga una cantidad de puntos determinada, en función de su 
     - (0.25ptos) Especificar preferencias (comando `set`). Su proyecto debe ser capaz al menos de especificar la búsqueda con resaltado, el tamaño de los tabs e ignorar las mayúsculas y minúsculas. Es importante también implementar sus contrapartes, o sea, ser capaces de revertir estas configuraciones. Resulta necesario haber implementado la funcionalidad de búsqueda para implementar esta funcionalidad.
     - (0.25ptos) Otras operaciones como `delete`, `yank`, `put`, `copy`, `move`, `join` y `normal`. Es necesario implementar al menos tres de ellas.
 - Misceláneas
-    - (0.25ptos) Buscar texto y ser capaz de moverse hacia la próxima ocurrencia con `/pattern` y `n`.
+    - (0.25ptos) Buscar texto y ser capaz de moverse hacia la próxima ocurrencia y la anterior con `/pattern`, `n` y `N`.
     - (0.25ptos) Autocompletamiento.
     - (0.25ptos) Cursor de bloque intermitente (blinking cursor).
  
