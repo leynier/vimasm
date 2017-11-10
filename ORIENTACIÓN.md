@@ -243,6 +243,9 @@ Este proyecto se encuentra en el repositorio [http://gitlab.matcom.uh.cu/pm1/vim
 ## Ayuda
 Todo ha sido preparado para que se pueda concentrar en la implementación del proyecto únicamente. De cualquier forma el colectivo de la asignatura está preparado para recibir preguntas de cualquier tipo con respecto al código y las herramientas que se brindan.
 
+#### Documentación adjunta
+Junto con el proyecto se distribuyen varios documentos que pueden resultar de utilidad. Entre ellos se encuentran varios libros que resultan de gran utilidad para comprender Vim y todas su funcionalidades. Además, se incluyen tres documentos creados por el desarrollador del proyecto [Tetrasm](https://github.com/programble/tetrasm), en el cual se inspira este proyecto. Otro de los documentos que se incluyen en la tabla con los códigos de escaneo para reconocer las teclas que se presionan. Uno de los recursos más importantes para comprender Vim, es la propia documentación, intente ejecutar `vimtutor` en una terminal.
+
 #### CMOS/RTC
 `CMOS` (Complementary-symmetry Metal-Oxide Semiconductor) es una zona de memoria estática, dividida en varios registros, destinada a almacenear la información del `SETUP` del `BIOS` (Basic Input Output System). El CMOS se encuentra dentro de un chip que posee una batería independiente, por lo que retiene la información mientras la computadora está apagada. Este chip también posee otro circuito llamado `RTC` (Real Time Clock), que cuenta la fecha y la hora, y almacena su valor en varios registros del CMOS.
 
@@ -306,7 +309,7 @@ links:
 *   [http://wiki.osdev.org/PS/2_Keyboard](http://wiki.osdev.org/PS/2_Keyboard)
 
 
-### Memory Mapped IO - Frame Buffer
+#### Memory Mapped IO - Frame Buffer
 Existen otros dispositivos (`Memory Mapped Devices`) que, a difirencia de utilizar el bus IO, utilizan la `RAM` para su comunicación. La tarjeta gráfica se comunica utilizando una zona de memoria denominada `Frame Buffer`, cuyo tamaño varía dependiendo del modo en que se configure. En el proyecto se utilizará la tarjeta gráfica en modo texto, el cual asume que la pantalla es una matriz de texto con 25 filas y 80 columnas. La codificación de la matriz se realiza utilizando 2 bytes por celda y ubicando en la memoria cada fila una a continuación de otra. El framebuffer está ubicado a partir de la dirección 0xB8000 y tiene una extensión de 25 * 80 * 2 bytes, por lo tanto la celda ubicada en la fila r y la columna c se encuentra en la dirección de memoria 0xB8000 + (80 * r + c) * 2. Cada celda se codifica en una palabra (word), el byte menos significativo es exactamente el caracter (chr) que se mostrará en la celda y el más significativo representa el color de la celda. El byte del color almacena en el nibble menos significativo el color del caracter (fg), y en el nible más significativo el color de fondo (bg). Por lo tanto, la palabra (word) correspondiente a una celda puede ser representada de la forma ((bg << 12) | (fg << 8) | chr). Además, el bit más significativo de cada color (fb o bg), al estar activado, indica
 que el color se mostrará en su forma más clara.
 
