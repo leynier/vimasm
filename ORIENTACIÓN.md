@@ -114,11 +114,11 @@ En la carpeta `src` se encuentra el código que se brinda como base para comenza
 
 * `game.asm`
 
-    Se encuentra el ciclo principal del juego, como ejemplo se ve el código de un programa que cuando se presiona la tecla `arriba` la pantalla se pone de color rojo y cuando se presiona "abajo" de color verde.
+    Se encuentra el ciclo principal del juego, como ejemplo se ve el código de un programa que cuando se presiona la tecla `arriba` la pantalla se pone de color rojo y cuando se presiona `abajo` de color verde.
 
-* `kerboard.asm`
+* `keyboard.asm`
 
-    Se encuentra un procedimiento llamado `scan` que retorna en `al` el byte de la última tecla que se presionó y 0 si es la misma.
+    Se encuentra un procedimiento llamado `scan` que retorna en `al` el byte de la última tecla que se presionó y 0 si es la misma que se había presionado anteriormente.
 
 * `keyboard.mac`
 
@@ -182,7 +182,7 @@ Existen otros archivos de utilidad en el proyecto no relacionados con el código
 
 * `ORIENTACIÓN.md`
 
-    Este archivo ;-).
+    Este archivo.
 
 * `.gitignore`
 
@@ -208,7 +208,7 @@ Cualquier archivo que se añada en el directorio `src` automáticamente pasará 
 
 QEMU es donde va a correr su programa de manera virtualizada.
 
-Para correr y probar su programa ejecutar `make qemu` en una terminal sobre el directorio de su proyecto.
+Para correr y probar su programa ejecutar `make qemu` en una terminal desde el directorio de su proyecto.
 
 ```
 $ make qemu
@@ -224,7 +224,7 @@ $ make qemu-iso
 
 * Los equipos no deben ser de más de dos personas y se recomienda que no sean menos que esta cantidad.
 * No hay ninguna razón para utilizar `C` a no ser que la funcionalidad que se quiera implementar sea lo suficientemente compleja. En cualquier caso consultar con el colectivo de la asignatura su propuesta.
-* La fecha de entrega es el viernes de la semana 16.
+* La fecha de entrega es el viernes de la semana 15.
 
 ## Recomendaciones
 
@@ -243,7 +243,7 @@ Este proyecto se encuentra en el repositorio [http://gitlab.matcom.uh.cu/pm1/vim
 ## Ayuda
 Todo ha sido preparado para que se pueda concentrar en la implementación del proyecto únicamente. De cualquier forma el colectivo de la asignatura está preparado para recibir preguntas de cualquier tipo con respecto al código y las herramientas que se brindan.
 
-### Documentación adjunta
+## Documentación adjunta
 Junto con el proyecto se distribuyen varios documentos que pueden resultar de utilidad. Entre ellos se encuentran varios libros que resultan de gran utilidad para comprender Vim y todas su funcionalidades. Además, se incluyen tres documentos creados por el desarrollador del proyecto [Tetrasm](https://github.com/programble/tetrasm), en el cual se inspira este proyecto. Otro de los documentos que se incluyen en la tabla con los códigos de escaneo para reconocer las teclas que se presionan. Uno de los recursos más importantes para comprender Vim, es la propia documentación, intente ejecutar `vimtutor` en una terminal.
 
 ### CMOS/RTC
@@ -310,7 +310,7 @@ links:
 
 
 ### Memory Mapped IO - Frame Buffer
-Existen otros dispositivos (`Memory Mapped Devices`) que, a difirencia de utilizar el bus IO, utilizan la `RAM` para su comunicación. La tarjeta gráfica se comunica utilizando una zona de memoria denominada `Frame Buffer`, cuyo tamaño varía dependiendo del modo en que se configure. En el proyecto se utilizará la tarjeta gráfica en modo texto, el cual asume que la pantalla es una matriz de texto con 25 filas y 80 columnas. La codificación de la matriz se realiza utilizando 2 bytes por celda y ubicando en la memoria cada fila una a continuación de otra. El framebuffer está ubicado a partir de la dirección 0xB8000 y tiene una extensión de 25 * 80 * 2 bytes, por lo tanto la celda ubicada en la fila r y la columna c se encuentra en la dirección de memoria 0xB8000 + (80 * r + c) * 2. Cada celda se codifica en una palabra (word), el byte menos significativo es exactamente el caracter (chr) que se mostrará en la celda y el más significativo representa el color de la celda. El byte del color almacena en el nibble menos significativo el color del caracter (fg), y en el nible más significativo el color de fondo (bg). Por lo tanto, la palabra (word) correspondiente a una celda puede ser representada de la forma ((bg << 12) | (fg << 8) | chr). Además, el bit más significativo de cada color (fb o bg), al estar activado, indica
+Existen otros dispositivos (`Memory Mapped Devices`) que, a diferencia de utilizar el bus IO, utilizan la `RAM` para su comunicación. La tarjeta gráfica se comunica utilizando una zona de memoria denominada `Frame Buffer`, cuyo tamaño varía dependiendo del modo en que se configure. En el proyecto se utilizará la tarjeta gráfica en modo texto, el cual asume que la pantalla es una matriz de texto con 25 filas y 80 columnas. La codificación de la matriz se realiza utilizando 2 bytes por celda y ubicando en la memoria cada fila una a continuación de otra. El framebuffer está ubicado a partir de la dirección 0xB8000 y tiene una extensión de 25 * 80 * 2 bytes, por lo tanto la celda ubicada en la fila r y la columna c se encuentra en la dirección de memoria 0xB8000 + (80 * r + c) * 2. Cada celda se codifica en una palabra (word), el byte menos significativo es exactamente el caracter (chr) que se mostrará en la celda y el más significativo representa el color de la celda. El byte del color almacena en el nibble menos significativo el color del caracter (fg), y en el nible más significativo el color de fondo (bg). Por lo tanto, la palabra (word) correspondiente a una celda puede ser representada de la forma ((bg << 12) | (fg << 8) | chr). Además, el bit más significativo de cada color (fb o bg), al estar activado, indica
 que el color se mostrará en su forma más clara.
 
 Color   | value
