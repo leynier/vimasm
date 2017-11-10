@@ -238,7 +238,7 @@ Sistema de control de versiones.
 
 Es altamente recomendada la utilización de esta herramienta dada las ventajas que brinda.
 
-Este proyecto se encuentra en el repositorio [http://gitlab.matcom.uh.cu/pm1/vimasm.git](http://gitlab.matcom.uh.cu/pm1/vimasm.git). Se recomienda hacer un _fork_ del mismo para trabajar sobre él.
+Este proyecto se encuentra en el repositorio [http://gitlab.matcom.uh.cu/h.canizares1/vimasm](http://gitlab.matcom.uh.cu/h.canizares1/vimasm). Se recomienda hacer un _fork_ del mismo para trabajar sobre él.
 
 ## Ayuda
 Todo ha sido preparado para que se pueda concentrar en la implementación del proyecto únicamente. De cualquier forma el colectivo de la asignatura está preparado para recibir preguntas de cualquier tipo con respecto al código y las herramientas que se brindan.
