@@ -11,7 +11,7 @@ LD = ld
 LD_FLAGS = -m elf_i386 -nostdlib -T linker.ld
 
 # Kernel
-KERNEL = snakasm.elf
+KERNEL = vimasm.elf
 
 # All my source code
 SRC = $(wildcard src/*.asm)
@@ -34,14 +34,14 @@ GENISOIMAGE = genisoimage
 ISO_FLAGS = -R -b boot/grub/stage2_eltorito -no-emul-boot -boot-load-size 4 -boot-info-table
 STAGE2 = stage2_eltorito
 
-ISO = snakasm.iso
+ISO = vimasm.iso
 
 iso: $(ISO)
 
-$(ISO): iso/boot/snakasm.elf iso/boot/grub/stage2_eltorito iso/boot/grub/menu.lst
+$(ISO): iso/boot/vimasm.elf iso/boot/grub/stage2_eltorito iso/boot/grub/menu.lst
 	$(GENISOIMAGE) $(ISO_FLAGS) -o $@ iso
 
-iso/boot/snakasm.elf: $(KERNEL)
+iso/boot/vimasm.elf: $(KERNEL)
 	@mkdir -p iso/boot
 	cp $< $@
 

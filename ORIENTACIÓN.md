@@ -1,106 +1,95 @@
-# SNAKASM
-[http://gitlab.matcom.uh.cu/pm1/snakasm.git](http://gitlab.matcom.uh.cu/pm1/snakasm.git)
+# VIMASM
 
 ## Proyecto de Programación de Máquinas I.
 
-> Ciencia de la Computación. Curso 2016-17.
+## Ciencia de la Computación. Curso 2017-2018.
 
-![](http://wikipedia.matcom.uh.cu/wikipedia_en_all_02_2014/I/media/S/n/a/k/SnakeBBCMicro.png)
-
-[Snake]( http://wikipedia.matcom.uh.cu/wikipedia_en_all_02_2014/A/html/S/n/a/k/Snake_(video_game).html )
+<img src="Vimlogo.svg.png" alt="Vim logo" style="width: 200px;"/>
 
 ## Introducción
+
 Con la idea de preparar un soporte para lo que más adelante será el curso de Sistemas Operativos el colectivo de la asignatura a decidido orientar un proyecto sin dicho recurso (SO).
 
-El objetivo es la implementación de un juego tipo "Snake" pero completamente desarrollado en NASM y sin la utilización de un sistema operativo. Para esto se le brinda un API para la interacción con las partes más primitivas de la computadora, en estos momentos completamente desprovista de drivers ni nada por el estilo.
+El objetivo es la implementación de un editor de texto que incluya un subconjunto de las funcionalidades de [Vim](http://wikipedia.matcom.uh.cu/wikipedia_en_all_02_2014/A/html/V/i/m/_/Vim_(text_editor).html), pero completamente desarrollado en NASM y sin la utilización de un sistema operativo. Para esto se le brinda un API para la interacción con las partes más primitivas de la computadora, en estos momentos completamente desprovista de drivers ni nada por el estilo.
+
+Para el desarollo del proyecto resulta casi imprescindible la utilización de Linux como sistema operativo. Aquellos aventureros que insistan en la utilización de Windows deben conocer que el colectivo de la asignatura no brindará soporte para esta plataforma.
+
+## Sobre Vim
+
+Vim es un editor de texto en la terminal, aunque cuenta también con una aplicación gráfica. Una de sus principales características es el concepto de modos, a diferencia de los editores de texto tradicionales como Microsoft Word o Notepad, donde siempre el usuario se encuentra en modo de inserción, en Vim existen múltiples modos. Además, es un editor altamente customizable, contando con un gran ecosistema de _plugins_. Para el desarrollo de este proyecto, resulta necesario contar con una comprensión básica de Vim, sus modos y funcionalidades. Con este propósito, se adjunta documentación que facilite esta tarea.
 
 ## Dependencias
-Antes de empezar a desarrollar es necesario que tenga instalado todos los programas. Para esto desde un terminal ejecute:
+
+Antes de empezar a desarrollar es necesario que tenga instalado todos los programas. Para esto, debe tener acceso a un repositorio de Linux, ya sea conectado a la red o desde un disco duro. Desde el directorio donde se encuentra el proyecto, abra una terminal y ejecute:
 
 ```
 $ sudo make install_dependencies
 ```
 
-Debe de estar conectado y con acceso a un repositorio. Luego de esto, no debe haber ningún problema con empezar de inmediato con el resto de su proyecto.
-
 ## Requerimientos
+
 Los requerimientos básicos (los que garantizan una calificación de 3) del proyecto son los siguientes:
 
 * Comenzar
-
-    Que el juego arranque.
-
-* Visualizar Mapa
-
-    Este debe tener paredes y espacios en blanco de forma tal que la serpiente pueda moverse y chocar.
-
-* Movimiento con teclas
-
-    4 movimientos básicos, arriba, abajo, derecha e izquierda.
-
-* Comer y crecer
-
-    Eventualmente hacer aparecer "fruta" en una posición válida (alcanzable) del mapa y cuando la cabeza de la serpiente pase por encima de este, hacer que la longitud de la serpiente aumente.
-
-* Chocar y perder
-
-    Si la cabeza de la serpiente se encuentra con un obstáculo (cualquier zona no vacía que no sea una fruta) el juego debe detenerse e indicar que se ha perdido.
-
-* Puntuación.
-
-    Llevar la cuenta de los puntos del jugador y hacérselo saber en todo momento.
+    - Que el editor de texto arranque.
+* Mensaje de bienvenida
+    - Su proyecto debe mostrar al inicio los nombre de los integrantes y algo semejante a: "Proyecto de PMI 2017-2018. Presione cualquier tecla para continuar..."
+* Alternar entre modos
+    - Su proyecto debe ser capaz de alternar entre modo normal de Vim, el modo inserción y el modo visual.
+* Insertar texto
+    - Ser capaces de entrar en modo inserción y poder insertar y eliminar texto.
+* Copiar texto en modo visual
+    - Su proyecto debe permitir entrar en modo visual y seleccionar y copiar texto de tres formas posibles: simple, en líneas y en bloque.
+* Pegar texto en modo normal
+    - El texto que haya sido copiado en modo visual, debe poderse pegar en modo normal.
+* Volver a la pantalla de inicio
+    - Su proyecto debe permitir regresar a la pantalla inicio y volver a entrar para editar un documento nuevo, descartando todos los cambios hechos.
 
 Una **correcta** implementación del anterior grupo de funcionalidades le otorgará 3 puntos. Para alcanzar una nota superior es necesario implementar algunas de las siguientes características opcionales.
 
-### Funcionalidades optativas
+Es importante notar que para lograr estos objetivos, las combinaciones de teclas tienen que ser las mismas utilizadas por Vim.
 
-Por su nivel de complejidad no todos tienen el mismo "peso":
+## Funcionalidades optativas
+
+Por su nivel de complejidad no todas tienen el mismo "peso".
 
 Cada funcionalidad otorga una cantidad de puntos determinada, en función de su complejidad. A continuación describimos cada una:
 
-* Dificultad (velocidades, ...) (+0.5)
-
-    Tener distintos niveles de dificultad, que afecten la sensación del juego. Una posible idea sería la velocidad de la serpiente.
+- Operaciones en modo normal
+    - (0.75ptos) Comando punto (_Dot command_):
+        - Permite repetir el último cambio. Una de las instrucciones más poderosas y versátiles de Vim. Es necesario implementar al menos una versión de este operador que repita lo que sucedió entre entrar en modo inserción y salir.
+    - (0.25ptos) Deshacer una acción.
+    - (0.25ptos) Deshacer infinito.
+    - Operadores + Repeticiones + Movimiento (0.75ptos)
+        - Es necesario implementar al menos los operadores de copiar, borrar y reemplazar con cualquier cantidad de repeticiones y al menos tres tipos de movimientos diferentes.
+    - (0.25ptos) Ir al inicio del fichero, al final del fichero y a una línea específica del fichero.
+    - (0.25ptos) Entrar en modo sobreescribir.
+- Operaciones en modo inserción
+    - (0.25ptos) Borrar utilizando operadores de movimiento.
+    - (0.25ptos) Pegar desde registro.
+- Operaciones en modo visual
+    - (0.25ptos) Mover el rango de selección con operadores de movimiento.
+    - (0.5ptos) Inserción en modo bloque.
+- Operaciones en modo línea de comandos
+    - (0.5ptos) Reemplazar texto.
+    - (0.25ptos) Especificar preferencias (comando `set`). Su proyecto debe ser capaz al menos de especificar la búsqueda con resaltado, el tamaño de los tabs e ignorar las mayúsculas y minúsculas. Es importante también implementar sus contrapartes, o sea, ser capaces de revertir estas configuraciones. Resulta necesario haber implementado la funcionalidad de búsqueda para implementar esta funcionalidad.
+    - (0.25ptos) Otras operaciones como `delete`, `yank`, `put`, `copy`, `move`, `join` y `normal`. Es necesario implementar al menos tres de ellas.
+- Misceláneas
+    - (0.25ptos) Buscar texto y ser capaz de moverse hacia la próxima ocurrencia con `/pattern` y `n`.
+    - (0.25ptos) Autocompletamiento.
+    - (0.25ptos) Cursor de bloque intermitente (blinking cursor).
  
-* Niveles fijos (+0.5) - Aleatorios jugables (+1)
+Como puede verse, es posible lograr más de 5 puntos, calificación que se tendrá en cuenta para la evaluación final de la asignatura. Cada una de las funcionalidades implementadas debe integrarse con las implementadas anteriormente. Esto significa, por ejemplo, que si se implementa el comando punto y deshacer, su proyecto tiene que ser capaz de deshacer lo que se haga con el comando punto.
 
-    Tener la opción de jugar distintos niveles en vez de uno fijo. También es posible que estos niveles se generen de manera aleatoria, pero siempre garantizando que sean jugables, que no haya una zona inaccesible en el mapa.
+Es muy probable que para realizar (como es debido) algunos de estos requerimientos se necesite de un poco de investigación al respecto.
 
-* Alta puntuación (+0.5)
-
-    Durante el período del juego llevar la cuenta de cuáles han sido las puntuaciones más altas, y llevar un scoreboard que se muestre de alguna manera, preferiblemente al terminar el juego.
-
-* Title screen con ascii art (+0.5)
-
-    Tener una pantalla de presentación generada con [ASCII art](http://wikipedia.matcom.uh.cu/wikipedia_en_all_02_2014/A/html/A/S/C/I/ASCII_art.html).
-
-* Tiempo (modificar la puntuación, ...) (+0.5)
-
-    El tiempo transcurrido debe afectar el modo de juego. Por ejemplo, ir disminuyendo la puntuación cada 10 segundos si no se comido ninguna fruta.
-
-* Serpientes adicionales (IA ó 2nd player) (+1) (ambos +1.5)
-
-    Tener la posibilidad de jugar con varias serpientes, lo mismo controladas de manera automática que por otro jugador. La implementación de alguno de estos requerimientos aporta 1 punto adicional o (no el `o` de lógica, en todo caso el xor ;-)) 1.5 si se realizan ambos.
-
-* Sonido/Música (+0.5)
-
-    Añadir sonido o música al juego.
-
-* Cualquier otro (+?) (consultar con el profesor)
-
-Como puede verse, es posible lograr más de 5 puntos, calificación que se tendrá en cuenta para la evaluación final de la asignatura.
-
-Es muy probable que para realizar (como es debido) algunos de estos requerimientos se necesite de un poco de investigación al respecto. 
-
-* Ej 1. Para poner sonido es necesario leer sobre los "puertos" y cómo pedir e insertar valores. 
-* Ej 2. Las serpientes controladas automáticamente normalmente se quiere que no tengan un movimiento completamente caótico (solución que es perfectamente válida para conseguir los puntos de este requerimiento). 
-* Ej 3. Funciones que generen números "random".
-
+Si a usted se le ocurre otra funcionalidad que resulte interesante y útil, díscútala con el colectivo de la asignatura para decidir si es de interés y cuántos puntos se otorgan por la misma. 
 
 ## Estructura del proyecto
+
 Para la correcta implementación de la tarea se le brinda una plantilla que contiene el código necesario para comenzar a cargar un programa muy básico en una máquina virtual, además de las respectivas funciones para leer del teclado, pintar en la pantalla y consultar el tiempo.
 
-    snakasm/
+    vimasm/
     ├── src/
     │   ├── multiboot.asm
     │   ├── boot.asm
@@ -153,9 +142,7 @@ En la carpeta `src` se encuentra el código que se brinda como base para comenza
 
 * `timing.asm`
 
-    Funciones útiles para el trabajo con el tiempo.
-
-    En clases prácticas estaremos entrando más en detalle acerca de este aspecto.
+    Funciones para el trabajo con el tiempo.
 
 Los demás archivos son utilizados en el proceso de arranque (*boot*).
 
@@ -172,6 +159,7 @@ Los demás archivos son utilizados en el proceso de arranque (*boot*).
     Desaparece el cursor de la pantalla y salta para la etiqueta `game`.
 
 ### Otros
+
 Existen otros archivos de utilidad en el proyecto no relacionados con el código fuente.
 
 * `linker.ld`
@@ -200,7 +188,12 @@ Existen otros archivos de utilidad en el proyecto no relacionados con el código
 
     Archivos que no se tendrán en cuenta en su repositorio de `git`.
 
+* `Vimlogo.svg.png`
+
+    El logo de Vim.
+
 ### Compilación
+
 El proceso de compilación y ejecución del código está completamente a cargo de `make`. En principio no es necesario cambiar el código del `Makefile`, solo si se quisiera añadir alguna modificación, como añadir más directorios a su proyecto.
 
 Para compilar el proyecto solo es necesario ejecutar `make` en el directorio del proyecto.
@@ -209,9 +202,10 @@ Para compilar el proyecto solo es necesario ejecutar `make` en el directorio del
 $ make
 ```
 
-Cualquier archivo que se añada en el directorio `src` automáticamente pasará a formar parte del código fuente de su proyecto, por tanto se ensamblará y enlazará apropiadamente para crear el programa `snakasm.elf` sin hacer ninguna modificación en el `Makefile`.
+Cualquier archivo que se añada en el directorio `src` automáticamente pasará a formar parte del código fuente de su proyecto, por tanto se ensamblará y enlazará apropiadamente para crear el programa `vimasm.elf` sin hacer ninguna modificación en el `Makefile`.
 
 ### QEMU
+
 QEMU es donde va a correr su programa de manera virtualizada.
 
 Para correr y probar su programa ejecutar `make qemu` en una terminal sobre el directorio de su proyecto.
@@ -227,44 +221,27 @@ $ make qemu-iso
 ```
 
 ## Especificaciones
+
 * Los equipos no deben ser de más de dos personas y se recomienda que no sean menos que esta cantidad.
 * No hay ninguna razón para utilizar `C` a no ser que la funcionalidad que se quiera implementar sea lo suficientemente compleja. En cualquier caso consultar con el colectivo de la asignatura su propuesta.
 * La fecha de entrega es el viernes de la semana 16.
 
 ## Recomendaciones
+
 * No invertir mucho tiempo en tareas que parezcan muy complicadas. Proceder en orden ascendente. Plantearse tareas pequeñas que puedan luego ir escalando.
 * Comentar el código abundantemente, cuanto más, mejor.
 * Organizar convenientemente el código en distintos archivos dentro de la carpeta `src`, de acuerdo con la lógica que desarrollen.
 
 ### Git
+
 Sistema de control de versiones.
 
 Es altamente recomendada la utilización de esta herramienta dada las ventajas que brinda.
 
+Este proyecto se encuentra en el repositorio [http://gitlab.matcom.uh.cu/pm1/vimasm.git](http://gitlab.matcom.uh.cu/pm1/vimasm.git). Se recomienda hacer un _fork_ del mismo para trabajar sobre él.
+
 ## Ayuda
 Todo ha sido preparado para que se pueda concentrar en la implementación del proyecto únicamente. De cualquier forma el colectivo de la asignatura está preparado para recibir preguntas de cualquier tipo con respecto al código y las herramientas que se brindan.
-
-## Útiles para la implementación
-### I/O Porting
-Un puerto `IO` es una dirección en el bus `IO` de la familia de microprocesadores `x86`. Este bus permite la comunicación con los dispositivos. Para realizar dicha comunicación, `NASM` nos brinda las siguientes instrucciones:
-
-```nasm
-    in reg, addr
-```
-se utiliza para leer del puerto `addr` y escirbir su valor en el registro `reg`.
-El operando `reg` solamente puede ser uno de los registros `al`, `ax` o `eax`
-y `addr` solo puede ser una constante numérica o el registro `dx`.
-
-```nasm
-    out addr, data
-```
-se utiliza para escribir el valor `data` en el puerto `addr`.
-El operando `addr` solo puede ser una constante numérica o el registro `dx`
-y `data` solamente puede ser uno de los registros `al`, `ax` o `eax`.
-
-links:
-*   [http://wiki.osdev.org/I/O_Ports](http://wiki.osdev.org/I/O_Ports)
-
 
 #### CMOS/RTC
 `CMOS` (Complementary-symmetry Metal-Oxide Semiconductor) es una zona de memoria estática, dividida en varios registros, destinada a almacenear la información del `SETUP` del `BIOS` (Basic Input Output System). El CMOS se encuentra dentro de un chip que posee una batería independiente, por lo que retiene la información mientras la computadora está apagada. Este chip también posee otro circuito llamado `RTC` (Real Time Clock), que cuenta la fecha y la hora, y almacena su valor en varios registros del CMOS.
