@@ -25,15 +25,17 @@ clear:
   mov ecx, COLS * ROWS
   cld
   rep stosw
-  ret
+  ret 2
 
 
-; putc(char chr, byte color, byte r, byte c)
+; putc(char chr, byte color, byte c, byte r)
 ;      4         5           6       7
 global putc
 putc:
     ; calc famebuffer offset 2 * (r * COLS + c)
-    FBOFFSET [esp + 6], [esp + 7]
+    FBOFFSET [esp + 7], [esp + 6]
 
     mov bx, [esp + 4]
     mov [FBUFFER + eax], bx
+
+    ret 4
