@@ -1,6 +1,17 @@
+%include "video.mac"
+%include "keyboard.mac"
+
 section .text
 
-extern game
+extern clear
+extern scan
+extern calibrate
+
+%macro FILL_SCREEN 1
+  push word %1
+  call clear
+  add esp, 2
+%endmacro
 
 global main
 main:
@@ -12,4 +23,21 @@ main:
   mov al, 0xFF
   out dx, al
 
-  jmp game
+  FILL_SCREEN BG.BLACK
+
+  ; Calibrate the timing
+  call calibrate
+
+  main.loop:
+    .input:
+      call scan
+      cmp al, KEY.UP
+      jne not_up
+      FILL_SCREEN BG.RED
+      not_up:
+      cmp al, KEY.DOWN
+      jne not_down
+      FILL_SCREEN BG.GREEN
+      not_down:
+
+    jmp main.loop
