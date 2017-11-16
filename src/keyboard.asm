@@ -22,6 +22,7 @@ scan:
   ; Otherwise, return zero.
   .zero:
     xor eax, eax
+    jmp scan
 
   .ret:
     ret
