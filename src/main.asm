@@ -68,6 +68,20 @@ main:
       not_rightshiftup:
       cmp eax, [ASCII_LEN]
       jae main.loop
+      cmp eax, KEY.BACK.DOWN
+      jne not_backspace
+      cmp ecx, 0
+      je is_zero
+      dec cx
+      is_zero:
+      mov eax, ' ' | FG.BRIGHT | FG.GREEN
+      push cx
+      push ax
+      call putc
+      jmp main.loop
+      not_backspace:
+      cmp eax, [ASCII_LEN]
+      jae main.loop
       mov edx, [ASCII_CODE]
       mov al, [edx + eax]
       xor ax, FG.BRIGHT | FG.GREEN
