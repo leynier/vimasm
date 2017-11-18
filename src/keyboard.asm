@@ -10,19 +10,19 @@ section .text
 ; otherwise.
 global scan
 scan:
-  ; Scan.
-  in al, 0x60
+    ; Scan.
+    in al, 0x60
 
-  ; If scancode has changed, update key and return it.
-  cmp al, [key]
-  je .zero
-  mov [key], al
-  jmp .ret
+    ; If scancode has changed, update key and return it.
+    cmp al, [key]
+    je scan.zero
+    mov [key], al
+    jmp scan.ret
 
-  ; Otherwise, return zero.
-  .zero:
-    xor eax, eax
-    jmp scan
+    ; Otherwise, return zero.
+    scan.zero:
+        xor eax, eax
+        jmp scan
 
-  .ret:
-    ret
+    scan.ret:
+        ret

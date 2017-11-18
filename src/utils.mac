@@ -1,0 +1,13 @@
+%ifndef UTILS_MAC
+%define UTILS_MAC
+
+%define ASCII_LEN 84
+%define DOCUMENT_LEN 1000000
+
+%macro FILL_SCREEN 1
+    extern clear
+    push word %1
+    call clear
+%endmacro
+
+%endif
