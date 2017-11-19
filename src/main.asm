@@ -8,7 +8,9 @@ ASCII_NORMAL db 0x00, 0x1B, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39
 ASCII_EXTRA db 0x00, 0x1B, 0x21, 0x40, 0x23, 0x24, 0x25, 0x5E, 0x26, 0x2A, 0x28, 0x29, 0x5F, 0x2B, 0x08, 0x09, 0x51, 0x57, 0x45, 0x52, 0x54, 0x59, 0x55, 0x49, 0x4F, 0x50, 0x7B, 0x7D, 0x0D, 0x00, 0x41, 0x53, 0x44, 0x46, 0x47, 0x48, 0x4A, 0x4B, 0x4C, 0x3A, 0x22, 0x7E, 0x00, 0x7C, 0x5A, 0x58, 0x43, 0x56, 0x42, 0x4E, 0x4D, 0x3C, 0x3E, 0x3F, 0x00, 0x2A, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x37, 0x38, 0x39, 0x2D, 0x34, 0x35, 0x36, 0x2B, 0x31, 0x32, 0x33, 0x30, 0x2E
 ASCII_CODE dd ASCII_NORMAL
 TOGGLE_SHIFT dd 0
-DOCUMENT times DOCUMENT_LEN db 0
+POS_DOCUMENT dd 0
+POS_POINTER dd 0
+START_DOCUMENT times DOCUMENT_LEN db 0
 
 section .text
 
@@ -31,10 +33,14 @@ main:
     ; Calibrate the timing
     call calibrate
 
-    xor ecx, ecx
+    push dword START_DOCUMENT
+    push dword [POS_DOCUMENT]
+    push dword [POS_POINTER]
+    call puts
 
     main.loop:
         xor eax, eax
+        xor ecx, ecx
         call scan
         cmp eax, KEY.LEFTSHIFT.DOWN
         jne not_leftshiftdown
@@ -64,13 +70,16 @@ main:
         jae main.loop
         cmp eax, KEY.BACK.DOWN
         jne not_backspace
-        cmp ecx, 0
+        cmp dword [POS_POINTER], 0
         je is_zero
-        dec ecx
+        dec dword [POS_POINTER]
         is_zero:
-        mov byte [DOCUMENT + ecx], ' '
-        push dword DOCUMENT
-        push dword 0
+        mov ecx, [POS_DOCUMENT]
+        add ecx, [POS_POINTER]
+        mov byte [START_DOCUMENT + ecx], ' '
+        push dword START_DOCUMENT
+        push dword [POS_DOCUMENT]
+        push dword [POS_POINTER]
         call puts
         jmp main.loop
         not_backspace:
@@ -78,10 +87,13 @@ main:
         jae main.loop
         mov edx, [ASCII_CODE]
         mov al, [edx + eax]
-        mov [DOCUMENT + ecx], al
-        push dword DOCUMENT
-        push dword 0
+        mov ecx, [POS_DOCUMENT]
+        add ecx, [POS_POINTER]
+        inc dword [POS_POINTER]
+        mov [START_DOCUMENT + ecx], al
+        push dword START_DOCUMENT
+        push dword [POS_DOCUMENT]
+        push dword [POS_POINTER]
         call puts
-        inc ecx
 
         jmp main.loop

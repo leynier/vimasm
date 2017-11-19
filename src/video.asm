@@ -13,6 +13,13 @@
     shl ax, 1
 %endmacro
 
+section .data
+
+START_DOCUMENT dd 0
+POS_DOCUMENT dd 0
+POS_POINTER dd 0
+PAINT_POINTER dd 0
+
 section .text
 
 ; clear(byte char, byte attrs)
@@ -52,8 +59,8 @@ putc:
     ret 4
 
 
-; puts(string direction, start position)
-;      12                8
+; puts(string direction, start position, pointer position)
+;      16                12              8  
 global puts
 puts:
     push ebp
@@ -63,33 +70,52 @@ puts:
     push word BG.BLACK
     call clear
 
-    mov ebx, [ebp + 12] ; Direccion del array que contiene el texto
-    add ebx, [ebp + 8] ; Se le suma la posicion desde donde debe comenzar
-    mov esi, ebx
-    mov edi, FBUFFER
+    xor eax, eax
     xor ebx, ebx
+    xor esi, esi
+    xor edi, edi
+    mov dword [PAINT_POINTER], 0
+    mov eax, [ebp + 16]
+    mov [START_DOCUMENT], eax
+    xor eax, eax
+    mov eax, [ebp + 12]
+    mov [POS_DOCUMENT], eax
+    xor eax, eax
+    mov eax, [ebp + 8]
+    mov [POS_POINTER], eax
+    mov esi, [START_DOCUMENT]
+    add esi, [POS_DOCUMENT]
+    mov edi, FBUFFER
 
     puts.loop:
         xor eax, eax
         lodsb
-        cmp al, 0 ; Ver si no es el final del array
+        cmp al, 0
         je puts.ret
         xor ax, FG.BRIGHT | FG.GREEN
-        cmp bl, COLS2
-        jne not_end
-        mov bl, 0
-        inc bh
-        cmp bh, ROWS2
-        jne not_end
-        jmp puts.ret
-        not_end:
-        push bx
-        push ax
-        call putc
-        inc bl
+        cmp ebx, [POS_POINTER]
+        jne not_pointer
+        xor ax, BG.GRAY
+        mov dword [PAINT_POINTER], 1
+        not_pointer:
+        cmp ebx, 1920
+        je puts.ret
+        stosw
+        inc ebx
         jmp puts.loop
 
     puts.ret:
+    cmp dword [PAINT_POINTER], 1
+    je .ret
+    xor eax, eax
+    xor ebx, ebx
+    xor ecx, ecx
+    mov eax, [POS_POINTER]
+    mov ecx, 2
+    mul ecx
+    mov bx, ' ' | BG.GRAY
+    mov [FBUFFER + eax], bx
+    .ret:
     popa
     pop ebp
-    ret 8
+    ret 12
