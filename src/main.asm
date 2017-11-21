@@ -17,7 +17,7 @@ section .text
 extern scan
 extern calibrate
 extern puts
-extern tranlate
+extern translate
 
 global main
 main:
@@ -65,14 +65,32 @@ main:
         jne not_rightshiftup
         mov dword [TOGGLE_SHIFT], 0
         mov dword [ASCII_CODE], ASCII_NORMAL
-
-        push dword 2
-        push dword 1
-        push dword START_DOCUMENT
-        call tranlate
-
         jmp main.loop
         not_rightshiftup:
+        cmp eax, KEY.LEFT.DOWN
+        jne not_left
+        cmp dword [POS_POINTER], 0
+        je left.is_zero
+        dec dword [POS_POINTER]
+        left.is_zero:
+        push dword START_DOCUMENT
+        push dword [POS_DOCUMENT]
+        push dword [POS_POINTER]
+        call puts
+        jmp main.loop
+        not_left:
+        cmp eax, KEY.RIGHT.DOWN
+        jne not_right
+        cmp dword [POS_POINTER], 1920
+        je right.is_end
+        inc dword [POS_POINTER]
+        right.is_end:
+        push dword START_DOCUMENT
+        push dword [POS_DOCUMENT]
+        push dword [POS_POINTER]
+        call puts
+        jmp main.loop
+        not_right:
         cmp eax, ASCII_LEN
         jae main.loop
         cmp eax, KEY.BACK.DOWN
@@ -80,10 +98,18 @@ main:
         cmp dword [POS_POINTER], 0
         je is_zero
         dec dword [POS_POINTER]
-        is_zero:
         mov ecx, [POS_DOCUMENT]
         add ecx, [POS_POINTER]
-        mov byte [START_DOCUMENT + ecx], ' '
+        push dword START_DOCUMENT
+        push ecx
+        push dword -1
+        call translate
+        push dword START_DOCUMENT
+        push dword [POS_DOCUMENT]
+        push dword [POS_POINTER]
+        call puts
+        jmp main.loop
+        is_zero:
         push dword START_DOCUMENT
         push dword [POS_DOCUMENT]
         push dword [POS_POINTER]
@@ -97,6 +123,10 @@ main:
         mov ecx, [POS_DOCUMENT]
         add ecx, [POS_POINTER]
         inc dword [POS_POINTER]
+        push dword START_DOCUMENT
+        push ecx
+        push dword 1
+        call translate
         mov [START_DOCUMENT + ecx], al
         push dword START_DOCUMENT
         push dword [POS_DOCUMENT]

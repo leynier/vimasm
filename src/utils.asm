@@ -2,8 +2,8 @@
 
 section .text
 
-global tranlate
-tranlate:
+global translate
+translate:
     push ebp
     mov ebp, esp
     pusha
@@ -15,38 +15,39 @@ tranlate:
     xor esi, esi
     xor edi, edi
 
-    mov edx, [ebp + 8] ; Start Direction Array
+    mov edx, [ebp + 16] ; Start Direction Array
     mov eax, [ebp + 12] ; Pos Array
-    mov ebx, [ebp + 16] ; Pos Tranlate
+    mov ebx, [ebp + 8] ; Pos Translate
 
     cmp ebx, 0 ; Compara si es para la derecha o izquierda la translacion
-    jg tranlate.right
-    jl tranlate.left
-    jmp tranlate.ret
+    jg translate.right
+    jl translate.left
+    jmp translate.ret
 
-    tranlate.right:
+    translate.right:
         mov edi, edx
-        add edi, DOCUMENT_LEN ; Coloco edi en el final del array
+        add edi, DOCUMENT_LEN
+        dec edi
         mov esi, edi
-        sub esi, ebx ; Coloco esi en el final menos k del array, k = Pos Tranlate
-        add eax, edx ; Convierto Pos Array en Direction Pos Array
+        sub esi, ebx
+        add eax, edx
         mov ecx, esi
         sub ecx, eax
         inc ecx
         std
-        ciclo:
+        ciclo1:
             movsb
-            loop ciclo
+            loop ciclo1
         mov edi, eax
-        xor eax, eax
         mov ecx, ebx
+        xor eax, eax
         cld
         ciclo2:
             stosb
             loop ciclo2
-        jmp tranlate.ret
+        jmp translate.ret
     
-    tranlate.left:
+    translate.left:
         mov edi, edx
         add edi, eax
         mov esi, edi
@@ -54,6 +55,7 @@ tranlate:
         mov ecx, edx
         add ecx, DOCUMENT_LEN
         sub ecx, esi
+        dec ecx
         cld
         ciclo3:
            movsb
@@ -64,9 +66,9 @@ tranlate:
         ciclo4:
             stosb
             loop ciclo4
-        jmp tranlate.ret
+        jmp translate.ret
 
-    tranlate.ret:
+    translate.ret:
         popa
         pop ebp
         ret 12

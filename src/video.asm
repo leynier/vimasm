@@ -90,8 +90,6 @@ puts:
     puts.loop:
         xor eax, eax
         lodsb
-        cmp al, 0
-        ;je puts.ret
         xor ax, FG.BRIGHT | FG.GREEN
         cmp ebx, [POS_POINTER]
         jne not_pointer
