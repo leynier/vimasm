@@ -91,7 +91,7 @@ puts:
         xor eax, eax
         lodsb
         cmp al, 0
-        je puts.ret
+        ;je puts.ret
         xor ax, FG.BRIGHT | FG.GREEN
         cmp ebx, [POS_POINTER]
         jne not_pointer

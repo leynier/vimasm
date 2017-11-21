@@ -17,6 +17,7 @@ section .text
 extern scan
 extern calibrate
 extern puts
+extern tranlate
 
 global main
 main:
@@ -64,6 +65,12 @@ main:
         jne not_rightshiftup
         mov dword [TOGGLE_SHIFT], 0
         mov dword [ASCII_CODE], ASCII_NORMAL
+
+        push dword 2
+        push dword 1
+        push dword START_DOCUMENT
+        call tranlate
+
         jmp main.loop
         not_rightshiftup:
         cmp eax, ASCII_LEN
