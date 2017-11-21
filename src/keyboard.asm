@@ -1,9 +1,6 @@
-section .data
-
-; Previous scancode.
-key db 0
-
 section .text
+
+extern KEY
 
 ; scan()
 ; Scan for new keypress. Returns new scancode if changed since last call, zero
@@ -14,9 +11,9 @@ scan:
     in al, 0x60
 
     ; If scancode has changed, update key and return it.
-    cmp al, [key]
+    cmp al, [KEY]
     je scan.zero
-    mov [key], al
+    mov [KEY], al
     jmp scan.ret
 
     ; Otherwise, return zero.

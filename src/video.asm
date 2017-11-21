@@ -1,34 +1,19 @@
 %include "video.mac"
 
-; Frame buffer location
-%define FBUFFER 0xB8000
-
-; FBOFFSET(byte row, byte column)
-%macro FBOFFSET 2.nolist
-    xor eax, eax
-    mov al, COLS
-    mul byte %1
-    add al, %2
-    adc ah, 0
-    shl ax, 1
-%endmacro
-
-section .data
-
-START_DOCUMENT dd 0
-POS_DOCUMENT dd 0
-POS_POINTER dd 0
-PAINT_POINTER dd 0
-
 section .text
 
+extern START_DOCUMENT
+extern POS_DOCUMENT
+extern POS_POINTER
+extern PAINT_POINTER
+
 ; clear(byte char, byte attrs)
-; Clear the screen by filling it with char and attributes.
+; Pinta en toda la pantalla un caracter con el color deseado
 global clear
 clear:
     push ebp
     mov ebp, esp
-    pusha
+    pushad
 
     mov ax, [ebp + 8] ; char, attrs
     mov edi, FBUFFER
@@ -36,37 +21,40 @@ clear:
     cld
     rep stosw
 
-    popa
+    popad
     pop ebp
     ret 2
 
 
-; putc(char chr, byte color, byte c, byte r)
+; putc(byte chr, byte color, byte c, byte r)
 ;      8         9           10      11
+; Pinta en una posicion de la pantalla un caracter del color deseado
 global putc
 putc:
     push ebp
     mov ebp, esp
-    pusha
+    pushad
 
     ; calc famebuffer offset 2 * (r * COLS + c)
     FBOFFSET [ebp + 11], [ebp + 10]
     mov bx, [ebp + 8]
     mov [FBUFFER + eax], bx
 
-    popa
+    popad
     pop ebp
     ret 4
 
 
-; puts(string direction, start position, pointer position)
-;      16                12              8  
+; puts(start position, pointer position)
+;      12              8  
+; Pinta en la pantalla el cursor y el texto desde la posicion deseada
 global puts
 puts:
     push ebp
     mov ebp, esp
-    pusha
+    pushad
 
+    ; Pinta la pantalla de color negro
     push word BG.BLACK
     call clear
 
@@ -74,36 +62,33 @@ puts:
     xor ebx, ebx
     xor esi, esi
     xor edi, edi
+
+    ; Inicializa el PAINT_POINTER
     mov dword [PAINT_POINTER], 0
-    mov eax, [ebp + 16]
-    mov [START_DOCUMENT], eax
-    xor eax, eax
-    mov eax, [ebp + 12]
-    mov [POS_DOCUMENT], eax
-    xor eax, eax
-    mov eax, [ebp + 8]
-    mov [POS_POINTER], eax
-    mov esi, [START_DOCUMENT]
+
+    ; Coloca el 'esi' apartir de donde se este mostrando el documento, el 'edi' al principio de la pantalla
+    mov esi, START_DOCUMENT
     add esi, [POS_DOCUMENT]
     mov edi, FBUFFER
+    cld
 
     puts.loop:
         xor eax, eax
-        lodsb
-        xor ax, FG.BRIGHT | FG.GREEN
-        cmp ebx, [POS_POINTER]
+        lodsb ; Carga hacia 'al' un caracter y avanza el 'esi'
+        xor ax, FG.BRIGHT | FG.GREEN ; Le coloca el color al caracter
+        cmp ebx, [POS_POINTER] ; Comprueba si el caracter esta en la posicion del cursor
         jne not_pointer
-        xor ax, BG.GRAY
-        mov dword [PAINT_POINTER], 1
+        xor ax, BG.GRAY ; Como el caracter esta en la posicion del cursor se le coloca el fondo blanco
+        mov dword [PAINT_POINTER], 1 ; Marca el PAINT_POINTER para luego no pintarlo
         not_pointer:
-        cmp ebx, 1920
-        je puts.ret
-        stosw
-        inc ebx
+        cmp ebx, 1920 ; Comprueba si no se ha llegado al final de la pantalla
+        je puts.ret ; Retorna porque se llego al final de la pantalla
+        stosw ; Coloca en la pantalla el caracter con el color y mueve el 'edi'
+        inc ebx ; Incrementa la posicion donde se esta pintando
         jmp puts.loop
 
     puts.ret:
-    cmp dword [PAINT_POINTER], 1
+    cmp dword [PAINT_POINTER], 1 ; Comprueba si se pinto el cursor, si no lo pinta
     je .ret
     xor eax, eax
     xor ebx, ebx
@@ -114,6 +99,6 @@ puts:
     mov bx, ' ' | BG.GRAY
     mov [FBUFFER + eax], bx
     .ret:
-    popa
+    popad
     pop ebp
-    ret 12
+    ret

@@ -1,6 +1,21 @@
 %ifndef VIDEO_MAC
 %define VIDEO_MAC
 
+; Frame buffer location
+; Direccion de memoria de la pantalla
+%define FBUFFER 0xB8000
+
+; FBOFFSET(byte row, byte column)
+; Devuelve en eax la posicion de la pantalla, dada una fila y una columna
+%macro FBOFFSET 2.nolist
+    xor eax, eax
+    mov al, COLS
+    mul byte %1
+    add al, %2
+    adc ah, 0
+    shl ax, 1
+%endmacro
+
 %define COLS 80
 %define ROWS 25
 %define COLS2 80
