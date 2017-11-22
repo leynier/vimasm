@@ -75,12 +75,16 @@ puts:
     puts.loop:
         xor eax, eax
         lodsb ; Carga hacia 'al' un caracter y avanza el 'esi'
-        xor ax, FG.BRIGHT | FG.GREEN ; Le coloca el color al caracter
         cmp ebx, [POS_POINTER] ; Comprueba si el caracter esta en la posicion del cursor
         jne not_pointer
-        xor ax, BG.GRAY ; Como el caracter esta en la posicion del cursor se le coloca el fondo blanco
+        xor ax, FG.BLACK ; Le coloca el color al caracter
+        xor ax, BG.GREEN | BG.BRIGHT ; Como el caracter esta en la posicion del cursor se le coloca el fondo blanco
         mov dword [PAINT_POINTER], 1 ; Marca el PAINT_POINTER para luego no pintarlo
+        jmp pointer
         not_pointer:
+        xor ax, FG.BRIGHT | FG.GREEN ; Le coloca el color al caracter
+        xor ax, BG.BLACK
+        pointer:
         cmp ebx, 1920 ; Comprueba si no se ha llegado al final de la pantalla
         je puts.ret ; Retorna porque se llego al final de la pantalla
         stosw ; Coloca en la pantalla el caracter con el color y mueve el 'edi'
