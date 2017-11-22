@@ -1,8 +1,61 @@
 %include "utils.mac"
+%include "keyboard.mac"
 
 section .text
 
 extern START_DOCUMENT
+extern TOGGLE_SHIFT
+extern ASCII_NORMAL
+extern ASCII_EXTRA
+extern ASCII_CODE
+
+; update_shift(dword hex tecla)
+; Actualiza el TOGGLE_SHIFT y el ASCII_CODE
+global update_shift
+update_shift:
+    push ebp
+    mov ebp, esp
+    push ebx
+
+    xor eax, eax
+    xor ebx, ebx
+
+    mov ebx, [ebp + 8] ; Hexadecimal que representa la tecla pulsada
+
+    cmp ebx, KEY.LEFTSHIFT.DOWN
+    jne not_leftshiftdown
+    mov dword [TOGGLE_SHIFT], 1
+    mov dword [ASCII_CODE], ASCII_EXTRA
+    mov eax, 1
+    jmp update_shift.ret
+    not_leftshiftdown:
+    cmp ebx, KEY.LEFTSHIFT.UP
+    jne not_leftshiftup
+    mov dword [TOGGLE_SHIFT], 0
+    mov dword [ASCII_CODE], ASCII_NORMAL
+    mov eax, 1
+    jmp update_shift.ret
+    not_leftshiftup:
+    cmp ebx, KEY.RIGHTSHIFT.DOWN
+    jne not_rightshiftdown
+    mov dword [TOGGLE_SHIFT], 1
+    mov dword [ASCII_CODE], ASCII_EXTRA
+    mov eax, 1
+    jmp update_shift.ret
+    not_rightshiftdown:
+    cmp ebx, KEY.RIGHTSHIFT.UP
+    jne not_rightshiftup
+    mov dword [TOGGLE_SHIFT], 0
+    mov dword [ASCII_CODE], ASCII_NORMAL
+    mov eax, 1
+    jmp update_shift.ret
+    not_rightshiftup:
+
+    update_shift.ret:
+        pop ebx
+        pop ebp
+        ret 4
+
 
 global translate
 translate:

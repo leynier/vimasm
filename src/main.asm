@@ -37,6 +37,7 @@ extern scan
 extern calibrate
 extern puts
 extern translate
+extern update_shift
 
 global main
 main:
@@ -57,33 +58,20 @@ main:
 
     main.loop:
         xor eax, eax
+        xor ebx, ebx
         xor ecx, ecx
+
         call scan
-        cmp eax, KEY.LEFTSHIFT.DOWN
-        jne not_leftshiftdown
-        mov dword [TOGGLE_SHIFT], 1
-        mov dword [ASCII_CODE], ASCII_EXTRA
-        jmp main.loop
-        not_leftshiftdown:
-        cmp eax, KEY.LEFTSHIFT.UP
-        jne not_leftshiftup
-        mov dword [TOGGLE_SHIFT], 0
-        mov dword [ASCII_CODE], ASCII_NORMAL
-        jmp main.loop
-        not_leftshiftup:
-        cmp eax, KEY.RIGHTSHIFT.DOWN
-        jne not_rightshiftdown
-        mov dword [TOGGLE_SHIFT], 1
-        mov dword [ASCII_CODE], ASCII_EXTRA
-        jmp main.loop
-        not_rightshiftdown:
-        cmp eax, KEY.RIGHTSHIFT.UP
-        jne not_rightshiftup
-        mov dword [TOGGLE_SHIFT], 0
-        mov dword [ASCII_CODE], ASCII_NORMAL
-        jmp main.loop
-        not_rightshiftup:
-        cmp eax, KEY.LEFT.DOWN
+
+        mov ebx, eax ; Mueve el valor hex de la tecla para 'ebx' porque 'eax' se utiliza para los returns
+        
+        ; Reviza si la tecla escaneada fue algun shift
+        push ebx ; Enqueue el parametro en la pila para update_shift
+        call update_shift ; Llamo a update_shift, devuelve 1 se fue algun shift, 0 si no.
+        cmp eax, 1
+        je main.loop
+
+        cmp ebx, KEY.LEFT.DOWN
         jne not_left
         cmp dword [POS_POINTER], 0
         je left.is_zero
@@ -92,7 +80,7 @@ main:
         call puts
         jmp main.loop
         not_left:
-        cmp eax, KEY.RIGHT.DOWN
+        cmp ebx, KEY.RIGHT.DOWN
         jne not_right
         cmp dword [POS_POINTER], 1920
         je right.is_end
@@ -101,9 +89,9 @@ main:
         call puts
         jmp main.loop
         not_right:
-        cmp eax, ASCII_LEN
+        cmp ebx, ASCII_LEN
         jae main.loop
-        cmp eax, KEY.BACK.DOWN
+        cmp ebx, KEY.BACK.DOWN
         jne not_backspace
         cmp dword [POS_POINTER], 0
         je is_zero
@@ -119,17 +107,17 @@ main:
         call puts
         jmp main.loop
         not_backspace:
-        cmp eax, ASCII_LEN
+        cmp ebx, ASCII_LEN
         jae main.loop
         mov edx, [ASCII_CODE]
-        mov al, [edx + eax]
+        mov bl, [edx + ebx]
         mov ecx, [POS_DOCUMENT]
         add ecx, [POS_POINTER]
         inc dword [POS_POINTER]
         push ecx
         push dword 1
         call translate
-        mov [START_DOCUMENT + ecx], al
+        mov [START_DOCUMENT + ecx], bl
         call puts
 
         jmp main.loop
