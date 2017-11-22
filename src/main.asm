@@ -37,7 +37,7 @@ extern scan
 extern calibrate
 extern puts
 extern translate
-extern update_shift
+extern check_shift
 
 global main
 main:
@@ -66,8 +66,8 @@ main:
         mov ebx, eax ; Mueve el valor hex de la tecla para 'ebx' porque 'eax' se utiliza para los returns
         
         ; Reviza si la tecla escaneada fue algun shift
-        push ebx ; Enqueue el parametro en la pila para update_shift
-        call update_shift ; Llamo a update_shift, devuelve 1 se fue algun shift, 0 si no.
+        push ebx ; Enqueue el parametro en la pila para check_shift
+        call check_shift ; Llamo a check_shift, devuelve 1 se fue algun shift, 0 si no.
         cmp eax, 1
         je main.loop
 
