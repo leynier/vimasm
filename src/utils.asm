@@ -4,10 +4,93 @@
 section .text
 
 extern START_DOCUMENT
+extern POS_DOCUMENT
+extern POS_POINTER
 extern TOGGLE_SHIFT
 extern ASCII_NORMAL
 extern ASCII_EXTRA
 extern ASCII_CODE
+
+; Mueve el cursor hacia la izquierda
+global move_cursor_left
+move_cursor_left:
+    push -1
+    call move_cursor
+    ret
+
+; Mueve el cursor hacia la derecha
+global move_cursor_right
+move_cursor_right:
+    push 1
+    call move_cursor
+    ret
+
+; Mueve el cursor hacia abajo
+global move_cursor_down
+move_cursor_down:
+    push 80
+    call move_cursor
+    ret
+
+; Mueve el cursor hacia arriba
+global move_cursor_up
+move_cursor_up:
+    push -80
+    call move_cursor
+    ret
+
+; move_cursor(dowrd pos)
+; Mueve el cursor una X cantidad de posiciones
+global move_cursor
+move_cursor:
+    push ebp
+    mov ebp, esp
+    pushad
+
+    xor eax, eax
+
+    mov eax, [ebp + 8] ; Numero de posiciones a mover el cursor
+
+    add [POS_POINTER], eax ; Mover el cursor
+
+    cmp dword [POS_POINTER], 0
+    jge not_pos_pointer_less
+        ; Como el cursor se volvio negativo hay que bajar el texto
+        sub dword [POS_DOCUMENT], 80
+        cmp dword [POS_DOCUMENT], 0
+        jge not_pos_document_less
+            ; El texto no puede bajar mas, ya se llego al principio
+            add dword [POS_DOCUMENT], 80
+            sub [POS_POINTER], eax
+            jmp move_cursor.ret
+        not_pos_document_less:
+            ; Muevo el cursor hacia abajo, para que quede en la misma posicion
+            push dword 80
+            call move_cursor
+            jmp move_cursor.ret
+    not_pos_pointer_less:
+
+    cmp dword [POS_POINTER], 1920
+    jl not_pos_pointer_greater
+        ; Como el cursor se salio de la pantalla hay que subir el texto
+        add dword [POS_DOCUMENT], 80
+        cmp dword [POS_DOCUMENT], DOCUMENT_LEN
+        jl not_pos_document_greater
+            ; El texto no puede subir mas, ya se llego al final
+            sub dword [POS_DOCUMENT], 80
+            sub [POS_POINTER], eax
+            jmp move_cursor.ret
+        not_pos_document_greater:
+            ; Muevo el cursor hacia arriba, para que quede en la misma posicion
+            push dword -80
+            call move_cursor
+            jmp move_cursor.ret
+    not_pos_pointer_greater:
+
+    move_cursor.ret:
+        popad
+        pop ebp
+        ret 4
 
 ; check_shift(dword hex tecla)
 ; Chequea el shift y actuliza el TOGGLE_SHIFT y el ASCII_CODE
@@ -24,31 +107,34 @@ check_shift:
 
     cmp ebx, KEY.LEFTSHIFT.DOWN
     jne not_leftshiftdown
-    mov dword [TOGGLE_SHIFT], 1
-    mov dword [ASCII_CODE], ASCII_EXTRA
-    mov eax, 1
-    jmp check_shift.ret
+        mov dword [TOGGLE_SHIFT], 1
+        mov dword [ASCII_CODE], ASCII_EXTRA
+        mov eax, 1
+        jmp check_shift.ret
     not_leftshiftdown:
+
     cmp ebx, KEY.LEFTSHIFT.UP
     jne not_leftshiftup
-    mov dword [TOGGLE_SHIFT], 0
-    mov dword [ASCII_CODE], ASCII_NORMAL
-    mov eax, 1
-    jmp check_shift.ret
+        mov dword [TOGGLE_SHIFT], 0
+        mov dword [ASCII_CODE], ASCII_NORMAL
+        mov eax, 1
+        jmp check_shift.ret
     not_leftshiftup:
+
     cmp ebx, KEY.RIGHTSHIFT.DOWN
     jne not_rightshiftdown
-    mov dword [TOGGLE_SHIFT], 1
-    mov dword [ASCII_CODE], ASCII_EXTRA
-    mov eax, 1
-    jmp check_shift.ret
+        mov dword [TOGGLE_SHIFT], 1
+        mov dword [ASCII_CODE], ASCII_EXTRA
+        mov eax, 1
+        jmp check_shift.ret
     not_rightshiftdown:
+    
     cmp ebx, KEY.RIGHTSHIFT.UP
     jne not_rightshiftup
-    mov dword [TOGGLE_SHIFT], 0
-    mov dword [ASCII_CODE], ASCII_NORMAL
-    mov eax, 1
-    jmp check_shift.ret
+        mov dword [TOGGLE_SHIFT], 0
+        mov dword [ASCII_CODE], ASCII_NORMAL
+        mov eax, 1
+        jmp check_shift.ret
     not_rightshiftup:
 
     check_shift.ret:
@@ -56,7 +142,8 @@ check_shift:
         pop ebp
         ret 4
 
-
+; translate(dword pos, dword desp)
+; Tranlada el texto o documento X cantidad de casillas a partir de casilla deseada
 global translate
 translate:
     push ebp

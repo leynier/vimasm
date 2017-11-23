@@ -38,6 +38,10 @@ extern calibrate
 extern puts
 extern translate
 extern check_shift
+extern move_cursor_left
+extern move_cursor_right
+extern move_cursor_down
+extern move_cursor_up
 
 global main
 main:
@@ -60,6 +64,7 @@ main:
         xor eax, eax
         xor ebx, ebx
         xor ecx, ecx
+        xor edx, edx
 
         call scan
 
@@ -73,51 +78,59 @@ main:
 
         cmp ebx, KEY.LEFT.DOWN
         jne not_left
-        cmp dword [POS_POINTER], 0
-        je left.is_zero
-        dec dword [POS_POINTER]
-        left.is_zero:
-        call puts
-        jmp main.loop
+            call move_cursor_left
+            call puts
+            jmp main.loop
         not_left:
+
         cmp ebx, KEY.RIGHT.DOWN
         jne not_right
-        cmp dword [POS_POINTER], 1920
-        je right.is_end
-        inc dword [POS_POINTER]
-        right.is_end:
-        call puts
-        jmp main.loop
+            call move_cursor_right
+            call puts
+            jmp main.loop
         not_right:
+
+        cmp ebx, KEY.UP.DOWN
+        jne not_up
+            call move_cursor_up
+            call puts
+            jmp main.loop
+        not_up:
+
+        cmp ebx, KEY.DOWN.DOWN
+        jne not_down
+            call move_cursor_down
+            call puts
+            jmp main.loop
+        not_down:
+
         cmp ebx, ASCII_LEN
         jae main.loop
+
         cmp ebx, KEY.BACK.DOWN
         jne not_backspace
-        cmp dword [POS_POINTER], 0
-        je is_zero
-        dec dword [POS_POINTER]
-        mov ecx, [POS_DOCUMENT]
-        add ecx, [POS_POINTER]
-        push ecx
-        push dword -1
-        call translate
-        call puts
-        jmp main.loop
-        is_zero:
-        call puts
-        jmp main.loop
+            mov edx, [POS_POINTER]
+            call move_cursor_left
+            cmp edx, [POS_POINTER]
+            je main.loop
+            mov ecx, [POS_DOCUMENT]
+            add ecx, [POS_POINTER]
+            push ecx
+            push dword -1
+            call translate
+            call puts
+            jmp main.loop
         not_backspace:
-        cmp ebx, ASCII_LEN
-        jae main.loop
+        
         mov edx, [ASCII_CODE]
         mov bl, [edx + ebx]
         mov ecx, [POS_DOCUMENT]
         add ecx, [POS_POINTER]
-        inc dword [POS_POINTER]
         push ecx
         push dword 1
         call translate
         mov [START_DOCUMENT + ecx], bl
+        call move_cursor_right
         call puts
 
         jmp main.loop
