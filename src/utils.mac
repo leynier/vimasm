@@ -4,6 +4,14 @@
 %define ASCII_LEN 84
 %define DOCUMENT_LEN 1000000
 
+; Bind a key to a procedure
+%macro bind 3
+  cmp dword %1, %2
+  jne %%next
+  call %3
+  %%next:
+%endmacro
+
 %macro FILL_SCREEN 1
     extern clear
     push word %1
