@@ -10,6 +10,61 @@ extern TOGGLE_SHIFT
 extern ASCII_NORMAL
 extern ASCII_EXTRA
 extern ASCII_CODE
+extern KEY
+
+; Metodo que comprueba si la tecla presionada fue una tecla valida para escribir, y la escribe en el documento
+global write
+write:
+    pushad
+
+    xor eax, eax
+    xor ebx, ebx
+    xor ecx, ecx
+    xor edx, edx
+
+    ; Comprueba si la tecla es de escritura
+    IN_RANGE [KEY], KEY.ONE.DOWN, KEY.EQUAL.DOWN
+    IN_RANGE [KEY], KEY.Q.DOWN, KEY.BRACECLOSE.DOWN
+    IN_RANGE [KEY], KEY.A.DOWN, KEY.ACCENTLOW.DOWN
+    IN_RANGE [KEY], KEY.BACKSLASH.DOWN, KEY.SLASH.DOWN
+    IN_RANGE [KEY], KEY.SPACE.DOWN, KEY.SPACE.DOWN
+
+    cmp eax, 0
+    je write.ret ; Si no termina el metodo
+
+    mov edx, [ASCII_CODE]
+    add edx, [KEY]
+    mov bl, [edx]
+    mov ecx, [POS_DOCUMENT]
+    add ecx, [POS_POINTER]
+    push ecx
+    push dword 1
+    call translate
+    mov [START_DOCUMENT + ecx], bl
+    call move_cursor_right
+
+    write.ret:
+        popad
+        ret
+
+; Metodo que cumple la funcion de borrar con el BACKSPACE
+global erase
+erase:
+    pushad
+
+    mov edx, [POS_POINTER]
+    call move_cursor_left
+    cmp edx, [POS_POINTER]
+    je erase.ret
+    mov ecx, [POS_DOCUMENT]
+    add ecx, [POS_POINTER]
+    push ecx
+    push dword -1
+    call translate
+
+    erase.ret:
+        popad
+        ret
 
 ; Mueve el cursor hacia la izquierda
 global move_cursor_left
@@ -92,55 +147,19 @@ move_cursor:
         pop ebp
         ret 4
 
-; check_shift(dword hex tecla)
-; Chequea el shift y actuliza el TOGGLE_SHIFT y el ASCII_CODE
-global check_shift
-check_shift:
-    push ebp
-    mov ebp, esp
-    push ebx
+global shift_down
+shift_down:
+    mov dword [TOGGLE_SHIFT], 1
+    mov dword [ASCII_CODE], ASCII_EXTRA
+    mov eax, 1
+    ret
 
-    xor eax, eax
-    xor ebx, ebx
-
-    mov ebx, [ebp + 8] ; Hexadecimal que representa la tecla pulsada
-
-    cmp ebx, KEY.LEFTSHIFT.DOWN
-    jne not_leftshiftdown
-        mov dword [TOGGLE_SHIFT], 1
-        mov dword [ASCII_CODE], ASCII_EXTRA
-        mov eax, 1
-        jmp check_shift.ret
-    not_leftshiftdown:
-
-    cmp ebx, KEY.LEFTSHIFT.UP
-    jne not_leftshiftup
-        mov dword [TOGGLE_SHIFT], 0
-        mov dword [ASCII_CODE], ASCII_NORMAL
-        mov eax, 1
-        jmp check_shift.ret
-    not_leftshiftup:
-
-    cmp ebx, KEY.RIGHTSHIFT.DOWN
-    jne not_rightshiftdown
-        mov dword [TOGGLE_SHIFT], 1
-        mov dword [ASCII_CODE], ASCII_EXTRA
-        mov eax, 1
-        jmp check_shift.ret
-    not_rightshiftdown:
-    
-    cmp ebx, KEY.RIGHTSHIFT.UP
-    jne not_rightshiftup
-        mov dword [TOGGLE_SHIFT], 0
-        mov dword [ASCII_CODE], ASCII_NORMAL
-        mov eax, 1
-        jmp check_shift.ret
-    not_rightshiftup:
-
-    check_shift.ret:
-        pop ebx
-        pop ebp
-        ret 4
+global shift_up
+shift_up:
+    mov dword [TOGGLE_SHIFT], 0
+    mov dword [ASCII_CODE], ASCII_NORMAL
+    mov eax, 1
+    ret
 
 ; translate(dword pos, dword desp)
 ; Tranlada el texto o documento X cantidad de casillas a partir de casilla deseada

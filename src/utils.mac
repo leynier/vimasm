@@ -4,12 +4,21 @@
 %define ASCII_LEN 84
 %define DOCUMENT_LEN 1000000
 
+%macro IN_RANGE 3
+    cmp dword %1, %2
+    jl %%no
+    cmp dword %1, %3
+    jg %%no
+    mov eax, 1
+    %%no:
+%endmacro
+
 ; Bind a key to a procedure
-%macro bind 3
-  cmp dword %1, %2
-  jne %%next
-  call %3
-  %%next:
+%macro BIND 3
+    cmp dword %1, %2
+    jne %%next
+    call %3
+    %%next:
 %endmacro
 
 %macro FILL_SCREEN 1

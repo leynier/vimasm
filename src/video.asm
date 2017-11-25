@@ -45,11 +45,11 @@ putc:
     ret 4
 
 
-; puts(start position, pointer position)
+; paint(start position, pointer position)
 ;      12              8  
 ; Pinta en la pantalla el cursor y el texto desde la posicion deseada
-global puts
-puts:
+global paint
+paint:
     push ebp
     mov ebp, esp
     pushad
@@ -72,7 +72,7 @@ puts:
     mov edi, FBUFFER
     cld
 
-    puts.loop:
+    paint.loop:
         xor eax, eax
         lodsb ; Carga hacia 'al' un caracter y avanza el 'esi'
         cmp ebx, [POS_POINTER] ; Comprueba si el caracter esta en la posicion del cursor
@@ -86,12 +86,12 @@ puts:
         xor ax, BG.BLACK
         pointer:
         cmp ebx, 1920 ; Comprueba si no se ha llegado al final de la pantalla
-        je puts.ret ; Retorna porque se llego al final de la pantalla
+        je paint.ret ; Retorna porque se llego al final de la pantalla
         stosw ; Coloca en la pantalla el caracter con el color y mueve el 'edi'
         inc ebx ; Incrementa la posicion donde se esta pintando
-        jmp puts.loop
+        jmp paint.loop
 
-    puts.ret:
+    paint.ret:
     cmp dword [PAINT_POINTER], 1 ; Comprueba si se pinto el cursor, si no lo pinta
     je .ret
     xor eax, eax
