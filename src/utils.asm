@@ -6,12 +6,13 @@ section .text
 extern START_DOCUMENT
 extern POS_DOCUMENT
 extern POS_POINTER
-extern TOGGLE_SHIFT
 extern ASCII_NORMAL
 extern ASCII_EXTRA
 extern ASCII_CODE
 extern KEY
+extern move_cursor_right
 
+; write()
 ; Metodo que comprueba si la tecla presionada fue una tecla valida para escribir, y la escribe en el documento
 global write
 write:
@@ -47,54 +48,7 @@ write:
         popad
         ret
 
-; Metodo que cumple la funcion de borrar con el BACKSPACE
-global erase
-erase:
-    pushad
-
-    mov edx, [POS_POINTER]
-    call move_cursor_left
-    cmp edx, [POS_POINTER]
-    je erase.ret
-    mov ecx, [POS_DOCUMENT]
-    add ecx, [POS_POINTER]
-    push ecx
-    push dword -1
-    call translate
-
-    erase.ret:
-        popad
-        ret
-
-; Mueve el cursor hacia la izquierda
-global move_cursor_left
-move_cursor_left:
-    push -1
-    call move_cursor
-    ret
-
-; Mueve el cursor hacia la derecha
-global move_cursor_right
-move_cursor_right:
-    push 1
-    call move_cursor
-    ret
-
-; Mueve el cursor hacia abajo
-global move_cursor_down
-move_cursor_down:
-    push 80
-    call move_cursor
-    ret
-
-; Mueve el cursor hacia arriba
-global move_cursor_up
-move_cursor_up:
-    push -80
-    call move_cursor
-    ret
-
-; move_cursor(dowrd pos)
+; move_cursor(dword pos)
 ; Mueve el cursor una X cantidad de posiciones
 global move_cursor
 move_cursor:
@@ -146,20 +100,6 @@ move_cursor:
         popad
         pop ebp
         ret 4
-
-global shift_down
-shift_down:
-    mov dword [TOGGLE_SHIFT], 1
-    mov dword [ASCII_CODE], ASCII_EXTRA
-    mov eax, 1
-    ret
-
-global shift_up
-shift_up:
-    mov dword [TOGGLE_SHIFT], 0
-    mov dword [ASCII_CODE], ASCII_NORMAL
-    mov eax, 1
-    ret
 
 ; translate(dword pos, dword desp)
 ; Tranlada el texto o documento X cantidad de casillas a partir de casilla deseada

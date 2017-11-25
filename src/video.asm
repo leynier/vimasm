@@ -7,7 +7,7 @@ extern POS_DOCUMENT
 extern POS_POINTER
 extern PAINT_POINTER
 
-; clear(byte char, byte attrs)
+; clear(word char|attrs)
 ; Pinta en toda la pantalla un caracter con el color deseado
 global clear
 clear:
@@ -26,8 +26,7 @@ clear:
     ret 2
 
 
-; putc(byte chr, byte color, byte c, byte r)
-;      8         9           10      11
+; putc(word col|row, word chr|color)
 ; Pinta en una posicion de la pantalla un caracter del color deseado
 global putc
 putc:
@@ -45,9 +44,8 @@ putc:
     ret 4
 
 
-; paint(start position, pointer position)
-;      12              8  
-; Pinta en la pantalla el cursor y el texto desde la posicion deseada
+; paint()
+; Pinta en la pantalla segun los valores del POS_DOCUMENT y el POS_POINTER
 global paint
 paint:
     push ebp
