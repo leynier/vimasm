@@ -53,6 +53,7 @@ extern move_cursor_right
 extern move_cursor_down
 extern move_cursor_up
 extern erase
+extern end_line
 extern write
 
 global main
@@ -73,10 +74,7 @@ main:
     call paint
 
     main.loop:
-        xor eax, eax
-        xor ebx, ebx
-        xor ecx, ecx
-        xor edx, edx
+        REG_CLEAR
 
         call scan
 
@@ -94,6 +92,9 @@ main:
 
         ; Comprueba el BACKSPACE
         BIND [KEY], KEY.BACK.DOWN, erase
+
+        ; Comprueba el ENTER
+        BIND [KEY], KEY.ENTER.DOWN, end_line
 
         call write
 

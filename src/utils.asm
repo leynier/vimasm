@@ -18,10 +18,7 @@ global write
 write:
     pushad
 
-    xor eax, eax
-    xor ebx, ebx
-    xor ecx, ecx
-    xor edx, edx
+    REG_CLEAR
 
     ; Comprueba si la tecla es de escritura
     IN_RANGE [KEY], KEY.ONE.DOWN, KEY.EQUAL.DOWN
@@ -109,12 +106,7 @@ translate:
     mov ebp, esp
     pushad
 
-    xor eax, eax
-    xor ebx, ebx
-    xor ecx, ecx
-    xor edx, edx
-    xor esi, esi
-    xor edi, edi
+    REG_CLEAR
 
     mov eax, [ebp + 12] ; Posicion desde donde se quiere transladar el documento
     mov ebx, [ebp + 8] ; Cantidad de posiciones por transladar

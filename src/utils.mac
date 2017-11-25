@@ -4,6 +4,15 @@
 %define ASCII_LEN 84
 %define DOCUMENT_LEN 1000000
 
+%macro REG_CLEAR 0
+    xor eax, eax
+    xor ebx, ebx
+    xor ecx, ecx
+    xor edx, edx
+    xor esi, esi
+    xor edi, edi
+%endmacro
+
 %macro IN_RANGE 3
     cmp dword %1, %2
     jl %%no

@@ -14,6 +14,29 @@ extern KEY
 extern translate
 extern move_cursor
 
+; end_line()
+; Metodo que cumple la funcion de fin de linea con el ENTER
+global end_line
+end_line:
+    pushad
+    REG_CLEAR
+
+    mov eax, [POS_POINTER]
+    mov ebx, 80
+    div ebx
+    sub ebx, edx
+    mov ecx, [POS_DOCUMENT]
+    add ecx, [POS_POINTER]
+    push ecx
+    push ebx
+    call translate
+    push ebx
+    call move_cursor
+
+    end_line.ret:
+        popad
+        ret
+
 ; erase()
 ; Metodo que cumple la funcion de borrar con el BACKSPACE
 global erase
