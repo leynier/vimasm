@@ -7,23 +7,18 @@ extern KEY
 ; otherwise.
 global scan
 scan:
-    xor eax, eax
-    ; Scan.
-    in al, 0x64
-
-    test al, 1
-    je scan.zero
-
-    test al, 32
-    jne scan.zero
-
-    in al, 0x60
-    mov [KEY], al
-    jmp scan.ret
-
-    ; Otherwise, return zero.
-    scan.zero:
-        jmp scan
+    push eax
+    scan.loop:
+        xor eax, eax
+        in al, 0x64
+        test al, 1
+        je scan.loop
+        test al, 32
+        jne scan.loop
+        in al, 0x60
+        mov [KEY], eax
+        jmp scan.ret
 
     scan.ret:
+        pop eax
         ret
