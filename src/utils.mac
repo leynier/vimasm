@@ -1,6 +1,8 @@
 %ifndef UTILS_MAC
 %define UTILS_MAC
 
+%define EOF 3
+%define EOL 10
 %define ASCII_LEN 84
 %define DOCUMENT_LEN 1000000
 

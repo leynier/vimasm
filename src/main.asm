@@ -28,10 +28,6 @@ POS_DOCUMENT dd 0
 global POS_POINTER
 POS_POINTER dd 0
 
-; Para comprobar si fue pintado el cursor
-global PAINT_POINTER
-PAINT_POINTER dd 0
-
 ; Valor de la tecla presionada, actualizada por el metodo 'scan'
 global KEY
 KEY dd 0
@@ -70,6 +66,8 @@ main:
 
     ; Calibrate the timing
     call calibrate
+
+    mov byte [START_DOCUMENT], EOF
 
     call paint
 

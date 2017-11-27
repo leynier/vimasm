@@ -1,11 +1,11 @@
 %include "video.mac"
+%include "utils.mac"
 
 section .text
 
 extern START_DOCUMENT
 extern POS_DOCUMENT
 extern POS_POINTER
-extern PAINT_POINTER
 
 ; clear(word char|attrs)
 ; Pinta en toda la pantalla un caracter con el color deseado
@@ -61,9 +61,6 @@ paint:
     xor esi, esi
     xor edi, edi
 
-    ; Inicializa el PAINT_POINTER
-    mov dword [PAINT_POINTER], 0
-
     ; Coloca el 'esi' apartir de donde se este mostrando el documento, el 'edi' al principio de la pantalla
     mov esi, START_DOCUMENT
     add esi, [POS_DOCUMENT]
@@ -73,11 +70,18 @@ paint:
     paint.loop:
         xor eax, eax
         lodsb ; Carga hacia 'al' un caracter y avanza el 'esi'
+        cmp al, EOF ; Comprueba si es el fin de fichero
+        jne not_eof
+        mov al, ' ' ; Si es el fin de fichero lo remplaza con espacio en blanco
+        not_eof:
+        cmp al, EOL ; Comprueba si es el fin de linea
+        jne not_eol
+        mov al, ' ' ; Si es el fin de linea lo remplaza con espacio en blanco
+        not_eol:
         cmp ebx, [POS_POINTER] ; Comprueba si el caracter esta en la posicion del cursor
         jne not_pointer
         xor ax, FG.BLACK ; Le coloca el color al caracter
         xor ax, BG.GREEN | BG.BRIGHT ; Como el caracter esta en la posicion del cursor se le coloca el fondo blanco
-        mov dword [PAINT_POINTER], 1 ; Marca el PAINT_POINTER para luego no pintarlo
         jmp pointer
         not_pointer:
         xor ax, FG.BRIGHT | FG.GREEN ; Le coloca el color al caracter
@@ -90,17 +94,6 @@ paint:
         jmp paint.loop
 
     paint.ret:
-    cmp dword [PAINT_POINTER], 1 ; Comprueba si se pinto el cursor, si no lo pinta
-    je .ret
-    xor eax, eax
-    xor ebx, ebx
-    xor ecx, ecx
-    mov eax, [POS_POINTER]
-    mov ecx, 2
-    mul ecx
-    mov bx, ' ' | BG.GRAY
-    mov [FBUFFER + eax], bx
-    .ret:
     popad
     pop ebp
     ret

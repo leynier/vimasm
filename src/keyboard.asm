@@ -25,13 +25,21 @@ end_line:
     mov ebx, 80
     div ebx
     sub ebx, edx
+    ; En 'ebx' esta la cantidad de posicion para llegar al final de linea
+
     mov ecx, [POS_DOCUMENT]
     add ecx, [POS_POINTER]
     push ecx
     push ebx
     call translate
+    ; Tralado o empujo el texto las posiciones necesarias, antes calculadas
+
+    mov byte [START_DOCUMENT + ecx], EOL
+    ; Coloco el simbolo de fin de linea
+
     push ebx
     call move_cursor
+    ; Muevo el cursor hacia donde le corresponde
 
     end_line.ret:
         popad
@@ -42,17 +50,32 @@ end_line:
 global erase
 erase:
     pushad
+    REG_CLEAR
 
-    mov edx, [POS_POINTER]
-    call move_cursor_left
-    cmp edx, [POS_POINTER]
-    je erase.ret
-    mov ecx, [POS_DOCUMENT]
-    add ecx, [POS_POINTER]
-    push ecx
-    push dword -1
-    call translate
+    ; Comprubo si no es el principio del documento
+    cmp dword [POS_DOCUMENT], 0
+    jne not_start
+    cmp dword [POS_POINTER], 0
+    jne not_start
+    jmp erase.ret
 
+    not_start:
+        ; Calculo cuantas posiciones tengo que correr para la izquierda
+        ; Porque si habia un salto de linea o algo por el estilo no es
+        ; solamente una posicion.
+        call move_cursor_left
+        mov eax, [POS_DOCUMENT]
+        add eax, [POS_POINTER]
+        mov ebx, eax
+        erase.loop:
+            inc ebx
+            dec ecx
+            cmp byte [START_DOCUMENT + ebx], 0
+            je erase.loop
+        push eax
+        push ecx
+        call translate
+    
     erase.ret:
         popad
         ret
@@ -61,33 +84,98 @@ erase:
 ; Mueve el cursor hacia la izquierda
 global move_cursor_left
 move_cursor_left:
+    pushad
     push -1
     call move_cursor
-    ret
+
+    move_cursor_left.loop:
+        ; Mueve el cursor hacia la izquierda hasta que encuentre una caracter diferente de cero
+        mov eax, START_DOCUMENT
+        add eax, [POS_DOCUMENT]
+        add eax, [POS_POINTER]
+        cmp byte [eax], 0
+        jne move_cursor_left.ret
+        push -1
+        call move_cursor
+        jmp move_cursor_left.loop     
+
+    move_cursor_left.ret:
+        popad
+        ret
 
 ; move_cursor_right()
 ; Mueve el cursor hacia la derecha
 global move_cursor_right
 move_cursor_right:
+    pushad
+    mov eax, START_DOCUMENT
+    add eax, [POS_DOCUMENT]
+    add eax, [POS_POINTER]
+    cmp byte [eax], EOF
+    je move_cursor_right.ret
     push 1
     call move_cursor
-    ret
+
+    move_cursor_right.loop:
+    ; Mueve el cursor hacia la derecha hasta que encuentre una caracter diferente de cero
+        mov eax, START_DOCUMENT
+        add eax, [POS_DOCUMENT]
+        add eax, [POS_POINTER]
+        cmp byte [eax], 0
+        jne move_cursor_right.ret
+        push 1
+        call move_cursor
+        jmp move_cursor_right.loop     
+
+    move_cursor_right.ret:
+        popad
+        ret
 
 ; move_cursor_down
 ; Mueve el cursor hacia abajo
 global move_cursor_down
 move_cursor_down:
+    pushad
     push 80
     call move_cursor
-    ret
+
+    move_cursor_down.loop:
+        ; Mueve el cursor hacia la izquierda hasta que encuentre una caracter diferente de cero
+        mov eax, START_DOCUMENT
+        add eax, [POS_DOCUMENT]
+        add eax, [POS_POINTER]
+        cmp byte [eax], 0
+        jne move_cursor_down.ret
+        push -1
+        call move_cursor
+        jmp move_cursor_down.loop     
+
+    move_cursor_down.ret:
+        popad
+        ret
 
 ; move_cursor_up
 ; Mueve el cursor hacia arriba
 global move_cursor_up
 move_cursor_up:
+    pushad
     push -80
     call move_cursor
-    ret
+
+    move_cursor_up.loop:
+        ; Mueve el cursor hacia la izquierda hasta que encuentre una caracter diferente de cero
+        mov eax, START_DOCUMENT
+        add eax, [POS_DOCUMENT]
+        add eax, [POS_POINTER]
+        cmp byte [eax], 0
+        jne move_cursor_up.ret
+        push -1
+        call move_cursor
+        jmp move_cursor_up.loop     
+
+    move_cursor_up.ret:
+        popad
+        ret
 
 ; shift_down()
 ; Activa el TOGGLE_SHIFT para saber que la tecla shift esta presionada
