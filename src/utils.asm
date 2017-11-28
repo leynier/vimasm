@@ -12,6 +12,54 @@ extern ASCII_CODE
 extern KEY
 extern move_cursor_right
 
+; fix_eol(dword pos)
+; Metodo que corrige todos los saltos de linea
+global fix_eol
+fix_eol:
+    pushad
+    REG_CLEAR
+
+    mov eax, [POS_DOCUMENT]
+    add eax, [POS_POINTER]
+    dec eax ; Posicion desde la cual se debe arreglar los salto de linea
+
+    fix_eol.loop:
+        inc eax
+        cmp byte [START_DOCUMENT + eax], EOF
+        je fix_eol.ret
+        cmp byte [START_DOCUMENT + eax], EOL
+        jne fix_eol.loop
+            push eax
+            xor ecx, ecx
+            xor edx, edx
+            mov ebx, 80
+            div ebx
+            sub ebx, edx
+            pop eax
+            ; En 'ebx' esta la cantidad de posicion para llegar al final de linea
+            mov edx, eax
+            fix_eol.loop2:
+                inc edx
+                inc ecx
+                cmp byte [START_DOCUMENT + edx], 0
+                je fix_eol.loop2
+            ; En 'ecx'esta la cantidad actual de espacio vacios
+            mov byte [START_DOCUMENT + eax], 0
+            mov edx, ebx
+            sub edx, ecx
+            ; En 'edx' queda la diferencia de espacios
+            push eax
+            push edx
+            call translate
+            mov byte [START_DOCUMENT + eax], EOL
+            add eax, ebx
+            dec eax
+            jmp fix_eol.loop
+
+    fix_eol.ret:
+        popad
+        ret
+
 ; write()
 ; Metodo que comprueba si la tecla presionada fue una tecla valida para escribir, y la escribe en el documento
 global write
@@ -40,6 +88,7 @@ write:
     call translate
     mov [START_DOCUMENT + ecx], bl
     call move_cursor_right
+    call fix_eol
 
     write.ret:
         popad

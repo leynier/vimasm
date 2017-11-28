@@ -13,6 +13,7 @@ extern ASCII_CODE
 extern KEY
 extern translate
 extern move_cursor
+extern fix_eol
 
 ; end_line()
 ; Metodo que cumple la funcion de fin de linea con el ENTER
@@ -40,6 +41,7 @@ end_line:
     push ebx
     call move_cursor
     ; Muevo el cursor hacia donde le corresponde
+    call fix_eol
 
     end_line.ret:
         popad
@@ -75,6 +77,8 @@ erase:
         push eax
         push ecx
         call translate
+        
+        call fix_eol
     
     erase.ret:
         popad

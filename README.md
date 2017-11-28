@@ -1,7 +1,11 @@
-# Vimasm
+# VIMASM
 
-Integrantes y grupo.
+## Proyecto de Programación de Máquinas I.
 
-Describir todo lo que se realizó en el proyecto, dejando claro cuáles fueron las características que se implementaron.
+## Ciencia de la Computación. Curso 2017-2018.
 
-Para más información acerca de la orientación del proyecto ir a [ORIENTACIÓN.md](ORIENTACIÓN.md)
+<img src="Vimlogo.svg.png" alt="Vim logo" style="width: 200px;"/>
+
+## Integrantes:
+
+### Paula Rodríguez Pérez y Leynier Gutiérrez González
