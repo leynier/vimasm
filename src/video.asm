@@ -8,6 +8,7 @@ extern POS_DOCUMENT
 extern POS_POINTER
 extern BAR_BOTTOM
 extern MODE
+extern WELCOME_MSG
 
 global paint_start
 paint_start:
@@ -22,19 +23,15 @@ paint_start:
     REG_CLEAR
 
     cld
+    mov esi, WELCOME_MSG
     mov edi, FBUFFER
-    mov ax, 'V' | FG.GREEN | FG.BRIGHT
-    stosw
-    mov ax, 'I' | FG.GREEN | FG.BRIGHT
-    stosw
-    mov ax, 'M' | FG.GREEN | FG.BRIGHT
-    stosw
-    mov ax, 'A' | FG.GREEN | FG.BRIGHT
-    stosw
-    mov ax, 'S' | FG.GREEN | FG.BRIGHT
-    stosw
-    mov ax, 'M' | FG.GREEN | FG.BRIGHT
-    stosw
+    or ax, FG.GREEN | FG.BRIGHT
+    paint_start.loop:
+        cmp byte [esi], 0
+        je paint_start.ret
+        lodsb
+        stosw
+        jmp paint_start.loop
 
     paint_start.ret:
         popad
