@@ -6,6 +6,40 @@ section .text
 extern START_DOCUMENT
 extern POS_DOCUMENT
 extern POS_POINTER
+extern BAR_BOTTOM
+extern MODE
+
+global paint_start
+paint_start:
+    push ebp
+    mov ebp, esp
+    pushad
+
+    ; Pinta la pantalla de color negro
+    push word BG.BLACK
+    call clear
+
+    REG_CLEAR
+
+    cld
+    mov edi, FBUFFER
+    mov ax, 'V' | FG.GREEN | FG.BRIGHT
+    stosw
+    mov ax, 'I' | FG.GREEN | FG.BRIGHT
+    stosw
+    mov ax, 'M' | FG.GREEN | FG.BRIGHT
+    stosw
+    mov ax, 'A' | FG.GREEN | FG.BRIGHT
+    stosw
+    mov ax, 'S' | FG.GREEN | FG.BRIGHT
+    stosw
+    mov ax, 'M' | FG.GREEN | FG.BRIGHT
+    stosw
+
+    paint_start.ret:
+        popad
+        pop ebp
+        ret
 
 ; clear(word char|attrs)
 ; Pinta en toda la pantalla un caracter con el color deseado
@@ -56,10 +90,113 @@ paint:
     push word BG.BLACK
     call clear
 
-    xor eax, eax
-    xor ebx, ebx
-    xor esi, esi
-    xor edi, edi
+    REG_CLEAR
+
+    cld
+    cmp dword [MODE], MODE_NORMAL
+    jne not_mode_normal
+        mov edi, BAR_BOTTOM
+        mov al, '-'
+        stosb
+        mov al, '-'
+        stosb
+        mov al, ' '
+        stosb
+        mov al, 'N'
+        stosb
+        mov al, 'O'
+        stosb
+        mov al, 'R'
+        stosb
+        mov al, 'M'
+        stosb
+        mov al, 'A'
+        stosb
+        mov al, 'L'
+        stosb
+        mov al, ' '
+        stosb
+        mov al, '-'
+        stosb
+        mov al, '-'
+        stosb
+        mov al, ' '
+        stosb
+        mov al, ' '
+        stosb
+        mov al, ' '
+        stosb
+        mov al, ' '
+        stosb
+        mov al, ' '
+        stosb
+        mov al, ' '
+        stosb
+        mov al, ' '
+        stosb
+    not_mode_normal:
+    cmp dword [MODE], MODE_INSERTION
+    jne not_mode_insertion
+        mov edi, BAR_BOTTOM
+        mov al, '-'
+        stosb
+        mov al, '-'
+        stosb
+        mov al, ' '
+        stosb
+        mov al, 'I'
+        stosb
+        mov al, 'N'
+        stosb
+        mov al, 'S'
+        stosb
+        mov al, 'E'
+        stosb
+        mov al, 'R'
+        stosb
+        mov al, 'T'
+        stosb
+        mov al, 'I'
+        stosb
+        mov al, 'O'
+        stosb
+        mov al, 'N'
+        stosb
+        mov al, ' '
+        stosb
+        mov al, '-'
+        stosb
+        mov al, '-'
+        stosb
+        mov al, ' '
+        stosb
+        mov al, ' '
+        stosb
+        mov al, ' '
+        stosb
+        mov al, ' '
+        stosb
+        mov al, ' '
+        stosb
+        mov al, ' '
+        stosb
+        mov al, ' '
+        stosb
+        mov al, ' '
+        stosb
+        mov al, ' '
+        stosb
+    not_mode_insertion:
+    mov esi, BAR_BOTTOM
+    mov edi, FBUFFER
+    add edi, 3840
+    mov ecx, 80
+    paint.bottom:
+        xor eax, eax
+        lodsb
+        or ax, FG.GREEN | FG.BRIGHT
+        stosw
+        loop paint.bottom
 
     ; Coloca el 'esi' apartir de donde se este mostrando el documento, el 'edi' al principio de la pantalla
     mov esi, START_DOCUMENT
@@ -94,6 +231,6 @@ paint:
         jmp paint.loop
 
     paint.ret:
-    popad
-    pop ebp
-    ret
+        popad
+        pop ebp
+        ret

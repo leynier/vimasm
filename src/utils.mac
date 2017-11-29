@@ -1,6 +1,8 @@
 %ifndef UTILS_MAC
 %define UTILS_MAC
 
+%define MODE_NORMAL 0
+%define MODE_INSERTION 1
 %define EOF 3
 %define EOL 10
 %define ASCII_LEN 84
