@@ -187,6 +187,166 @@ paint:
         mov al, ' '
         stosb
     not_mode_insertion:
+    cmp dword [MODE], MODE_VISUAL
+    jne not_mode_visual
+        mov edi, BAR_BOTTOM
+        mov al, '-'
+        stosb
+        mov al, '-'
+        stosb
+        mov al, ' '
+        stosb
+        mov al, 'V'
+        stosb
+        mov al, 'I'
+        stosb
+        mov al, 'S'
+        stosb
+        mov al, 'U'
+        stosb
+        mov al, 'A'
+        stosb
+        mov al, 'L'
+        stosb
+        mov al, ' '
+        stosb
+        mov al, '-'
+        stosb
+        mov al, '-'
+        stosb
+        mov al, ' '
+        stosb
+        mov al, ' '
+        stosb
+        mov al, ' '
+        stosb
+        mov al, ' '
+        stosb
+        mov al, ' '
+        stosb
+        mov al, ' '
+        stosb
+        mov al, ' '
+        stosb
+        mov al, ' '
+        stosb
+        mov al, ' '
+        stosb
+    not_mode_visual:
+    cmp dword [MODE], MODE_VISUAL_BLOCK
+    jne not_mode_visual_block
+        mov edi, BAR_BOTTOM
+        mov al, '-'
+        stosb
+        mov al, '-'
+        stosb
+        mov al, ' '
+        stosb
+        mov al, 'V'
+        stosb
+        mov al, 'I'
+        stosb
+        mov al, 'S'
+        stosb
+        mov al, 'U'
+        stosb
+        mov al, 'A'
+        stosb
+        mov al, 'L'
+        stosb
+        mov al, ' '
+        stosb
+        mov al, 'B'
+        stosb
+        mov al, 'L'
+        stosb
+        mov al, 'O'
+        stosb
+        mov al, 'C'
+        stosb
+        mov al, 'K'
+        stosb
+        mov al, ' '
+        stosb
+        mov al, '-'
+        stosb
+        mov al, '-'
+        stosb
+        mov al, ' '
+        stosb
+        mov al, ' '
+        stosb
+        mov al, ' '
+        stosb
+        mov al, ' '
+        stosb
+        mov al, ' '
+        stosb
+        mov al, ' '
+        stosb
+        mov al, ' '
+        stosb
+        mov al, ' '
+        stosb
+        mov al, ' '
+        stosb
+    not_mode_visual_block:
+    cmp dword [MODE], MODE_VISUAL_LINE
+    jne not_mode_visual_line
+        mov edi, BAR_BOTTOM
+        mov al, '-'
+        stosb
+        mov al, '-'
+        stosb
+        mov al, ' '
+        stosb
+        mov al, 'V'
+        stosb
+        mov al, 'I'
+        stosb
+        mov al, 'S'
+        stosb
+        mov al, 'U'
+        stosb
+        mov al, 'A'
+        stosb
+        mov al, 'L'
+        stosb
+        mov al, ' '
+        stosb
+        mov al, 'L'
+        stosb
+        mov al, 'I'
+        stosb
+        mov al, 'N'
+        stosb
+        mov al, 'E'
+        stosb
+        mov al, ' '
+        stosb
+        mov al, '-'
+        stosb
+        mov al, '-'
+        stosb
+        mov al, ' '
+        stosb
+        mov al, ' '
+        stosb
+        mov al, ' '
+        stosb
+        mov al, ' '
+        stosb
+        mov al, ' '
+        stosb
+        mov al, ' '
+        stosb
+        mov al, ' '
+        stosb
+        mov al, ' '
+        stosb
+        mov al, ' '
+        stosb
+    not_mode_visual_line:
     mov esi, BAR_BOTTOM
     mov edi, FBUFFER
     add edi, 3840

@@ -7,6 +7,7 @@ extern START_DOCUMENT
 extern POS_DOCUMENT
 extern POS_POINTER
 extern TOGGLE_SHIFT
+extern TOGGLE_CTRL
 extern ASCII_NORMAL
 extern ASCII_EXTRA
 extern ASCII_CODE
@@ -195,6 +196,23 @@ shift_down:
 global shift_up
 shift_up:
     mov dword [TOGGLE_SHIFT], 0
+    mov dword [ASCII_CODE], ASCII_NORMAL
+    mov eax, 1
+    ret
+
+; ctrl_down()
+; Activa el TOGGLE_CTRL para saber que la tecla ctrl esta presionada
+global ctrl_down
+ctrl_down:
+    mov dword [TOGGLE_CTRL], 1
+    mov eax, 1
+    ret
+
+; ctrl_up()
+; Desactiva el TOGGLE_CTRL para saber que la tecla ctrl NO esta presionada
+global ctrl_up
+ctrl_up:
+    mov dword [TOGGLE_CTRL], 1
     mov dword [ASCII_CODE], ASCII_NORMAL
     mov eax, 1
     ret

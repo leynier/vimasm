@@ -20,6 +20,10 @@ ASCII_CODE dd ASCII_NORMAL
 global TOGGLE_SHIFT
 TOGGLE_SHIFT dd 0
 
+; Contiene 0 si el ctrl no esta presionado, 1 si lo esta
+global TOGGLE_CTRL
+TOGGLE_CTRL dd 0
+
 ; Posicion del documento donde se esta presentando en pantalla
 global POS_DOCUMENT
 POS_DOCUMENT dd 0
