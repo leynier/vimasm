@@ -31,9 +31,16 @@ normal:
     REG_CLEAR
     call scan
 
-    cmp dword [KEY], KEY.ESC.DOWN
+BIND [KEY], KEY.CTRL.DOWN, ctrl_down
+    BIND [KEY], KEY.CTRL.UP, ctrl_up
+
+    cmp dword [TOGGLE_CTRL], 0
+    je continue 
+    cmp dword [KEY], KEY.C.DOWN
+    ;cmp dword [KEY], KEY.ESC.DOWN
     je normal.ret
 
+    continue:
     BIND [KEY], KEY.I.DOWN, insertion
     BIND [KEY], KEY.S.DOWN, insertion
 
@@ -42,16 +49,15 @@ normal:
     BIND [KEY], KEY.LEFTSHIFT.UP, shift_up
     BIND [KEY], KEY.RIGHTSHIFT.UP, shift_up
  
-    BIND [KEY], KEY.CTRL.DOWN, ctrl_down
-    BIND [KEY], KEY.CTRL.UP, ctrl_up
-
     cmp dword [TOGGLE_SHIFT],0
     jne visualline
     cmp dword [TOGGLE_CTRL],0
     jne visualblock
-    BIND [KEY], KEY.V.UP, visual
+    BIND [KEY], KEY.V.DOWN, visual
     jmp end   
     visualline:
+    cmp dword [TOGGLE_CTRL],1
+    je end
     BIND [KEY], KEY.V.DOWN, visual_line
     jmp end
     visualblock:

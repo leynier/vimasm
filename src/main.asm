@@ -75,7 +75,7 @@ main:
         call paint_start
         REG_CLEAR
         call scan
-
+        mov dword [TOGGLE_CTRL], 0
         BIND [KEY], KEY.ENTER.DOWN, normal
 
         jmp main.loop
