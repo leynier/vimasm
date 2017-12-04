@@ -10,7 +10,6 @@ extern MODE
 extern TOGGLE_CTRL
 
 extern insertion
-
 extern scan
 extern paint
 
@@ -22,13 +21,13 @@ visual_block:
     REG_CLEAR
     call scan
 
-    ; Comprueba si se presiono la s
-    cmp dword [KEY], KEY.S.DOWN
-    je insertion
-
     ; Comprueba el ESC
     cmp dword [KEY], KEY.ESC.DOWN
     je visual_block.ret
+
+    ; Comprueba si se presiono la s
+    cmp dword [KEY], KEY.S.DOWN
+    je insertion
 
     jmp visual_block
 

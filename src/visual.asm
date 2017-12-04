@@ -20,13 +20,13 @@ visual:
     REG_CLEAR
     call scan
 
-    ; Comprueba si se presiono la s
-    cmp dword [KEY], KEY.S.DOWN
-    je insertion
-
     ; Comprueba el ESC
     cmp dword [KEY], KEY.ESC.DOWN
     je visual.ret
+
+    ; Comprueba si se presiono la s
+    cmp dword [KEY], KEY.S.DOWN
+    je insertion
 
     jmp visual
 

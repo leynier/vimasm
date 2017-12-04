@@ -36,12 +36,15 @@ POS_POINTER dd 0
 global KEY
 KEY dd 0
 
+; Variable que representa los modos de la aplicacion
 global MODE
 MODE dd 0
 
+; Array que contiene la informacion que se encuentra en la ultima linea
 global BAR_BOTTOM
 BAR_BOTTOM times 80 db 0
 
+; Texto de bienvenida
 global WELCOME_MSG
 WELCOME_MSG db "  ____________________________________________________________________________   |                                                                            |  |                           WELCOME TO VIMASM v1.0                           |  |                                                                            |  |                          Project of PM1 2017-2018                          |  |                                                                            |  |                                                                            |  |                                                                            |  |                                                                            |  |                                                                            |  |                                                                            |  |                                                                            |  |                              ( PRESS  ENTER )                              |  |                                                                            |  |                                                                            |  |                                                                            |  |                                                                            |  |                                                                            |  |                                                                            |  |                                                                            |  |                                                                            |  |                                                                            |  |       Developers: Paula Rodriguez Perez & Leynier Gutierrez Gonzalez       |  |____________________________________________________________________________| ", 0
 
@@ -72,6 +75,7 @@ main:
     mov byte [START_DOCUMENT], EOF
 
     main.loop:
+        mov dword [MODE], MODE_START
         call paint_start
         REG_CLEAR
         call scan
