@@ -10,18 +10,15 @@ extern BAR_BOTTOM
 extern MODE
 extern WELCOME_MSG
 
+; paint_start()
+; Pinta la presentacion
 global paint_start
 paint_start:
-    push ebp
-    mov ebp, esp
     pushad
-
     ; Pinta la pantalla de color negro
     push word BG.BLACK
     call clear
-
     REG_CLEAR
-
     cld
     mov esi, WELCOME_MSG
     mov edi, FBUFFER
@@ -32,11 +29,34 @@ paint_start:
         lodsb
         stosw
         jmp paint_start.loop
-
     paint_start.ret:
         popad
-        pop ebp
         ret
+
+; paint_select()
+; Resalta segun el modo que este activado
+global paint_select
+paint_select:
+    pushad
+    REG_CLEAR
+    BIND [MODE], MODE_NORMAL, paint_cursor
+    BIND [MODE], MODE_INSERTION, paint_cursor
+    popad
+    ret
+
+; paint_cursor()
+; Resalta solamente la posicion del cursor
+global paint_cursor
+paint_cursor:
+    pushad
+    REG_CLEAR
+    mov eax, [POS_POINTER]
+    add eax, eax
+    mov bx, [FBUFFER + eax]
+    ror bh, 4
+    mov [FBUFFER + eax], bx
+    popad
+    ret
 
 ; clear(word char|attrs)
 ; Pinta en toda la pantalla un caracter con el color deseado
@@ -45,17 +65,16 @@ clear:
     push ebp
     mov ebp, esp
     pushad
-
+    REG_CLEAR
     mov ax, [ebp + 8] ; char, attrs
     mov edi, FBUFFER
     mov ecx, COLS * ROWS
     cld
     rep stosw
-
-    popad
-    pop ebp
-    ret 2
-
+    clear.ret:
+        popad
+        pop ebp
+        ret 2
 
 ; putc(word col|row, word chr|color)
 ; Pinta en una posicion de la pantalla un caracter del color deseado
@@ -64,31 +83,23 @@ putc:
     push ebp
     mov ebp, esp
     pushad
-
     ; calc famebuffer offset 2 * (r * COLS + c)
     FBOFFSET [ebp + 11], [ebp + 10]
     mov bx, [ebp + 8]
     mov [FBUFFER + eax], bx
-
     popad
     pop ebp
     ret 4
-
 
 ; paint()
 ; Pinta en la pantalla segun los valores del POS_DOCUMENT y el POS_POINTER
 global paint
 paint:
-    push ebp
-    mov ebp, esp
     pushad
-
     ; Pinta la pantalla de color negro
     push word BG.BLACK
     call clear
-
     REG_CLEAR
-
     cld
     cmp dword [MODE], MODE_NORMAL
     jne not_mode_normal
@@ -351,18 +362,17 @@ paint:
     paint.bottom:
         xor eax, eax
         lodsb
-        or ax, FG.GREEN | FG.BRIGHT
+        or ax, FG.BRIGHT | FG.GREEN | BG.BLACK
         stosw
         loop paint.bottom
-
     ; Coloca el 'esi' apartir de donde se este mostrando el documento, el 'edi' al principio de la pantalla
     mov esi, START_DOCUMENT
     add esi, [POS_DOCUMENT]
     mov edi, FBUFFER
     cld
-
     paint.loop:
         xor eax, eax
+        or ax, FG.BRIGHT | FG.GREEN | BG.BLACK ; Le coloca el color al caracter
         lodsb ; Carga hacia 'al' un caracter y avanza el 'esi'
         cmp al, EOF ; Comprueba si es el fin de fichero
         jne not_eof
@@ -372,22 +382,12 @@ paint:
         jne not_eol
         mov al, ' ' ; Si es el fin de linea lo remplaza con espacio en blanco
         not_eol:
-        cmp ebx, [POS_POINTER] ; Comprueba si el caracter esta en la posicion del cursor
-        jne not_pointer
-        xor ax, FG.BLACK ; Le coloca el color al caracter
-        xor ax, BG.GREEN | BG.BRIGHT ; Como el caracter esta en la posicion del cursor se le coloca el fondo blanco
-        jmp pointer
-        not_pointer:
-        xor ax, FG.BRIGHT | FG.GREEN ; Le coloca el color al caracter
-        xor ax, BG.BLACK
-        pointer:
         cmp ebx, 1920 ; Comprueba si no se ha llegado al final de la pantalla
         je paint.ret ; Retorna porque se llego al final de la pantalla
         stosw ; Coloca en la pantalla el caracter con el color y mueve el 'edi'
         inc ebx ; Incrementa la posicion donde se esta pintando
         jmp paint.loop
-
     paint.ret:
+        call paint_select
         popad
-        pop ebp
         ret
