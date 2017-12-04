@@ -47,9 +47,113 @@ paint_select:
     BIND [MODE], MODE_NORMAL, paint_cursor
     BIND [MODE], MODE_INSERTION, paint_cursor
     BIND [MODE], MODE_VISUAL, paint_visual
+    BIND [MODE], MODE_VISUAL_LINE, paint_visual_line
 
     popad
     ret
+
+; paint_visual_line()
+; Pinta la seleccion del modo visual line
+global paint_visual_line
+paint_visual_line:
+    pushad
+    REG_CLEAR
+
+    add eax, [POS_DOCUMENT]
+    mov ebx, eax
+    add eax, [POS_POINTER]
+    ; Coloco en 'eax' la posicion de puntero con respecto a principio del documento
+
+    cmp [POS_SELECT], eax ; Comparo si el cursor de seleccion esta por la derecha o izquierda
+    jl .less
+        add ebx, 1920
+        cmp [POS_SELECT], ebx ; Comparo si el cursor de seleccion esta por fuera de la pantalla
+        jnge .notgreat
+        mov ecx, ebx
+        jmp .preloop1
+        .notgreat:
+        mov ecx, [POS_SELECT]
+        push eax
+        push ebx
+        push edx
+        mov ebx, 80
+        mov eax, ecx
+        div ebx
+        sub ebx, edx
+        add ecx, ebx
+        pop edx
+        pop ebx
+        pop eax
+        .preloop1:
+        push ebx
+        push ecx
+        push edx
+        mov ebx, eax
+        mov ecx, 80
+        div ecx
+        sub ebx, edx
+        mov eax, ebx
+        pop edx
+        pop ecx
+        pop ebx
+        sub ecx, eax
+        sub ebx, 1920
+        sub eax, ebx
+        ; En 'ecx' queda la cantidad de posiciones que hay que resaltar
+        ; En 'eax' queda la posicion inicial que se ira aumentando en el loop
+        .loop1:
+            push eax
+            call paint_pointer
+            inc eax
+            loop .loop1
+            jmp .ret
+    .less:
+        cmp [POS_SELECT], ebx ; Comparo si el cursor de seleccion esta por fuera de la pantalla
+        jnle .notless
+        mov ecx, ebx
+        jmp .preloop2
+        .notless:
+        mov ecx, [POS_SELECT]
+        push eax
+        push ebx
+        push edx
+        mov ebx, 80
+        mov eax, ecx
+        div ebx
+        sub ecx, edx
+        pop edx
+        pop ebx
+        pop eax
+        .preloop2:
+        push ebx
+        push ecx
+        push edx
+        mov ebx, eax
+        mov ecx, 80
+        div ecx
+        sub ecx, edx
+        add ebx, ecx
+        mov eax, ebx
+        pop edx
+        pop ecx
+        pop ebx
+        mov edx, eax
+        mov eax, ecx
+        mov ecx, edx
+        sub ecx, eax
+        sub eax, ebx
+        ; En 'ecx' queda la cantidad de posiciones que hay que resaltar
+        ; En 'eax' queda la posicion inicial que se ira aumentando en el loop
+        .loop2:
+            push eax
+            call paint_pointer
+            inc eax
+            loop .loop2
+            jmp .ret
+
+    .ret:
+        popad
+        ret
 
 ; paint_visual()
 ; Pinta la seleccion del modo visual
