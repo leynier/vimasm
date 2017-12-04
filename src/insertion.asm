@@ -13,6 +13,8 @@ extern scan
 extern paint
 extern shift_down
 extern shift_up
+extern ctrl_down
+extern ctrl_up
 extern move_cursor_left
 extern move_cursor_right
 extern move_cursor_down
@@ -25,8 +27,6 @@ extern void
 global insertion
 insertion:
     pushad
-    mov dword [TOGGLE_CTRL], 0
-    mov dword [TOGGLE_SHIFT], 0
 
     .loop:
         mov dword [MODE], MODE_INSERTION
@@ -42,6 +42,10 @@ insertion:
         BIND_NORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.RIGHT.DOWN, move_cursor_right, .loop
         BIND_NORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.UP.DOWN, move_cursor_up, .loop
         BIND_NORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.DOWN.DOWN, move_cursor_down, .loop
+
+        ; Comprueba el control
+        BIND_NORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.CTRL.DOWN, ctrl_down, .loop
+        BIND_CTRL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.CTRL.UP, ctrl_up, .loop
 
         ; Comprueba el shift
         BIND_NORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.LEFTSHIFT.DOWN, shift_down, .loop

@@ -29,8 +29,6 @@ extern void
 global normal
 normal:
     pushad
-    mov dword [TOGGLE_CTRL], 0
-    mov dword [TOGGLE_SHIFT], 0
 
     .loop:
         mov dword [MODE], MODE_NORMAL

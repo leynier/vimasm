@@ -62,6 +62,10 @@ extern scan
 extern calibrate
 extern paint_start
 extern normal
+extern shift_down
+extern shift_up
+extern ctrl_down
+extern ctrl_up
 
 global main
 main:
@@ -80,13 +84,22 @@ main:
 
     .loop:
         mov dword [MODE], MODE_START
-        mov dword [TOGGLE_CTRL], 0
-        mov dword [TOGGLE_SHIFT], 0
         REG_CLEAR
 
         call paint_start
         call scan
         
+        ; Comprueba el control
+        BIND_NORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.CTRL.DOWN, ctrl_down, .loop
+        BIND_CTRL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.CTRL.UP, ctrl_up, .loop
+
+        ; Comprueba el shift
+        BIND_NORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.LEFTSHIFT.DOWN, shift_down, .loop
+        BIND_NORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.RIGHTSHIFT.DOWN, shift_down, .loop
+        BIND_SHIFT [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.LEFTSHIFT.UP, shift_up, .loop
+        BIND_SHIFT [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.RIGHTSHIFT.UP, shift_up, .loop
+
+        ; Comprueba el enter para comenzar
         BIND_NORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.ENTER.DOWN, normal, .loop
 
         jmp .loop
