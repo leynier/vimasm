@@ -221,3 +221,7 @@ translate:
         popad
         pop ebp
         ret 8
+
+global void
+void:
+    ret

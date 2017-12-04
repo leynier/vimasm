@@ -38,6 +38,55 @@
     %%next:
 %endmacro
 
+%macro BINDNORMAL 6
+    push eax
+    mov eax, %2
+    add eax, %3
+    cmp eax, 0
+    jne %%next
+    cmp dword %1, %4
+    jne %%next
+    pop eax
+    call %5
+    jmp %6
+    %%next:
+    pop eax
+%endmacro
+
+%macro BINDCTRL 6
+    push eax
+    mov eax, %2
+    add eax, %3
+    cmp eax, 1
+    jne %%next
+    cmp dword %2, 1
+    jne %%next
+    cmp dword %1, %4
+    jne %%next
+    pop eax
+    call %5
+    jmp %6
+    %%next:
+    pop eax
+%endmacro
+
+%macro BINDSHIFT 6
+    push eax
+    mov eax, %2
+    add eax, %3
+    cmp eax, 1
+    jne %%next
+    cmp dword %3, 1
+    jne %%next
+    cmp dword %1, %4
+    jne %%next
+    pop eax
+    call %5
+    jmp %6
+    %%next:
+    pop eax
+%endmacro
+
 %macro FILL_SCREEN 1
     extern clear
     push word %1

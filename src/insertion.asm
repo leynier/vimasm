@@ -6,6 +6,8 @@ section .text
 
 extern KEY
 extern MODE
+extern TOGGLE_CTRL
+extern TOGGLE_SHIFT
 
 extern scan
 extern paint
@@ -18,39 +20,45 @@ extern move_cursor_up
 extern erase
 extern end_line
 extern write
+extern void
 
 global insertion
 insertion:
-    mov dword [MODE], MODE_INSERTION
-    call paint
-    REG_CLEAR
-    call scan
+    pushad
+    mov dword [TOGGLE_CTRL], 0
+    mov dword [TOGGLE_SHIFT], 0
 
-    ; Comprueba los shifts
-    BIND [KEY], KEY.LEFTSHIFT.DOWN, shift_down
-    BIND [KEY], KEY.RIGHTSHIFT.DOWN, shift_down
-    BIND [KEY], KEY.LEFTSHIFT.UP, shift_up
-    BIND [KEY], KEY.RIGHTSHIFT.UP, shift_up
+    .loop:
+        mov dword [MODE], MODE_INSERTION
+        call paint
+        call scan
+        REG_CLEAR
 
-    ; Comprueba las flechas de direccion
-    BIND [KEY], KEY.LEFT.DOWN, move_cursor_left
-    BIND [KEY], KEY.RIGHT.DOWN, move_cursor_right
-    BIND [KEY], KEY.UP.DOWN, move_cursor_up
-    BIND [KEY], KEY.DOWN.DOWN, move_cursor_down
+        ; Comprueba el ESC
+        BINDNORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.ESC.DOWN, void, .ret
 
-    ; Comprueba el BACKSPACE
-    BIND [KEY], KEY.BACK.DOWN, erase
+        ; Comprueba las teclas de direccion
+        BINDNORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.LEFT.DOWN, move_cursor_left, .loop
+        BINDNORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.RIGHT.DOWN, move_cursor_right, .loop
+        BINDNORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.UP.DOWN, move_cursor_up, .loop
+        BINDNORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.DOWN.DOWN, move_cursor_down, .loop
 
-    ; Comprueba el ENTER
-    BIND [KEY], KEY.ENTER.DOWN, end_line
+        ; Comprueba el shift
+        BINDNORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.LEFTSHIFT.DOWN, shift_down, .loop
+        BINDNORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.RIGHTSHIFT.DOWN, shift_down, .loop
+        BINDSHIFT [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.LEFTSHIFT.UP, shift_up, .loop
+        BINDSHIFT [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.RIGHTSHIFT.UP, shift_up, .loop
 
-    ; Comprueba el ESC
-    cmp dword [KEY], KEY.ESC.DOWN
-    je .ret
+        ; Comprueba el BACKSPACE
+        BINDNORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.BACK.DOWN, erase, .loop
 
-    call write
+        ; Comprueba el ENTER
+        BINDNORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.ENTER.DOWN, end_line, .loop
 
-    jmp insertion
+        call write
+
+        jmp .loop
 
     .ret:
+        popad
         ret

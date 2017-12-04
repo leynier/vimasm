@@ -80,10 +80,13 @@ main:
 
     .loop:
         mov dword [MODE], MODE_START
-        call paint_start
-        REG_CLEAR
-        call scan
         mov dword [TOGGLE_CTRL], 0
-        BIND [KEY], KEY.ENTER.DOWN, normal
+        mov dword [TOGGLE_SHIFT], 0
+        REG_CLEAR
+
+        call paint_start
+        call scan
+        
+        BINDNORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.ENTER.DOWN, normal, .loop
 
         jmp .loop

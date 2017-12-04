@@ -23,52 +23,49 @@ extern move_cursor_left
 extern move_cursor_right
 extern move_cursor_down
 extern move_cursor_up
+extern void
 
 global normal
 normal:
-    mov dword [MODE], MODE_NORMAL
-    call paint
-    REG_CLEAR
-    call scan
+    pushad
+    mov dword [TOGGLE_CTRL], 0
+    mov dword [TOGGLE_SHIFT], 0
 
-    BIND [KEY], KEY.CTRL.DOWN, ctrl_down
-    BIND [KEY], KEY.CTRL.UP, ctrl_up
+    .loop:
+        mov dword [MODE], MODE_NORMAL
+        REG_CLEAR
+        call paint
+        call scan
 
-    cmp dword [TOGGLE_CTRL], 0
-    je .continue
-    cmp dword [KEY], KEY.C.DOWN
-    je .ret
+        ; Comprueba el control
+        BINDNORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.CTRL.DOWN, ctrl_down, .loop
+        BINDCTRL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.CTRL.UP, ctrl_up, .loop
 
-    .continue:
-    BIND [KEY], KEY.I.DOWN, insertion
+        ; Comprueba el shift
+        BINDNORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.LEFTSHIFT.DOWN, shift_down, .loop
+        BINDNORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.RIGHTSHIFT.DOWN, shift_down, .loop
+        BINDSHIFT [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.LEFTSHIFT.UP, shift_up, .loop
+        BINDSHIFT [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.RIGHTSHIFT.UP, shift_up, .loop
 
-    BIND [KEY], KEY.LEFTSHIFT.DOWN, shift_down
-    BIND [KEY], KEY.RIGHTSHIFT.DOWN, shift_down
-    BIND [KEY], KEY.LEFTSHIFT.UP, shift_up
-    BIND [KEY], KEY.RIGHTSHIFT.UP, shift_up
- 
-    cmp dword [TOGGLE_SHIFT], 0
-    jne .visual_line
-    cmp dword [TOGGLE_CTRL], 0
-    jne .visual_block
-    BIND [KEY], KEY.V.DOWN, visual
-    jmp .end
-    .visual_line:
-    cmp dword [TOGGLE_CTRL], 1
-    je .end
-    BIND [KEY], KEY.V.DOWN, visual_line
-    jmp .end
-    .visual_block:
-    BIND [KEY], KEY.V.DOWN, visual_block
-    .end:
+        ; Comprueba la combinacion con 'V' para entrar a los modos visuales
+        BINDNORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.V.DOWN, visual, .loop
+        BINDCTRL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.V.DOWN, visual_block, .loop
+        BINDSHIFT [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.V.DOWN, visual_line, .loop
 
-    ; Comprueba las flechas de direccion
-    BIND [KEY], KEY.LEFT.DOWN, move_cursor_left
-    BIND [KEY], KEY.RIGHT.DOWN, move_cursor_right
-    BIND [KEY], KEY.UP.DOWN, move_cursor_up
-    BIND [KEY], KEY.DOWN.DOWN, move_cursor_down
+        ; Comprueba las teclas de direccion
+        BINDNORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.LEFT.DOWN, move_cursor_left, .loop
+        BINDNORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.RIGHT.DOWN, move_cursor_right, .loop
+        BINDNORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.UP.DOWN, move_cursor_up, .loop
+        BINDNORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.DOWN.DOWN, move_cursor_down, .loop
 
-    jmp normal
+        ; Comprueba si es la 'I' para el modo insertion
+        BINDNORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.I.DOWN, insertion, .loop
+
+        ; Comprueba si es el CTRL-C para retornar
+        BINDCTRL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.C.DOWN, void, .ret
+
+        jmp .loop
 
     .ret:
+        popad
         ret
