@@ -48,6 +48,8 @@ paint_select:
     BIND [MODE], MODE_INSERTION, paint_cursor
     BIND [MODE], MODE_VISUAL, paint_visual
     BIND [MODE], MODE_VISUAL_LINE, paint_visual_line
+    BIND [MODE], MODE_VISUAL_BLOCK, paint_cursor
+    BIND [MODE], MODE_REPLACE, paint_cursor
 
     popad
     ret
@@ -546,6 +548,54 @@ paint:
         mov al, ' '
         stosb
     .not_mode_visual_line:
+    cmp dword [MODE], MODE_REPLACE
+    jne .not_mode_replace
+        mov edi, BAR_BOTTOM
+        mov al, '-'
+        stosb
+        mov al, '-'
+        stosb
+        mov al, ' '
+        stosb
+        mov al, 'R'
+        stosb
+        mov al, 'E'
+        stosb
+        mov al, 'P'
+        stosb
+        mov al, 'L'
+        stosb
+        mov al, 'A'
+        stosb
+        mov al, 'C'
+        stosb
+        mov al, 'E'
+        stosb
+        mov al, ' '
+        stosb
+        mov al, '-'
+        stosb
+        mov al, '-'
+        stosb
+        mov al, ' '
+        stosb
+        mov al, ' '
+        stosb
+        mov al, ' '
+        stosb
+        mov al, ' '
+        stosb
+        mov al, ' '
+        stosb
+        mov al, ' '
+        stosb
+        mov al, ' '
+        stosb
+        mov al, ' '
+        stosb
+        mov al, ' '
+        stosb
+    .not_mode_replace:
     mov esi, BAR_BOTTOM
     mov edi, FBUFFER
     add edi, 3840

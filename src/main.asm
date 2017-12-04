@@ -87,6 +87,6 @@ main:
         call paint_start
         call scan
         
-        BINDNORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.ENTER.DOWN, normal, .loop
+        BIND_NORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.ENTER.DOWN, normal, .loop
 
         jmp .loop

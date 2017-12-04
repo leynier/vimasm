@@ -12,6 +12,7 @@ extern ASCII_NORMAL
 extern ASCII_EXTRA
 extern ASCII_CODE
 extern KEY
+
 extern translate
 extern move_cursor
 extern fix_eol
@@ -188,7 +189,6 @@ global shift_down
 shift_down:
     mov dword [TOGGLE_SHIFT], 1
     mov dword [ASCII_CODE], ASCII_EXTRA
-    mov eax, 1
     ret
 
 ; shift_up()
@@ -197,7 +197,6 @@ global shift_up
 shift_up:
     mov dword [TOGGLE_SHIFT], 0
     mov dword [ASCII_CODE], ASCII_NORMAL
-    mov eax, 1
     ret
 
 ; ctrl_down()
@@ -205,16 +204,13 @@ shift_up:
 global ctrl_down
 ctrl_down:
     mov dword [TOGGLE_CTRL], 1
-    mov eax, 1
     ret
 
 ; ctrl_up()
 ; Desactiva el TOGGLE_CTRL para saber que la tecla ctrl NO esta presionada
 global ctrl_up
 ctrl_up:
-    mov dword [TOGGLE_CTRL], 1
-    mov dword [ASCII_CODE], ASCII_NORMAL
-    mov eax, 1
+    mov dword [TOGGLE_CTRL], 0
     ret
 
 ; scan()

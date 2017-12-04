@@ -1,3 +1,4 @@
+;ctrl v
 %include "video.mac"
 %include "keyboard.mac"
 %include "utils.mac"
@@ -11,25 +12,20 @@ extern TOGGLE_SHIFT
 
 extern scan
 extern paint
-extern shift_down
-extern shift_up
 extern move_cursor_left
 extern move_cursor_right
 extern move_cursor_down
 extern move_cursor_up
-extern erase
-extern end_line
-extern write
 extern void
 
-global insertion
-insertion:
+global replace
+replace:
     pushad
     mov dword [TOGGLE_CTRL], 0
     mov dword [TOGGLE_SHIFT], 0
 
     .loop:
-        mov dword [MODE], MODE_INSERTION
+        mov dword [MODE], MODE_REPLACE
         call paint
         call scan
         REG_CLEAR
@@ -42,20 +38,6 @@ insertion:
         BIND_NORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.RIGHT.DOWN, move_cursor_right, .loop
         BIND_NORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.UP.DOWN, move_cursor_up, .loop
         BIND_NORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.DOWN.DOWN, move_cursor_down, .loop
-
-        ; Comprueba el shift
-        BIND_NORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.LEFTSHIFT.DOWN, shift_down, .loop
-        BIND_NORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.RIGHTSHIFT.DOWN, shift_down, .loop
-        BIND_SHIFT [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.LEFTSHIFT.UP, shift_up, .loop
-        BIND_SHIFT [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.RIGHTSHIFT.UP, shift_up, .loop
-
-        ; Comprueba el BACKSPACE
-        BIND_NORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.BACK.DOWN, erase, .loop
-
-        ; Comprueba el ENTER
-        BIND_NORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.ENTER.DOWN, end_line, .loop
-
-        call write
 
         jmp .loop
 

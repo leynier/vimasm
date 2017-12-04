@@ -10,6 +10,7 @@ extern ASCII_NORMAL
 extern ASCII_EXTRA
 extern ASCII_CODE
 extern KEY
+
 extern move_cursor_right
 
 ; fix_eol(dword pos)
