@@ -51,11 +51,52 @@ fix_eol:
             ; En 'edx' queda la diferencia de espacios
             push eax
             push edx
-            call translate
+            call traslate
             mov byte [START_DOCUMENT + eax], EOL
             add eax, ebx
             dec eax
             jmp .loop
+
+    .ret:
+        popad
+        ret
+
+; re_write()
+; Metodo que comprueba si la tecla presionada fue una tecla valida para rescribir, y la rescribe en el documento
+global re_write
+re_write:
+    pushad
+
+    REG_CLEAR
+
+    ; Comprueba si la tecla es de escritura
+    IN_RANGE [KEY], KEY.ONE.DOWN, KEY.EQUAL.DOWN
+    IN_RANGE [KEY], KEY.Q.DOWN, KEY.BRACECLOSE.DOWN
+    IN_RANGE [KEY], KEY.A.DOWN, KEY.ACCENTLOW.DOWN
+    IN_RANGE [KEY], KEY.BACKSLASH.DOWN, KEY.SLASH.DOWN
+    IN_RANGE [KEY], KEY.SPACE.DOWN, KEY.SPACE.DOWN
+
+    cmp eax, 0
+    je .ret ; Si no termina el metodo
+
+    mov edx, [ASCII_CODE]
+    add edx, [KEY]
+    mov bl, [edx]
+    mov ecx, [POS_DOCUMENT]
+    add ecx, [POS_POINTER]
+    cmp byte [START_DOCUMENT + ecx], EOL
+    je .traslate
+    cmp byte [START_DOCUMENT + ecx], EOF
+    je .traslate
+    jmp .not_traslate
+    .traslate:
+    push ecx
+    push dword 1
+    call traslate
+    .not_traslate:
+    mov [START_DOCUMENT + ecx], bl
+    call move_cursor_right
+    call fix_eol
 
     .ret:
         popad
@@ -86,7 +127,7 @@ write:
     add ecx, [POS_POINTER]
     push ecx
     push dword 1
-    call translate
+    call traslate
     mov [START_DOCUMENT + ecx], bl
     call move_cursor_right
     call fix_eol
@@ -148,10 +189,10 @@ move_cursor:
         pop ebp
         ret 4
 
-; translate(dword pos, dword desp)
+; traslate(dword pos, dword desp)
 ; Tranlada el texto o documento X cantidad de casillas a partir de casilla deseada
-global translate
-translate:
+global traslate
+traslate:
     push ebp
     mov ebp, esp
     pushad

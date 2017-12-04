@@ -13,7 +13,7 @@ extern ASCII_EXTRA
 extern ASCII_CODE
 extern KEY
 
-extern translate
+extern traslate
 extern move_cursor
 extern fix_eol
 
@@ -34,7 +34,7 @@ end_line:
     add ecx, [POS_POINTER]
     push ecx
     push ebx
-    call translate
+    call traslate
     ; Tralado o empujo el texto las posiciones necesarias, antes calculadas
 
     mov byte [START_DOCUMENT + ecx], EOL
@@ -78,7 +78,7 @@ erase:
             je .loop
         push eax
         push ecx
-        call translate
+        call traslate
         
         call fix_eol
     
