@@ -26,8 +26,7 @@ visual_line:
     je visual_line.ret
 
     ; Comprueba si se presiono la s
-    cmp dword [KEY], KEY.S.DOWN
-    je insertion
+    ;BIND [KEY], KEY.S.DOWN, insertion
 
     jmp visual_line
 

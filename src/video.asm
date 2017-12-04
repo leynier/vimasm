@@ -6,6 +6,7 @@ section .text
 extern START_DOCUMENT
 extern POS_DOCUMENT
 extern POS_POINTER
+extern POS_SELECT
 extern BAR_BOTTOM
 extern MODE
 extern WELCOME_MSG
@@ -41,22 +42,91 @@ paint_select:
     REG_CLEAR
     BIND [MODE], MODE_NORMAL, paint_cursor
     BIND [MODE], MODE_INSERTION, paint_cursor
+    BIND [MODE], MODE_VISUAL, paint_visual
     popad
     ret
+
+; paint_visual()
+; Pinta la seleccion del modo visual
+global paint_visual
+paint_visual:
+    pushad
+    REG_CLEAR
+
+    mov eax, START_DOCUMENT
+    add eax, [POS_DOCUMENT]
+    mov ebx, eax
+    add eax, [POS_POINTER]
+    cmp [POS_SELECT], eax
+    jl paint_visual.less
+        add ebx, 1920
+        cmp [POS_SELECT], ebx
+        jnge paint_visual.notgreat
+        mov ecx, ebx
+        jmp paint_visual.preciclo1
+        paint_visual.notgreat:
+        mov ecx, [POS_SELECT]
+        paint_visual.preciclo1:
+        sub ecx, eax
+        mov eax, [POS_POINTER]
+        inc ecx
+        paint_visual.ciclo1:
+            push eax
+            call paint_pointer
+            inc eax
+            loop paint_visual.ciclo1
+            jmp paint_visual.ret
+    paint_visual.less:
+        mov ecx, eax
+        cmp [POS_SELECT], ebx
+        jnle paint_visual.notless
+        sub ecx, ebx
+        jmp paint_visual.preciclo2
+        paint_visual.notless:
+        sub ecx, [POS_SELECT]
+        paint_visual.preciclo2:
+        mov eax, [POS_POINTER]
+        sub eax, ecx
+        inc ecx
+        paint_visual.ciclo2:
+            push eax
+            call paint_pointer
+            inc eax
+            loop paint_visual.ciclo2
+            jmp paint_visual.ret
+    paint_visual.ret:
+        popad
+        ret
 
 ; paint_cursor()
 ; Resalta solamente la posicion del cursor
 global paint_cursor
 paint_cursor:
+    push dword [POS_POINTER]
+    call paint_pointer
+    ret
+
+; paint_pointer(dword pos) 
+; Resalta la posicion que se le pasa por parametro.
+global paint_pointer
+paint_pointer:
+    push ebp
+    mov ebp, esp
     pushad
     REG_CLEAR
-    mov eax, [POS_POINTER]
+
+    mov eax, [ebp + 8]
     add eax, eax
     mov bx, [FBUFFER + eax]
+    cmp bl, 0
+    je paint_pointer.ret
     ror bh, 4
     mov [FBUFFER + eax], bx
-    popad
-    ret
+
+    paint_pointer.ret:
+        popad
+        pop ebp
+        ret 4
 
 ; clear(word char|attrs)
 ; Pinta en toda la pantalla un caracter con el color deseado

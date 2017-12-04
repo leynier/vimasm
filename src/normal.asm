@@ -35,7 +35,7 @@ normal:
     je normal.ret
 
     BIND [KEY], KEY.I.DOWN, insertion
-    BIND [KEY], KEY.S.DOWN, insertion
+    ;BIND [KEY], KEY.S.DOWN, insertion
 
     BIND [KEY], KEY.LEFTSHIFT.DOWN, shift_down
     BIND [KEY], KEY.RIGHTSHIFT.DOWN, shift_down

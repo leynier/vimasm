@@ -32,6 +32,10 @@ POS_DOCUMENT dd 0
 global POS_POINTER
 POS_POINTER dd 0
 
+; Posicion del cursor de seleccion con respecto al START_DOCUMENT
+global POS_SELECT
+POS_SELECT dd 0
+
 ; Valor de la tecla presionada, actualizada por el metodo 'scan'
 global KEY
 KEY dd 0
