@@ -44,7 +44,7 @@ end_line:
     ; Muevo el cursor hacia donde le corresponde
     call fix_eol
 
-    end_line.ret:
+    .ret:
         popad
         ret
 
@@ -57,12 +57,12 @@ erase:
 
     ; Comprubo si no es el principio del documento
     cmp dword [POS_DOCUMENT], 0
-    jne not_start
+    jne .not_start
     cmp dword [POS_POINTER], 0
-    jne not_start
-    jmp erase.ret
+    jne .not_start
+    jmp .ret
 
-    not_start:
+    .not_start:
         ; Calculo cuantas posiciones tengo que correr para la izquierda
         ; Porque si habia un salto de linea o algo por el estilo no es
         ; solamente una posicion.
@@ -70,18 +70,18 @@ erase:
         mov eax, [POS_DOCUMENT]
         add eax, [POS_POINTER]
         mov ebx, eax
-        erase.loop:
+        .loop:
             inc ebx
             dec ecx
             cmp byte [START_DOCUMENT + ebx], 0
-            je erase.loop
+            je .loop
         push eax
         push ecx
         call translate
         
         call fix_eol
     
-    erase.ret:
+    .ret:
         popad
         ret
 
@@ -93,18 +93,18 @@ move_cursor_left:
     push -1
     call move_cursor
 
-    move_cursor_left.loop:
+    .loop:
         ; Mueve el cursor hacia la izquierda hasta que encuentre una caracter diferente de cero
         mov eax, START_DOCUMENT
         add eax, [POS_DOCUMENT]
         add eax, [POS_POINTER]
         cmp byte [eax], 0
-        jne move_cursor_left.ret
+        jne .ret
         push -1
         call move_cursor
-        jmp move_cursor_left.loop     
+        jmp .loop     
 
-    move_cursor_left.ret:
+    .ret:
         popad
         ret
 
@@ -117,22 +117,22 @@ move_cursor_right:
     add eax, [POS_DOCUMENT]
     add eax, [POS_POINTER]
     cmp byte [eax], EOF
-    je move_cursor_right.ret
+    je .ret
     push 1
     call move_cursor
 
-    move_cursor_right.loop:
+    .loop:
     ; Mueve el cursor hacia la derecha hasta que encuentre una caracter diferente de cero
         mov eax, START_DOCUMENT
         add eax, [POS_DOCUMENT]
         add eax, [POS_POINTER]
         cmp byte [eax], 0
-        jne move_cursor_right.ret
+        jne .ret
         push 1
         call move_cursor
-        jmp move_cursor_right.loop     
+        jmp .loop     
 
-    move_cursor_right.ret:
+    .ret:
         popad
         ret
 
@@ -144,18 +144,18 @@ move_cursor_down:
     push 80
     call move_cursor
 
-    move_cursor_down.loop:
+    .loop:
         ; Mueve el cursor hacia la izquierda hasta que encuentre una caracter diferente de cero
         mov eax, START_DOCUMENT
         add eax, [POS_DOCUMENT]
         add eax, [POS_POINTER]
         cmp byte [eax], 0
-        jne move_cursor_down.ret
+        jne .ret
         push -1
         call move_cursor
-        jmp move_cursor_down.loop     
+        jmp .loop     
 
-    move_cursor_down.ret:
+    .ret:
         popad
         ret
 
@@ -167,18 +167,18 @@ move_cursor_up:
     push -80
     call move_cursor
 
-    move_cursor_up.loop:
+    .loop:
         ; Mueve el cursor hacia la izquierda hasta que encuentre una caracter diferente de cero
         mov eax, START_DOCUMENT
         add eax, [POS_DOCUMENT]
         add eax, [POS_POINTER]
         cmp byte [eax], 0
-        jne move_cursor_up.ret
+        jne .ret
         push -1
         call move_cursor
-        jmp move_cursor_up.loop     
+        jmp .loop     
 
-    move_cursor_up.ret:
+    .ret:
         popad
         ret
 
@@ -222,17 +222,17 @@ ctrl_up:
 global scan
 scan:
     push eax
-    scan.loop:
+    .loop:
         xor eax, eax
         in al, 0x64
         test al, 1
-        je scan.loop
+        je .loop
         test al, 32
-        jne scan.loop
+        jne .loop
         in al, 0x60
         mov [KEY], eax
-        jmp scan.ret
+        jmp .ret
 
-    scan.ret:
+    .ret:
         pop eax
         ret

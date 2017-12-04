@@ -32,7 +32,7 @@ normal:
     call scan
 
     cmp dword [KEY], KEY.ESC.DOWN
-    je normal.ret
+    je .ret
 
     BIND [KEY], KEY.I.DOWN, insertion
     ;BIND [KEY], KEY.S.DOWN, insertion
@@ -46,17 +46,17 @@ normal:
     BIND [KEY], KEY.CTRL.UP, ctrl_up
 
     cmp dword [TOGGLE_SHIFT],0
-    jne visualline
+    jne .visual_line
     cmp dword [TOGGLE_CTRL],0
-    jne visualblock
-    BIND [KEY], KEY.V.UP, visual
-    jmp end   
-    visualline:
+    jne .visual_block
+    BIND [KEY], KEY.V.DOWN, visual
+    jmp .end   
+    .visual_line:
     BIND [KEY], KEY.V.DOWN, visual_line
-    jmp end
-    visualblock:
+    jmp .end
+    .visual_block:
     BIND [KEY], KEY.V.DOWN, visual_block
-    end:
+    .end:
 
     ; Comprueba las flechas de direccion
     BIND [KEY], KEY.LEFT.DOWN, move_cursor_left
@@ -66,5 +66,5 @@ normal:
 
     jmp normal
 
-    normal.ret:
+    .ret:
         ret

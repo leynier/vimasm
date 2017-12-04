@@ -23,12 +23,12 @@ fix_eol:
     add eax, [POS_POINTER]
     dec eax ; Posicion desde la cual se debe arreglar los salto de linea
 
-    fix_eol.loop:
+    .loop:
         inc eax
         cmp byte [START_DOCUMENT + eax], EOF
-        je fix_eol.ret
+        je .ret
         cmp byte [START_DOCUMENT + eax], EOL
-        jne fix_eol.loop
+        jne .loop
             push eax
             xor ecx, ecx
             xor edx, edx
@@ -38,11 +38,11 @@ fix_eol:
             pop eax
             ; En 'ebx' esta la cantidad de posicion para llegar al final de linea
             mov edx, eax
-            fix_eol.loop2:
+            .loop2:
                 inc edx
                 inc ecx
                 cmp byte [START_DOCUMENT + edx], 0
-                je fix_eol.loop2
+                je .loop2
             ; En 'ecx'esta la cantidad actual de espacio vacios
             mov byte [START_DOCUMENT + eax], 0
             mov edx, ebx
@@ -54,9 +54,9 @@ fix_eol:
             mov byte [START_DOCUMENT + eax], EOL
             add eax, ebx
             dec eax
-            jmp fix_eol.loop
+            jmp .loop
 
-    fix_eol.ret:
+    .ret:
         popad
         ret
 
@@ -76,7 +76,7 @@ write:
     IN_RANGE [KEY], KEY.SPACE.DOWN, KEY.SPACE.DOWN
 
     cmp eax, 0
-    je write.ret ; Si no termina el metodo
+    je .ret ; Si no termina el metodo
 
     mov edx, [ASCII_CODE]
     add edx, [KEY]
@@ -90,7 +90,7 @@ write:
     call move_cursor_right
     call fix_eol
 
-    write.ret:
+    .ret:
         popad
         ret
 
@@ -109,40 +109,40 @@ move_cursor:
     add [POS_POINTER], eax ; Mover el cursor
 
     cmp dword [POS_POINTER], 0
-    jge not_pos_pointer_less
+    jge .not_pos_pointer_less
         ; Como el cursor se volvio negativo hay que bajar el texto
         sub dword [POS_DOCUMENT], 80
         cmp dword [POS_DOCUMENT], 0
-        jge not_pos_document_less
+        jge .not_pos_document_less
             ; El texto no puede bajar mas, ya se llego al principio
             add dword [POS_DOCUMENT], 80
             sub [POS_POINTER], eax
-            jmp move_cursor.ret
-        not_pos_document_less:
+            jmp .ret
+        .not_pos_document_less:
             ; Muevo el cursor hacia abajo, para que quede en la misma posicion
             push dword 80
             call move_cursor
-            jmp move_cursor.ret
-    not_pos_pointer_less:
+            jmp .ret
+    .not_pos_pointer_less:
 
     cmp dword [POS_POINTER], 1920
-    jl not_pos_pointer_greater
+    jl .not_pos_pointer_greater
         ; Como el cursor se salio de la pantalla hay que subir el texto
         add dword [POS_DOCUMENT], 80
         cmp dword [POS_DOCUMENT], DOCUMENT_LEN
-        jl not_pos_document_greater
+        jl .not_pos_document_greater
             ; El texto no puede subir mas, ya se llego al final
             sub dword [POS_DOCUMENT], 80
             sub [POS_POINTER], eax
-            jmp move_cursor.ret
-        not_pos_document_greater:
+            jmp .ret
+        .not_pos_document_greater:
             ; Muevo el cursor hacia arriba, para que quede en la misma posicion
             push dword -80
             call move_cursor
-            jmp move_cursor.ret
-    not_pos_pointer_greater:
+            jmp .ret
+    .not_pos_pointer_greater:
 
-    move_cursor.ret:
+    .ret:
         popad
         pop ebp
         ret 4
@@ -161,11 +161,11 @@ translate:
     mov ebx, [ebp + 8] ; Cantidad de posiciones por transladar
 
     cmp ebx, 0 ; Compara si es para la derecha o izquierda la translacion
-    jg translate.right
-    jl translate.left
-    jmp translate.ret
+    jg .right
+    jl .left
+    jmp .ret
 
-    translate.right:
+    .right:
         ; Coloca el 'edi' al final de documento
         mov edi, START_DOCUMENT
         add edi, DOCUMENT_LEN
@@ -179,20 +179,20 @@ translate:
         sub ecx, eax
         inc ecx
         std
-        ciclo1:
+        .loop1:
             movsb
-            loop ciclo1
+            loop .loop1
         ; Rellena con ceros el espacio transladado
         mov edi, eax
         mov ecx, ebx
         xor eax, eax
         cld
-        ciclo2:
+        .loop2:
             stosb
-            loop ciclo2
-        jmp translate.ret
+            loop .loop2
+        jmp .ret
     
-    translate.left:
+    .left:
         ; Coloca el 'edi' en la posicion desde donde se desea transladar el documento
         mov edi, START_DOCUMENT
         add edi, eax
@@ -205,19 +205,19 @@ translate:
         sub ecx, esi
         dec ecx
         cld
-        ciclo3:
+        .loop3:
            movsb
-           loop ciclo3
+           loop .loop3
         xor eax, eax
         xor ecx, ecx
         sub ecx, ebx
         ; Rellenar al final con ceros
-        ciclo4:
+        .loop4:
             stosb
-            loop ciclo4
-        jmp translate.ret
+            loop .loop4
+        jmp .ret
 
-    translate.ret:
+    .ret:
         popad
         pop ebp
         ret 8

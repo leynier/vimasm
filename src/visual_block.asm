@@ -23,12 +23,12 @@ visual_block:
 
     ; Comprueba el ESC
     cmp dword [KEY], KEY.ESC.DOWN
-    je visual_block.ret
+    je .ret
 
     ; Comprueba si se presiono la s
     ;BIND [KEY], KEY.S.DOWN, insertion
 
     jmp visual_block
 
-    visual_block.ret:
+    .ret:
         ret

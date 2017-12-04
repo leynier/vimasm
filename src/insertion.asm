@@ -46,11 +46,11 @@ insertion:
 
     ; Comprueba el ESC
     cmp dword [KEY], KEY.ESC.DOWN
-    je insertion.ret
+    je .ret
 
     call write
 
     jmp insertion
 
-    insertion.ret:
+    .ret:
         ret

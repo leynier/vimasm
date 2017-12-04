@@ -24,12 +24,11 @@ extern move_cursor_up
 global visual
 visual:
     pushad
-    mov eax, START_DOCUMENT
     add eax, [POS_DOCUMENT]
     add eax, [POS_POINTER]
     mov [POS_SELECT], eax
 
-    visual.loop:
+    .loop:
         mov dword [MODE], MODE_VISUAL
         REG_CLEAR
 
@@ -38,7 +37,7 @@ visual:
 
         ; Comprueba el ESC
         cmp dword [KEY], KEY.ESC.DOWN
-        je visual.ret
+        je .ret
 
         ; Comprueba las flechas de direccion
         BIND [KEY], KEY.LEFT.DOWN, move_cursor_left
@@ -49,8 +48,8 @@ visual:
         ; Comprueba si se presiono la s
         ;BIND [KEY], KEY.S.DOWN, insertion
 
-        jmp visual.loop
+        jmp .loop
 
-    visual.ret:
+    .ret:
         popad
         ret

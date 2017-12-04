@@ -78,7 +78,7 @@ main:
 
     mov byte [START_DOCUMENT], EOF
 
-    main.loop:
+    .loop:
         mov dword [MODE], MODE_START
         call paint_start
         REG_CLEAR
@@ -86,4 +86,4 @@ main:
 
         BIND [KEY], KEY.ENTER.DOWN, normal
 
-        jmp main.loop
+        jmp .loop

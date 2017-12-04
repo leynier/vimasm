@@ -20,17 +20,20 @@ paint_start:
     push word BG.BLACK
     call clear
     REG_CLEAR
+
     cld
     mov esi, WELCOME_MSG
     mov edi, FBUFFER
     or ax, FG.GREEN | FG.BRIGHT
-    paint_start.loop:
+
+    .loop:
         cmp byte [esi], 0
-        je paint_start.ret
+        je .ret
         lodsb
         stosw
-        jmp paint_start.loop
-    paint_start.ret:
+        jmp .loop
+
+    .ret:
         popad
         ret
 
@@ -40,9 +43,11 @@ global paint_select
 paint_select:
     pushad
     REG_CLEAR
+
     BIND [MODE], MODE_NORMAL, paint_cursor
     BIND [MODE], MODE_INSERTION, paint_cursor
     BIND [MODE], MODE_VISUAL, paint_visual
+
     popad
     ret
 
@@ -53,48 +58,54 @@ paint_visual:
     pushad
     REG_CLEAR
 
-    mov eax, START_DOCUMENT
     add eax, [POS_DOCUMENT]
     mov ebx, eax
     add eax, [POS_POINTER]
-    cmp [POS_SELECT], eax
-    jl paint_visual.less
+    ; Coloco en 'eax' la posicion de puntero con respecto a principio del documento
+
+    cmp [POS_SELECT], eax ; Comparo si el cursor de seleccion esta por la derecha o izquierda
+    jl .less
         add ebx, 1920
-        cmp [POS_SELECT], ebx
-        jnge paint_visual.notgreat
+        cmp [POS_SELECT], ebx ; Comparo si el cursor de seleccion esta por fuera de la pantalla
+        jnge .notgreat
         mov ecx, ebx
-        jmp paint_visual.preciclo1
-        paint_visual.notgreat:
+        jmp .preloop1
+        .notgreat:
         mov ecx, [POS_SELECT]
-        paint_visual.preciclo1:
+        .preloop1:
         sub ecx, eax
         mov eax, [POS_POINTER]
         inc ecx
-        paint_visual.ciclo1:
+        ; En 'ecx' queda la cantidad de posiciones que hay que resaltar
+        ; En 'eax' queda la posicion inicial que se ira aumentando en el loop
+        .loop1:
             push eax
             call paint_pointer
             inc eax
-            loop paint_visual.ciclo1
-            jmp paint_visual.ret
-    paint_visual.less:
+            loop .loop1
+            jmp .ret
+    .less:
         mov ecx, eax
-        cmp [POS_SELECT], ebx
-        jnle paint_visual.notless
+        cmp [POS_SELECT], ebx ; Comparo si el cursor de seleccion esta por fuera de la pantalla
+        jnle .notless
         sub ecx, ebx
-        jmp paint_visual.preciclo2
-        paint_visual.notless:
+        jmp .preloop2
+        .notless:
         sub ecx, [POS_SELECT]
-        paint_visual.preciclo2:
+        .preloop2:
         mov eax, [POS_POINTER]
         sub eax, ecx
         inc ecx
-        paint_visual.ciclo2:
+        ; En 'ecx' queda la cantidad de posiciones que hay que resaltar
+        ; En 'eax' queda la posicion inicial que se ira aumentando en el loop
+        .loop2:
             push eax
             call paint_pointer
             inc eax
-            loop paint_visual.ciclo2
-            jmp paint_visual.ret
-    paint_visual.ret:
+            loop .loop2
+            jmp .ret
+
+    .ret:
         popad
         ret
 
@@ -115,15 +126,15 @@ paint_pointer:
     pushad
     REG_CLEAR
 
-    mov eax, [ebp + 8]
-    add eax, eax
+    mov eax, [ebp + 8] ; Posicion a la que hay que resaltar
+    add eax, eax ; Se duplica porque la pantalla es en word
     mov bx, [FBUFFER + eax]
-    cmp bl, 0
-    je paint_pointer.ret
-    ror bh, 4
+    cmp bl, 0 ; Si no hay nada no resalto
+    je .ret
+    ror bh, 4 ; Roto para cambiar el background por el foreground
     mov [FBUFFER + eax], bx
 
-    paint_pointer.ret:
+    .ret:
         popad
         pop ebp
         ret 4
@@ -136,12 +147,14 @@ clear:
     mov ebp, esp
     pushad
     REG_CLEAR
+
     mov ax, [ebp + 8] ; char, attrs
     mov edi, FBUFFER
     mov ecx, COLS * ROWS
     cld
     rep stosw
-    clear.ret:
+
+    .ret:
         popad
         pop ebp
         ret 2
@@ -153,13 +166,16 @@ putc:
     push ebp
     mov ebp, esp
     pushad
+
     ; calc famebuffer offset 2 * (r * COLS + c)
     FBOFFSET [ebp + 11], [ebp + 10]
     mov bx, [ebp + 8]
     mov [FBUFFER + eax], bx
-    popad
-    pop ebp
-    ret 4
+
+    .ret:
+        popad
+        pop ebp
+        ret 4
 
 ; paint()
 ; Pinta en la pantalla segun los valores del POS_DOCUMENT y el POS_POINTER
@@ -170,9 +186,10 @@ paint:
     push word BG.BLACK
     call clear
     REG_CLEAR
+
     cld
     cmp dword [MODE], MODE_NORMAL
-    jne not_mode_normal
+    jne .not_mode_normal
         mov edi, BAR_BOTTOM
         mov al, '-'
         stosb
@@ -212,9 +229,9 @@ paint:
         stosb
         mov al, ' '
         stosb
-    not_mode_normal:
+    .not_mode_normal:
     cmp dword [MODE], MODE_INSERTION
-    jne not_mode_insertion
+    jne .not_mode_insertion
         mov edi, BAR_BOTTOM
         mov al, '-'
         stosb
@@ -264,9 +281,9 @@ paint:
         stosb
         mov al, ' '
         stosb
-    not_mode_insertion:
+    .not_mode_insertion:
     cmp dword [MODE], MODE_VISUAL
-    jne not_mode_visual
+    jne .not_mode_visual
         mov edi, BAR_BOTTOM
         mov al, '-'
         stosb
@@ -310,9 +327,9 @@ paint:
         stosb
         mov al, ' '
         stosb
-    not_mode_visual:
+    .not_mode_visual:
     cmp dword [MODE], MODE_VISUAL_BLOCK
-    jne not_mode_visual_block
+    jne .not_mode_visual_block
         mov edi, BAR_BOTTOM
         mov al, '-'
         stosb
@@ -368,9 +385,9 @@ paint:
         stosb
         mov al, ' '
         stosb
-    not_mode_visual_block:
+    .not_mode_visual_block:
     cmp dword [MODE], MODE_VISUAL_LINE
-    jne not_mode_visual_line
+    jne .not_mode_visual_line
         mov edi, BAR_BOTTOM
         mov al, '-'
         stosb
@@ -424,40 +441,43 @@ paint:
         stosb
         mov al, ' '
         stosb
-    not_mode_visual_line:
+    .not_mode_visual_line:
     mov esi, BAR_BOTTOM
     mov edi, FBUFFER
     add edi, 3840
     mov ecx, 80
-    paint.bottom:
+    .bottom:
         xor eax, eax
         lodsb
         or ax, FG.BRIGHT | FG.GREEN | BG.BLACK
         stosw
-        loop paint.bottom
+        loop .bottom
+
     ; Coloca el 'esi' apartir de donde se este mostrando el documento, el 'edi' al principio de la pantalla
     mov esi, START_DOCUMENT
     add esi, [POS_DOCUMENT]
     mov edi, FBUFFER
     cld
-    paint.loop:
+
+    .loop:
         xor eax, eax
         or ax, FG.BRIGHT | FG.GREEN | BG.BLACK ; Le coloca el color al caracter
         lodsb ; Carga hacia 'al' un caracter y avanza el 'esi'
         cmp al, EOF ; Comprueba si es el fin de fichero
-        jne not_eof
+        jne .not_eof
         mov al, ' ' ; Si es el fin de fichero lo remplaza con espacio en blanco
-        not_eof:
+        .not_eof:
         cmp al, EOL ; Comprueba si es el fin de linea
-        jne not_eol
+        jne .not_eol
         mov al, ' ' ; Si es el fin de linea lo remplaza con espacio en blanco
-        not_eol:
+        .not_eol:
         cmp ebx, 1920 ; Comprueba si no se ha llegado al final de la pantalla
-        je paint.ret ; Retorna porque se llego al final de la pantalla
+        je .ret ; Retorna porque se llego al final de la pantalla
         stosw ; Coloca en la pantalla el caracter con el color y mueve el 'edi'
         inc ebx ; Incrementa la posicion donde se esta pintando
-        jmp paint.loop
-    paint.ret:
+        jmp .loop
+
+    .ret:
         call paint_select
         popad
         ret
