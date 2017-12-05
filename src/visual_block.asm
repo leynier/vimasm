@@ -7,6 +7,10 @@ section .text
 
 extern KEY
 extern MODE
+extern POS_POINTER
+extern POS_SELECT
+extern START_DOCUMENT
+extern POS_DOCUMENT
 extern TOGGLE_CTRL
 extern TOGGLE_SHIFT
 
@@ -25,6 +29,9 @@ extern void
 global visual_block
 visual_block:
     pushad
+    add eax, [POS_DOCUMENT]
+    add eax, [POS_POINTER]
+    mov [POS_SELECT], eax
 
     .loop:
         mov dword [MODE], MODE_VISUAL_BLOCK

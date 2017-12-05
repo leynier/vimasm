@@ -48,11 +48,100 @@ paint_select:
     BIND [MODE], MODE_INSERTION, paint_cursor
     BIND [MODE], MODE_VISUAL, paint_visual
     BIND [MODE], MODE_VISUAL_LINE, paint_visual_line
-    BIND [MODE], MODE_VISUAL_BLOCK, paint_cursor
+    BIND [MODE], MODE_VISUAL_BLOCK, paint_visual_block
     BIND [MODE], MODE_REPLACE, paint_cursor
 
     popad
     ret
+
+; paint_visual_block()
+; Pinta la seleccion del modo visual block
+global paint_visual_block
+paint_visual_block:
+    pushad
+    REG_CLEAR
+
+    mov eax, [POS_SELECT]
+    mov ebx, [POS_DOCUMENT]
+
+    .loop1:
+    cmp eax, ebx
+    jge .not_less
+        add eax, 80
+        jmp .loop1
+    .not_less:
+        add ebx, 1920
+        .loop2:
+        cmp eax, ebx
+        jl .continue
+        sub eax, 80
+        jmp .loop2
+    .continue:
+        sub eax, [POS_DOCUMENT]
+        mov ebx, [POS_POINTER]
+
+        cmp eax, ebx
+        jle .not_swap
+            mov ecx, eax
+            mov eax, ebx
+            mov ebx, ecx
+        .not_swap:
+
+        push eax
+        push ebx
+
+        mov esi, eax
+        mov edi, ebx
+
+        mov ebx, 80
+
+        xor edx, edx
+        mov eax, esi
+        div ebx
+        mov esi, edx
+
+        xor edx, edx
+        mov eax, edi
+        div ebx
+        mov edi, edx
+
+        pop ebx
+        pop eax
+
+        cmp esi, edi
+        jle .not_swap2
+            mov ecx, esi
+            mov esi, edi
+            mov edi, ecx
+            mov ecx, edi
+            sub ecx, esi
+            sub eax, ecx
+            add ebx, ecx
+        .not_swap2:
+
+        mov ecx, edi
+        sub ecx, esi
+
+        sub eax, 80
+        sub ebx, ecx
+        inc ecx
+        .start_loop:
+            add eax, 80
+            push eax
+            push ecx
+            .main_loop:
+                push eax
+                call paint_pointer
+                inc eax
+                loop .main_loop
+            pop ecx
+            pop eax
+            cmp eax, ebx
+            jl .start_loop
+        
+    .ret:
+        popad
+        ret
 
 ; paint_visual_line()
 ; Pinta la seleccion del modo visual line
@@ -61,7 +150,7 @@ paint_visual_line:
     pushad
     REG_CLEAR
 
-    add eax, [POS_DOCUMENT]
+    mov eax, [POS_DOCUMENT]
     mov ebx, eax
     add eax, [POS_POINTER]
     ; Coloco en 'eax' la posicion de puntero con respecto a principio del documento
@@ -164,7 +253,7 @@ paint_visual:
     pushad
     REG_CLEAR
 
-    add eax, [POS_DOCUMENT]
+    mov eax, [POS_DOCUMENT]
     mov ebx, eax
     add eax, [POS_POINTER]
     ; Coloco en 'eax' la posicion de puntero con respecto a principio del documento
