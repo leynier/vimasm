@@ -360,24 +360,6 @@ clear:
         pop ebp
         ret 2
 
-; putc(word col|row, word chr|color)
-; Pinta en una posicion de la pantalla un caracter del color deseado
-global putc
-putc:
-    push ebp
-    mov ebp, esp
-    pushad
-
-    ; calc famebuffer offset 2 * (r * COLS + c)
-    FBOFFSET [ebp + 11], [ebp + 10]
-    mov bx, [ebp + 8]
-    mov [FBUFFER + eax], bx
-
-    .ret:
-        popad
-        pop ebp
-        ret 4
-
 ; paint()
 ; Pinta en la pantalla segun los valores del POS_DOCUMENT y el POS_POINTER
 global paint
