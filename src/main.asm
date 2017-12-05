@@ -46,11 +46,29 @@ MODE dd 0
 
 ; Array que contiene la informacion que se encuentra en la ultima linea
 global BAR_BOTTOM
-BAR_BOTTOM times 80 db 0
+BAR_BOTTOM dd NORMAL_MSG
 
 ; Texto de bienvenida
 global WELCOME_MSG
 WELCOME_MSG db "  ____________________________________________________________________________   |                                                                            |  |                           WELCOME TO VIMASM v1.0                           |  |                                                                            |  |                          Project of PM1 2017-2018                          |  |                                                                            |  |                                                                            |  |                                                                            |  |                                                                            |  |                                                                            |  |                                                                            |  |                                                                            |  |                              ( PRESS  ENTER )                              |  |                                                                            |  |                                                                            |  |                                                                            |  |                                                                            |  |                                                                            |  |                                                                            |  |                                                                            |  |                                                                            |  |                                                                            |  |       Developers: Paula Rodriguez Perez & Leynier Gutierrez Gonzalez       |  |____________________________________________________________________________| ", 0
+
+global NORMAL_MSG
+NORMAL_MSG db "-- NORMAL --                                                                    ", 0
+
+global INSERTION_MSG
+INSERTION_MSG db "-- INSERTION --                                                                 ", 0
+
+global REPLACE_MSG
+REPLACE_MSG db "-- REPLACE --                                                                   ", 0
+
+global VISUAL_MSG
+VISUAL_MSG db "-- VISUAL --                                                                    ", 0
+
+global VISUAL_LINE_MSG
+VISUAL_LINE_MSG db "-- VISUAL LINE --                                                               ", 0
+
+global VISUAL_BLOCK_MSG
+VISUAL_BLOCK_MSG db "-- VISUAL BLOCK --                                                              ", 0
 
 ; Array que representa el documento
 global START_DOCUMENT

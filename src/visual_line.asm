@@ -13,6 +13,8 @@ extern POS_POINTER
 extern POS_SELECT
 extern START_DOCUMENT
 extern POS_DOCUMENT
+extern BAR_BOTTOM
+extern VISUAL_LINE_MSG
 
 extern scan
 extern paint
@@ -35,6 +37,7 @@ visual_line:
 
     .loop:
         mov dword [MODE], MODE_VISUAL_LINE
+        mov dword [BAR_BOTTOM], VISUAL_LINE_MSG
         call paint
         call scan
         REG_CLEAR

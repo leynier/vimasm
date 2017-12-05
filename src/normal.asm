@@ -8,6 +8,8 @@ extern KEY
 extern MODE
 extern TOGGLE_SHIFT
 extern TOGGLE_CTRL
+extern BAR_BOTTOM
+extern NORMAL_MSG
 
 extern scan
 extern paint
@@ -32,6 +34,7 @@ normal:
 
     .loop:
         mov dword [MODE], MODE_NORMAL
+        mov dword [BAR_BOTTOM], NORMAL_MSG
         REG_CLEAR
         call paint
         call scan

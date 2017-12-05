@@ -9,6 +9,8 @@ extern KEY
 extern MODE
 extern TOGGLE_CTRL
 extern TOGGLE_SHIFT
+extern BAR_BOTTOM
+extern REPLACE_MSG
 
 extern scan
 extern paint
@@ -31,6 +33,7 @@ replace:
 
     .loop:
         mov dword [MODE], MODE_REPLACE
+        mov dword [BAR_BOTTOM], REPLACE_MSG
         call paint
         call scan
         REG_CLEAR

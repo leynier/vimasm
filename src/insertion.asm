@@ -8,6 +8,8 @@ extern KEY
 extern MODE
 extern TOGGLE_CTRL
 extern TOGGLE_SHIFT
+extern BAR_BOTTOM
+extern INSERTION_MSG
 
 extern scan
 extern paint
@@ -30,6 +32,7 @@ insertion:
 
     .loop:
         mov dword [MODE], MODE_INSERTION
+        mov dword [BAR_BOTTOM], INSERTION_MSG
         call paint
         call scan
         REG_CLEAR

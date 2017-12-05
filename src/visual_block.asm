@@ -13,6 +13,8 @@ extern START_DOCUMENT
 extern POS_DOCUMENT
 extern TOGGLE_CTRL
 extern TOGGLE_SHIFT
+extern BAR_BOTTOM
+extern VISUAL_BLOCK_MSG
 
 extern scan
 extern paint
@@ -35,6 +37,7 @@ visual_block:
 
     .loop:
         mov dword [MODE], MODE_VISUAL_BLOCK
+        mov dword [BAR_BOTTOM], VISUAL_BLOCK_MSG
         call paint
         call scan
         REG_CLEAR
