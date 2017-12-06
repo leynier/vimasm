@@ -10,6 +10,7 @@ extern TOGGLE_SHIFT
 extern TOGGLE_CTRL
 extern BAR_BOTTOM
 extern NORMAL_MSG
+extern TIMER
 
 extern scan
 extern paint
@@ -31,6 +32,10 @@ extern void
 global normal
 normal:
     pushad
+
+    rdtsc
+    mov [TIMER], eax
+    mov [TIMER + 4], edx
 
     .loop:
         mov dword [MODE], MODE_NORMAL

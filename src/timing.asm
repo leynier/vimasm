@@ -185,7 +185,7 @@ interval:
         pop ebx
         mov esp, ebp
         pop ebp
-        ret
+        ret 8
 
 ; delay(dword timer, dword ms)
 ; Return non-zero if at least ms milliseconds have elapsed since the first call

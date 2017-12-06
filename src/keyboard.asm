@@ -12,10 +12,13 @@ extern ASCII_NORMAL
 extern ASCII_EXTRA
 extern ASCII_CODE
 extern KEY
+extern TIMER
 
 extern traslate
 extern move_cursor
 extern fix_eol
+extern interval
+extern paint_cursor
 
 ; end_line()
 ; Metodo que cumple la funcion de fin de linea con el ENTER
@@ -219,6 +222,19 @@ global scan
 scan:
     push eax
     .loop:
+        cmp dword [TIMER], 0
+        jne .blinking
+        cmp dword [TIMER + 4], 0
+        jne .blinking
+        jmp .not_blinking
+        .blinking:
+        push dword 500
+        push dword TIMER
+        call interval
+        cmp eax, 0
+        je .not_blinking
+        call paint_cursor
+        .not_blinking:
         xor eax, eax
         in al, 0x64
         test al, 1

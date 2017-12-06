@@ -48,6 +48,9 @@ MODE dd 0
 global BAR_BOTTOM
 BAR_BOTTOM dd NORMAL_MSG
 
+global TIMER
+TIMER dd 0, 0
+
 ; Texto de bienvenida
 global WELCOME_MSG
 WELCOME_MSG db "  ____________________________________________________________________________   |                                                                            |  |                           WELCOME TO VIMASM v1.0                           |  |                                                                            |  |                          Project of PM1 2017-2018                          |  |                                                                            |  |                                                                            |  |                                                                            |  |                                                                            |  |                                                                            |  |                                                                            |  |                                                                            |  |                              ( PRESS  ENTER )                              |  |                                                                            |  |                                                                            |  |                                                                            |  |                                                                            |  |                                                                            |  |                                                                            |  |                                                                            |  |                                                                            |  |                                                                            |  |       Developers: Paula Rodriguez Perez & Leynier Gutierrez Gonzalez       |  |____________________________________________________________________________| ", 0
@@ -97,12 +100,15 @@ main:
 
     ; Calibrate the timing
     call calibrate
-
+    
     mov byte [START_DOCUMENT], EOF
 
     .loop:
         mov dword [MODE], MODE_START
         REG_CLEAR
+
+        mov dword [TIMER], 0
+        mov dword [TIMER + 4], 0
 
         call paint_start
         call scan
