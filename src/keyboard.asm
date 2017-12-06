@@ -216,7 +216,7 @@ ctrl_up:
     mov dword [TOGGLE_CTRL], 0
     ret
 
-; scan()
+; scan()        
 ; Espera hasta que se presione una tecla y la guarda en KEY
 global scan
 scan:

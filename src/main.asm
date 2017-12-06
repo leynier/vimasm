@@ -87,6 +87,7 @@ extern shift_down
 extern shift_up
 extern ctrl_down
 extern ctrl_up
+extern reset_doc
 
 global main
 main:
@@ -104,6 +105,8 @@ main:
     mov byte [START_DOCUMENT], EOF
 
     .loop:
+        call reset_doc
+        
         mov dword [MODE], MODE_START
         REG_CLEAR
 

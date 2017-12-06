@@ -10,6 +10,9 @@ extern ASCII_NORMAL
 extern ASCII_EXTRA
 extern ASCII_CODE
 extern KEY
+extern TOGGLE_SHIFT
+extern TOGGLE_CTRL
+extern POS_SELECT
 
 extern move_cursor_right
 
@@ -266,4 +269,25 @@ traslate:
 
 global void
 void:
+    ret
+
+global reset_doc
+reset_doc:
+    pushad 
+    REG_CLEAR
+    .ciclo:
+    cmp byte [START_DOCUMENT + ecx], EOF
+    je .end
+    mov byte [START_DOCUMENT + ecx], 0
+    inc ecx
+    jmp .ciclo
+    .end:
+    mov byte [START_DOCUMENT + ecx], 0
+    popad
+    mov byte [START_DOCUMENT], EOF
+    mov dword [TOGGLE_CTRL], 0
+    mov dword [TOGGLE_SHIFT], 0
+    mov dword [POS_DOCUMENT], 0
+    mov dword [POS_POINTER], 0
+    mov dword [POS_SELECT], 0
     ret
