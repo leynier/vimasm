@@ -32,10 +32,11 @@
 %endmacro
 
 ; Bind a key to a procedure
-%macro BIND 3
+%macro BIND 4
     cmp dword %1, %2
     jne %%next
     call %3
+    jmp %4
     %%next:
 %endmacro
 

@@ -50,15 +50,16 @@ paint_select:
     pushad
     REG_CLEAR
 
-    BIND [MODE], MODE_NORMAL, paint_cursor
-    BIND [MODE], MODE_INSERTION, paint_cursor
-    BIND [MODE], MODE_VISUAL, paint_visual
-    BIND [MODE], MODE_VISUAL_LINE, paint_visual_line
-    BIND [MODE], MODE_VISUAL_BLOCK, paint_visual_block
-    BIND [MODE], MODE_REPLACE, paint_cursor
+    BIND [MODE], MODE_NORMAL, paint_cursor, .ret
+    BIND [MODE], MODE_INSERTION, paint_cursor, .ret
+    BIND [MODE], MODE_VISUAL, paint_visual, .ret
+    BIND [MODE], MODE_VISUAL_LINE, paint_visual_line, .ret
+    BIND [MODE], MODE_VISUAL_BLOCK, paint_visual_block, .ret
+    BIND [MODE], MODE_REPLACE, paint_cursor, .ret
 
-    popad
-    ret
+    .ret:
+        popad
+        ret
 
 ; paint_visual_block()
 ; Pinta la seleccion del modo visual block
