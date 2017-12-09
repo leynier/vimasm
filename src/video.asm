@@ -73,14 +73,14 @@ paint_visual_block:
     .loop1:
     cmp eax, ebx
     jge .not_less
-        add eax, 80
+        add eax, COLS
         jmp .loop1
     .not_less:
-        add ebx, 1920
+        add ebx, SCREEN_LEN
         .loop2:
         cmp eax, ebx
         jl .continue
-        sub eax, 80
+        sub eax, COLS
         jmp .loop2
     .continue:
         sub eax, [POS_DOCUMENT]
@@ -99,7 +99,7 @@ paint_visual_block:
         mov esi, eax
         mov edi, ebx
 
-        mov ebx, 80
+        mov ebx, COLS
 
         xor edx, edx
         mov eax, esi
@@ -128,11 +128,11 @@ paint_visual_block:
         mov ecx, edi
         sub ecx, esi
 
-        sub eax, 80
+        sub eax, COLS
         sub ebx, ecx
         inc ecx
         .start_loop:
-            add eax, 80
+            add eax, COLS
             push eax
             push ecx
             .main_loop:
@@ -163,7 +163,7 @@ paint_visual_line:
 
     cmp [POS_SELECT], eax ; Comparo si el cursor de seleccion esta por la derecha o izquierda
     jl .less
-        add ebx, 1920
+        add ebx, SCREEN_LEN
         cmp [POS_SELECT], ebx ; Comparo si el cursor de seleccion esta por fuera de la pantalla
         jnge .notgreat
         mov ecx, ebx
@@ -173,7 +173,7 @@ paint_visual_line:
         push eax
         push ebx
         push edx
-        mov ebx, 80
+        mov ebx, COLS
         mov eax, ecx
         div ebx
         sub ebx, edx
@@ -186,7 +186,7 @@ paint_visual_line:
         push ecx
         push edx
         mov ebx, eax
-        mov ecx, 80
+        mov ecx, COLS
         div ecx
         sub ebx, edx
         mov eax, ebx
@@ -194,7 +194,7 @@ paint_visual_line:
         pop ecx
         pop ebx
         sub ecx, eax
-        sub ebx, 1920
+        sub ebx, SCREEN_LEN
         sub eax, ebx
         ; En 'ecx' queda la cantidad de posiciones que hay que resaltar
         ; En 'eax' queda la posicion inicial que se ira aumentando en el loop
@@ -214,7 +214,7 @@ paint_visual_line:
         push eax
         push ebx
         push edx
-        mov ebx, 80
+        mov ebx, COLS
         mov eax, ecx
         div ebx
         sub ecx, edx
@@ -226,7 +226,7 @@ paint_visual_line:
         push ecx
         push edx
         mov ebx, eax
-        mov ecx, 80
+        mov ecx, COLS
         div ecx
         sub ecx, edx
         add ebx, ecx
@@ -266,7 +266,7 @@ paint_visual:
 
     cmp [POS_SELECT], eax ; Comparo si el cursor de seleccion esta por la derecha o izquierda
     jl .less
-        add ebx, 1920
+        add ebx, SCREEN_LEN
         cmp [POS_SELECT], ebx ; Comparo si el cursor de seleccion esta por fuera de la pantalla
         jnge .notgreat
         mov ecx, ebx
@@ -373,8 +373,8 @@ paint:
     cld
     mov esi, [BAR_BOTTOM]
     mov edi, FBUFFER
-    add edi, 3840
-    mov ecx, 80
+    add edi, SCREEN_LEN2
+    mov ecx, COLS
     .bottom:
         xor eax, eax
         lodsb
@@ -400,7 +400,7 @@ paint:
         jne .not_eol
         mov al, ' ' ; Si es el fin de linea lo remplaza con espacio en blanco
         .not_eol:
-        cmp ebx, 1920 ; Comprueba si no se ha llegado al final de la pantalla
+        cmp ebx, SCREEN_LEN ; Comprueba si no se ha llegado al final de la pantalla
         je .ret ; Retorna porque se llego al final de la pantalla
         stosw ; Coloca en la pantalla el caracter con el color y mueve el 'edi'
         inc ebx ; Incrementa la posicion donde se esta pintando

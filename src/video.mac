@@ -17,9 +17,13 @@
 %endmacro
 
 %define COLS 80
+%define COLSN -80
 %define ROWS 25
-%define COLS2 80
+%define ROWSN -25
 %define ROWS2 24
+%define ROWS2N -24
+%define SCREEN_LEN 1920
+%define SCREEN_LEN2 3840
 
 %define FG.BLACK   0 << 8
 %define FG.BLUE    1 << 8

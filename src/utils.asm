@@ -1,5 +1,6 @@
 %include "utils.mac"
 %include "keyboard.mac"
+%include "video.mac"
 
 section .text
 
@@ -36,7 +37,7 @@ fix_eol:
             push eax
             xor ecx, ecx
             xor edx, edx
-            mov ebx, 80
+            mov ebx, COLS
             div ebx
             sub ebx, edx
             pop eax
@@ -156,33 +157,33 @@ move_cursor:
     cmp dword [POS_POINTER], 0
     jge .not_pos_pointer_less
         ; Como el cursor se volvio negativo hay que bajar el texto
-        sub dword [POS_DOCUMENT], 80
+        sub dword [POS_DOCUMENT], COLS
         cmp dword [POS_DOCUMENT], 0
         jge .not_pos_document_less
             ; El texto no puede bajar mas, ya se llego al principio
-            add dword [POS_DOCUMENT], 80
+            add dword [POS_DOCUMENT], COLS
             sub [POS_POINTER], eax
             jmp .ret
         .not_pos_document_less:
             ; Muevo el cursor hacia abajo, para que quede en la misma posicion
-            push dword 80
+            push dword COLS
             call move_cursor
             jmp .ret
     .not_pos_pointer_less:
 
-    cmp dword [POS_POINTER], 1920
+    cmp dword [POS_POINTER], SCREEN_LEN
     jl .not_pos_pointer_greater
         ; Como el cursor se salio de la pantalla hay que subir el texto
-        add dword [POS_DOCUMENT], 80
+        add dword [POS_DOCUMENT], COLS
         cmp dword [POS_DOCUMENT], DOCUMENT_LEN
         jl .not_pos_document_greater
             ; El texto no puede subir mas, ya se llego al final
-            sub dword [POS_DOCUMENT], 80
+            sub dword [POS_DOCUMENT], COLS
             sub [POS_POINTER], eax
             jmp .ret
         .not_pos_document_greater:
             ; Muevo el cursor hacia arriba, para que quede en la misma posicion
-            push dword -80
+            push dword COLSN
             call move_cursor
             jmp .ret
     .not_pos_pointer_greater:

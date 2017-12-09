@@ -1,5 +1,6 @@
 %include "utils.mac"
 %include "keyboard.mac"
+%include "video.mac"
 
 section .text
 
@@ -28,7 +29,7 @@ end_line:
     REG_CLEAR
 
     mov eax, [POS_POINTER]
-    mov ebx, 80
+    mov ebx, COLS
     div ebx
     sub ebx, edx
     ; En 'ebx' esta la cantidad de posicion para llegar al final de linea
@@ -145,7 +146,7 @@ move_cursor_right:
 global move_cursor_down
 move_cursor_down:
     pushad
-    push 80
+    push COLS
     call move_cursor
 
     .loop:
@@ -168,7 +169,7 @@ move_cursor_down:
 global move_cursor_up
 move_cursor_up:
     pushad
-    push -80
+    push COLSN
     call move_cursor
 
     .loop:

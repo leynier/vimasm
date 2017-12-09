@@ -1,5 +1,3 @@
-;shift v
-%include "video.mac"
 %include "keyboard.mac"
 %include "utils.mac"
 
