@@ -13,6 +13,7 @@ extern KEY
 extern TOGGLE_SHIFT
 extern TOGGLE_CTRL
 extern POS_SELECT
+extern TOGGLE_CAPS
 
 extern move_cursor_right
 
@@ -71,13 +72,37 @@ re_write:
     pushad
 
     REG_CLEAR
+    
+    cmp dword [TOGGLE_CAPS], 1
+    jne .seguir
+    mov dword [ASCII_CODE], ASCII_EXTRA
+    cmp dword [TOGGLE_SHIFT], 1
+    jne .seguir
+    mov dword [ASCII_CODE], ASCII_NORMAL
+
+    .seguir:
 
     ; Comprueba si la tecla es de escritura
     IN_RANGE [KEY], KEY.ONE.DOWN, KEY.EQUAL.DOWN
-    IN_RANGE [KEY], KEY.Q.DOWN, KEY.BRACECLOSE.DOWN
-    IN_RANGE [KEY], KEY.A.DOWN, KEY.ACCENTLOW.DOWN
-    IN_RANGE [KEY], KEY.BACKSLASH.DOWN, KEY.SLASH.DOWN
+    IN_RANGE [KEY], KEY.BACKSLASH.DOWN, KEY.BACKSLASH.DOWN
     IN_RANGE [KEY], KEY.SPACE.DOWN, KEY.SPACE.DOWN
+    IN_RANGE [KEY], KEY.BRACEOPEN.DOWN, KEY.BRACECLOSE.DOWN
+    IN_RANGE [KEY], KEY.SEMICOLON.DOWN, KEY.ACCENTLOW.DOWN
+    IN_RANGE [KEY],KEY.COMMA.DOWN, KEY.SLASH.DOWN
+    cmp eax, 1
+    jne .seguir1
+    cmp dword [TOGGLE_CAPS], 1
+    jne .seguir1
+    mov dword [ASCII_CODE], ASCII_NORMAL
+    cmp dword [TOGGLE_SHIFT], 1
+    jne .seguir1
+    mov dword [ASCII_CODE], ASCII_EXTRA
+    
+    .seguir1:
+    
+    IN_RANGE [KEY], KEY.Q.DOWN, KEY.P.DOWN
+    IN_RANGE [KEY], KEY.A.DOWN, KEY.L.DOWN
+    IN_RANGE [KEY], KEY.Z.DOWN, KEY.M.DOWN
 
     cmp eax, 0
     je .ret ; Si no termina el metodo
@@ -113,12 +138,36 @@ write:
 
     REG_CLEAR
 
+    cmp dword [TOGGLE_CAPS], 1
+    jne .seguir
+    mov dword [ASCII_CODE], ASCII_EXTRA
+    cmp dword [TOGGLE_SHIFT], 1
+    jne .seguir
+    mov dword [ASCII_CODE], ASCII_NORMAL
+
+    .seguir:
+
     ; Comprueba si la tecla es de escritura
     IN_RANGE [KEY], KEY.ONE.DOWN, KEY.EQUAL.DOWN
-    IN_RANGE [KEY], KEY.Q.DOWN, KEY.BRACECLOSE.DOWN
-    IN_RANGE [KEY], KEY.A.DOWN, KEY.ACCENTLOW.DOWN
-    IN_RANGE [KEY], KEY.BACKSLASH.DOWN, KEY.SLASH.DOWN
+    IN_RANGE [KEY], KEY.BACKSLASH.DOWN, KEY.BACKSLASH.DOWN
     IN_RANGE [KEY], KEY.SPACE.DOWN, KEY.SPACE.DOWN
+    IN_RANGE [KEY], KEY.BRACEOPEN.DOWN, KEY.BRACECLOSE.DOWN
+    IN_RANGE [KEY], KEY.SEMICOLON.DOWN, KEY.ACCENTLOW.DOWN
+    IN_RANGE [KEY],KEY.COMMA.DOWN, KEY.SLASH.DOWN
+    cmp eax, 1
+    jne .seguir1
+    cmp dword [TOGGLE_CAPS], 1
+    jne .seguir1
+    mov dword [ASCII_CODE], ASCII_NORMAL
+    cmp dword [TOGGLE_SHIFT], 1
+    jne .seguir1
+    mov dword [ASCII_CODE], ASCII_EXTRA
+    
+    .seguir1:
+    
+    IN_RANGE [KEY], KEY.Q.DOWN, KEY.P.DOWN
+    IN_RANGE [KEY], KEY.A.DOWN, KEY.L.DOWN
+    IN_RANGE [KEY], KEY.Z.DOWN, KEY.M.DOWN
 
     cmp eax, 0
     je .ret ; Si no termina el metodo

@@ -11,6 +11,7 @@ extern TOGGLE_CTRL
 extern BAR_BOTTOM
 extern NORMAL_MSG
 extern TIMER
+extern TOGGLE_CAPS
 
 extern scan
 extern paint
@@ -28,6 +29,7 @@ extern move_cursor_right
 extern move_cursor_down
 extern move_cursor_up
 extern void
+extern caps_down
 
 global normal
 normal:
@@ -44,6 +46,8 @@ normal:
         call paint
         call scan
 
+        BIND [KEY], KEY.CAPS.DOWN, caps_down
+
         ; Comprueba el control
         BIND_NORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.CTRL.DOWN, ctrl_down, .loop
         BIND_CTRL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.CTRL.UP, ctrl_up, .loop
@@ -55,9 +59,11 @@ normal:
         BIND_SHIFT [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.RIGHTSHIFT.UP, shift_up, .loop
 
         ; Comprueba la combinacion con 'V' para entrar a los modos visuales
-        BIND_NORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.V.DOWN, visual, .loop
+        BIND_CAPS [KEY], [TOGGLE_CAPS], [TOGGLE_SHIFT], KEY.V.DOWN, visual, .loop
         BIND_CTRL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.V.DOWN, visual_block, .loop
         BIND_SHIFT [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.V.DOWN, visual_line, .loop
+        BIND_SHIFT [KEY], [TOGGLE_SHIFT], [TOGGLE_CAPS], KEY.V.DOWN, visual_line, .loop
+        BIND_NORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.V.DOWN, visual, .loop
 
         ; Comprueba las teclas de direccion
         BIND_NORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.LEFT.DOWN, move_cursor_left, .loop
@@ -76,6 +82,7 @@ normal:
 
         ; Comprueba si es el Shift-R para el modo remplazar
         BIND_SHIFT [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.R.DOWN, replace, .loop
+        BIND_SHIFT [KEY], [TOGGLE_SHIFT], [TOGGLE_CAPS], KEY.R.DOWN, replace, .loop
 
         ; Comprueba si es el CTRL-C para retornar
         BIND_CTRL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.C.DOWN, void, .ret

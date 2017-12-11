@@ -26,6 +26,7 @@ extern erase
 extern end_line
 extern re_write
 extern void
+extern caps_down
 
 global replace
 replace:
@@ -37,6 +38,8 @@ replace:
         call paint
         call scan
         REG_CLEAR
+
+        BIND [KEY], KEY.CAPS.DOWN, caps_down
 
         ; Comprueba el ESC
         BIND_NORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.ESC.DOWN, void, .ret
