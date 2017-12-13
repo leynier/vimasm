@@ -27,6 +27,7 @@ extern move_cursor_right
 extern move_cursor_down
 extern move_cursor_up
 extern void
+extern paste_select
 
 global normal
 normal:
@@ -78,6 +79,8 @@ normal:
 
         ; Comprueba si es el CTRL-C para retornar
         BIND_CTRL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.C.DOWN, void, .ret
+
+        BIND_NORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.P.DOWN, paste_select, .loop
 
         jmp .loop
 

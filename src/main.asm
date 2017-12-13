@@ -72,6 +72,15 @@ VISUAL_LINE_MSG db "-- VISUAL LINE --                                           
 global VISUAL_BLOCK_MSG
 VISUAL_BLOCK_MSG db "-- VISUAL BLOCK --                                                              ", 0
 
+global MODE_COPY
+MODE_COPY dd 0
+
+global COPY_DOCUMENT
+COPY_DOCUMENT times DOCUMENT_LEN db 0
+
+global LEN_COPY
+LEN_COPY dd 0
+
 ; Array que representa el documento
 global START_DOCUMENT
 START_DOCUMENT times DOCUMENT_LEN db 0

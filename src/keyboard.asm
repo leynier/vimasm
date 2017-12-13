@@ -7,6 +7,7 @@ section .text
 extern START_DOCUMENT
 extern POS_DOCUMENT
 extern POS_POINTER
+extern POS_SELECT
 extern TOGGLE_SHIFT
 extern TOGGLE_CTRL
 extern ASCII_NORMAL
@@ -14,12 +15,114 @@ extern ASCII_EXTRA
 extern ASCII_CODE
 extern KEY
 extern TIMER
+extern MODE_COPY
+extern COPY_DOCUMENT
+extern LEN_COPY
+extern MODE
 
 extern traslate
 extern move_cursor
 extern fix_eol
 extern interval
 extern paint_cursor
+
+global paste_select
+paste_select:
+    pushad
+    REG_CLEAR
+
+    BIND [MODE_COPY], MODE_VISUAL, paste, .ret
+
+    .ret:
+        popad
+        ret
+
+global paste
+paste:
+    pushad
+    REG_CLEAR
+
+    mov ecx, [POS_DOCUMENT]
+    add ecx, [POS_POINTER]
+
+    mov ebx, [LEN_COPY]
+    inc ebx
+
+    push ecx
+    push ebx
+    call traslate
+
+    mov esi, COPY_DOCUMENT
+    mov edi, START_DOCUMENT
+    add edi, ecx
+
+    mov ecx, [LEN_COPY]
+    inc ecx
+
+    .loop:
+        movsb
+        loop .loop
+
+    call fix_eol
+
+    .ret:
+        popad
+        ret
+
+global copy_select
+copy_select:
+    pushad
+    REG_CLEAR
+
+    BIND [MODE], MODE_VISUAL, copy, .ret
+
+    .ret:
+        popad
+        ret
+
+global copy
+copy:
+    pushad
+    REG_CLEAR
+
+    mov esi, START_DOCUMENT
+    mov edi, COPY_DOCUMENT
+
+    mov dword [MODE_COPY], MODE_VISUAL
+
+    mov ebx, [POS_DOCUMENT]
+    add ebx, [POS_POINTER]
+
+    cmp [POS_SELECT], ebx
+    jg .great
+        mov eax, ebx
+        sub eax, [POS_SELECT]
+        add esi, [POS_SELECT]
+        jmp .continue
+    .great:
+        mov eax, [POS_SELECT]
+        sub eax, ebx
+        add esi, ebx
+    .continue:
+        mov [LEN_COPY], eax
+
+    mov ecx, [LEN_COPY]
+    inc ecx
+
+    .loop:
+        movsb
+        loop .loop
+
+    mov ecx, COPY_DOCUMENT
+    add ecx, [LEN_COPY]
+    cmp byte [ecx], EOF
+    jne .not_equal
+        mov byte [ecx], ' '
+    .not_equal:
+
+    .ret:
+        popad
+        ret
 
 ; end_line()
 ; Metodo que cumple la funcion de fin de linea con el ENTER
