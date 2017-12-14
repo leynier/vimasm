@@ -30,6 +30,8 @@ extern move_cursor_down
 extern move_cursor_up
 extern void
 extern caps_down
+extern jumpStart
+extern jumpEnd
 
 global normal
 normal:
@@ -83,6 +85,12 @@ normal:
         ; Comprueba si es el Shift-R para el modo remplazar
         BIND_SHIFT [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.R.DOWN, replace, .loop
         BIND_SHIFT [KEY], [TOGGLE_SHIFT], [TOGGLE_CAPS], KEY.R.DOWN, replace, .loop
+
+        ; Comprueba los saltos a comienzo del fichero y el final del fichero (g y  shift+g)
+        BIND_CAPS [KEY], [TOGGLE_CAPS], [TOGGLE_SHIFT], KEY.G.DOWN, jumpStart, .loop
+        BIND_SHIFT [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.G.DOWN, jumpEnd, .loop
+        BIND_SHIFT [KEY], [TOGGLE_SHIFT], [TOGGLE_CAPS], KEY.G.DOWN, jumpEnd, .loop
+        BIND_NORMAL [KEY],[TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.G.DOWN, jumpStart, .loop
 
         ; Comprueba si es el CTRL-C para retornar
         BIND_CTRL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.C.DOWN, void, .ret

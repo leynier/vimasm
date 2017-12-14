@@ -16,6 +16,7 @@ extern POS_SELECT
 extern TOGGLE_CAPS
 
 extern move_cursor_right
+extern move_cursor_left
 
 ; fix_eol(dword pos)
 ; Metodo que corrige todos los saltos de linea
@@ -48,7 +49,7 @@ fix_eol:
                 inc ecx
                 cmp byte [START_DOCUMENT + edx], 0
                 je .loop2
-            ; En 'ecx'esta la cantidad actual de espacio vacios
+            ; En 'ecx' esta la cantidad actual de espacio vacios
             mov byte [START_DOCUMENT + eax], 0
             mov edx, ebx
             sub edx, ecx
@@ -74,13 +75,13 @@ re_write:
     REG_CLEAR
     
     cmp dword [TOGGLE_CAPS], 1
-    jne .seguir
+    jne .continue
     mov dword [ASCII_CODE], ASCII_EXTRA
     cmp dword [TOGGLE_SHIFT], 1
-    jne .seguir
+    jne .continue
     mov dword [ASCII_CODE], ASCII_NORMAL
 
-    .seguir:
+    .continue:
 
     ; Comprueba si la tecla es de escritura
     IN_RANGE [KEY], KEY.ONE.DOWN, KEY.EQUAL.DOWN
@@ -89,16 +90,17 @@ re_write:
     IN_RANGE [KEY], KEY.BRACEOPEN.DOWN, KEY.BRACECLOSE.DOWN
     IN_RANGE [KEY], KEY.SEMICOLON.DOWN, KEY.ACCENTLOW.DOWN
     IN_RANGE [KEY],KEY.COMMA.DOWN, KEY.SLASH.DOWN
+   
     cmp eax, 1
-    jne .seguir1
+    jne .continue1
     cmp dword [TOGGLE_CAPS], 1
-    jne .seguir1
+    jne .continue1
     mov dword [ASCII_CODE], ASCII_NORMAL
     cmp dword [TOGGLE_SHIFT], 1
-    jne .seguir1
+    jne .continue1
     mov dword [ASCII_CODE], ASCII_EXTRA
     
-    .seguir1:
+    .continue1:
     
     IN_RANGE [KEY], KEY.Q.DOWN, KEY.P.DOWN
     IN_RANGE [KEY], KEY.A.DOWN, KEY.L.DOWN
@@ -139,13 +141,13 @@ write:
     REG_CLEAR
 
     cmp dword [TOGGLE_CAPS], 1
-    jne .seguir
+    jne .continue
     mov dword [ASCII_CODE], ASCII_EXTRA
     cmp dword [TOGGLE_SHIFT], 1
-    jne .seguir
+    jne .continue
     mov dword [ASCII_CODE], ASCII_NORMAL
 
-    .seguir:
+    .continue:
 
     ; Comprueba si la tecla es de escritura
     IN_RANGE [KEY], KEY.ONE.DOWN, KEY.EQUAL.DOWN
@@ -155,15 +157,15 @@ write:
     IN_RANGE [KEY], KEY.SEMICOLON.DOWN, KEY.ACCENTLOW.DOWN
     IN_RANGE [KEY],KEY.COMMA.DOWN, KEY.SLASH.DOWN
     cmp eax, 1
-    jne .seguir1
+    jne .continue1
     cmp dword [TOGGLE_CAPS], 1
-    jne .seguir1
+    jne .continue1
     mov dword [ASCII_CODE], ASCII_NORMAL
     cmp dword [TOGGLE_SHIFT], 1
-    jne .seguir1
+    jne .continue1
     mov dword [ASCII_CODE], ASCII_EXTRA
     
-    .seguir1:
+    .continue1:
     
     IN_RANGE [KEY], KEY.Q.DOWN, KEY.P.DOWN
     IN_RANGE [KEY], KEY.A.DOWN, KEY.L.DOWN
@@ -324,19 +326,68 @@ global reset_doc
 reset_doc:
     pushad 
     REG_CLEAR
-    .ciclo:
+   
+    .loop:
     cmp byte [START_DOCUMENT + ecx], EOF
     je .end
     mov byte [START_DOCUMENT + ecx], 0
     inc ecx
-    jmp .ciclo
+    jmp .loop
+    
     .end:
     mov byte [START_DOCUMENT + ecx], 0
-    popad
     mov byte [START_DOCUMENT], EOF
-    mov dword [TOGGLE_CTRL], 0
-    mov dword [TOGGLE_SHIFT], 0
-    mov dword [POS_DOCUMENT], 0
-    mov dword [POS_POINTER], 0
-    mov dword [POS_SELECT], 0
+    
+    popad
+    ret
+
+global jumpStart
+jumpStart:
+    pushad
+    REG_CLEAR
+
+    mov eax, -1
+    mul dword [POS_POINTER]
+    push eax
+    call move_cursor
+
+    .loop:
+    cmp dword [POS_DOCUMENT], 0
+    je .ret
+    mov ebx, -80
+    mul dword [POS_POINTER]
+    push ebx
+    call move_cursor
+    jmp .loop
+
+    .ret:
+    popad
+    ret
+
+global jumpEnd
+jumpEnd:
+    pushad
+    REG_CLEAR
+
+    .loop:
+    mov eax, START_DOCUMENT
+    add eax, [POS_DOCUMENT]
+    add eax, [POS_POINTER]
+    cmp byte [eax], EOF
+    je .loop1
+    call move_cursor_right
+    jmp .loop
+
+    .loop1:
+    mov edx, 0
+    mov eax, [POS_POINTER]
+    mov ebx, 80
+    div ebx
+    cmp edx, 0
+    je .ret
+    call move_cursor_left
+    jmp .loop1
+
+    .ret:
+    popad
     ret
