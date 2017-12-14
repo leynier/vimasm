@@ -1,9 +1,10 @@
 %include "utils.mac"
 %include "keyboard.mac"
 
-;section .data
-;global g
-;g dd 0
+section .data
+
+global g
+g dd 0
 
 section .text
 
@@ -356,13 +357,17 @@ jumpStart:
 
     mov ecx, [number]
 
-    ;cmp dword [g], 0
-    ;jne .continue
-    ;mov dword [g], 1
-    ;jmp .ret
+    cmp dword [TOGGLE_SHIFT], 1
+    je .continue
 
-    ;.continue:
-    ;mov dword [g], 0
+    cmp dword [g], 0
+    jne .continue
+    mov dword [g], 1
+    je .ret
+    .continue:
+    mov dword [g], 0
+    mov dword [TOGGLE_SHIFT], 0
+
     mov eax, -1
     mul dword [POS_POINTER]
     push eax
@@ -379,18 +384,20 @@ jumpStart:
 
     .loop1:
     cmp ecx, 1
-    jle .ret
+    jle .continue1
     mov eax, [POS_DOCUMENT]
     add eax, [POS_POINTER]
     add eax, 1
     cmp dword [START_DOCUMENT + eax], EOF
-    je .ret
+    je .continue1
     call move_cursor_down
     dec ecx
     jmp .loop1
    
-    .ret:
+    .continue1:
     mov dword [number], 0
+
+    .ret:
     popad
     ret
 
@@ -488,5 +495,31 @@ saveNumber:
 
     .ret:
     mov dword [number], ecx
+    popad
+    ret
+
+global emptyNumber
+emptyNumber:
+    pushad
+    REG_CLEAR  
+
+    IN_RANGE [KEY], KEY.ONE.DOWN, KEY.ZERO.DOWN
+    IN_RANGE [KEY], KEY.ONE.UP, KEY.ZERO.UP
+    IN_RANGE [KEY], KEY.G.DOWN, KEY.G.DOWN
+    IN_RANGE [KEY], KEY.G.UP, KEY.G.UP
+    IN_RANGE [KEY], KEY.CAPS.DOWN, KEY.CAPS.DOWN
+    IN_RANGE [KEY], KEY.CAPS.UP, KEY.CAPS.UP
+    IN_RANGE [KEY], KEY.LEFTSHIFT.DOWN, KEY.LEFTSHIFT.DOWN
+    IN_RANGE [KEY], KEY.LEFTSHIFT.UP, KEY.LEFTSHIFT.UP
+    IN_RANGE [KEY], KEY.RIGHTSHIFT.DOWN, KEY.RIGHTSHIFT.DOWN
+    IN_RANGE [KEY], KEY.RIGHTSHIFT.UP, KEY.RIGHTSHIFT.UP
+    IN_RANGE [KEY], KEY.CTRL.DOWN, KEY.CTRL.DOWN
+    IN_RANGE [KEY], KEY.CTRL.UP, KEY.CTRL.UP   
+    
+    cmp eax, 1
+    je .ret
+    mov dword [number], 0
+
+    .ret:
     popad
     ret

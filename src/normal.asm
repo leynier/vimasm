@@ -3,6 +3,7 @@
 %include "utils.mac"
 
 section .data
+
 global number
 number dd 0
 
@@ -37,6 +38,7 @@ extern caps_down
 extern jumpStart
 extern jumpEnd
 extern saveNumber
+extern emptyNumber
 
 global normal
 normal:
@@ -53,6 +55,8 @@ normal:
         call paint
         call scan
 
+        call emptyNumber
+       
         BIND [KEY], KEY.CAPS.DOWN, caps_down
 
         ; Comprueba el control
@@ -91,8 +95,13 @@ normal:
         BIND_SHIFT [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.R.DOWN, replace, .loop
         BIND_SHIFT [KEY], [TOGGLE_SHIFT], [TOGGLE_CAPS], KEY.R.DOWN, replace, .loop
 
-        ; Comprueba los saltos a comienzo del fichero y el final del fichero (g y  shift+g)
+        ; Comprueba los saltos al comienzo, a una linea especifica y al final del documento (g y  shift+g)
         BIND_CAPS [KEY], [TOGGLE_CAPS], [TOGGLE_SHIFT], KEY.G.DOWN, jumpStart, .loop
+        cmp dword [number], 0
+        je .toEnd
+        BIND_SHIFT [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.G.DOWN, jumpStart, .loop
+        BIND_SHIFT [KEY], [TOGGLE_SHIFT], [TOGGLE_CAPS], KEY.G.DOWN, jumpStart, .loop
+        .toEnd:
         BIND_SHIFT [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.G.DOWN, jumpEnd, .loop
         BIND_SHIFT [KEY], [TOGGLE_SHIFT], [TOGGLE_CAPS], KEY.G.DOWN, jumpEnd, .loop
         BIND_NORMAL [KEY],[TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.G.DOWN, jumpStart, .loop
