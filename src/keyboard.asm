@@ -32,8 +32,18 @@ paste_select:
     REG_CLEAR
 
     BIND [MODE_COPY], MODE_VISUAL, paste, .ret
+    BIND [MODE_COPY], MODE_VISUAL_LINE, paste_line, .ret
 
     .ret:
+        popad
+        ret
+
+global paste_line
+paste_line:
+    pushad
+    REG_CLEAR
+
+    .ret
         popad
         ret
 
@@ -75,6 +85,16 @@ copy_select:
     REG_CLEAR
 
     BIND [MODE], MODE_VISUAL, copy, .ret
+    BIND [MODE], MODE_VISUAL_LINE, copy_line, .ret
+
+    .ret:
+        popad
+        ret
+
+global copy_line
+copy_line:
+    pushad
+    REG_CLEAR
 
     .ret:
         popad

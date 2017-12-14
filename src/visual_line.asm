@@ -25,6 +25,7 @@ extern shift_up
 extern ctrl_down
 extern ctrl_up
 extern void
+extern copy_select
 
 global visual_line
 visual_line:
@@ -58,6 +59,8 @@ visual_line:
         BIND_NORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.RIGHT.DOWN, move_cursor_right, .loop
         BIND_NORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.UP.DOWN, move_cursor_up, .loop
         BIND_NORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.DOWN.DOWN, move_cursor_down, .loop
+
+        BIND_NORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.Y.DOWN, copy_select, .ret
 
         jmp .loop
 
