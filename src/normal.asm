@@ -2,6 +2,10 @@
 %include "keyboard.mac"
 %include "utils.mac"
 
+section .data
+global number
+number dd 0
+
 section .text
 
 extern KEY
@@ -32,6 +36,7 @@ extern void
 extern caps_down
 extern jumpStart
 extern jumpEnd
+extern saveNumber
 
 global normal
 normal:
@@ -94,6 +99,11 @@ normal:
 
         ; Comprueba si es el CTRL-C para retornar
         BIND_CTRL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.C.DOWN, void, .ret
+
+        IN_RANGE [KEY], KEY.ONE.DOWN, KEY.ZERO.DOWN
+        cmp eax, 1
+        jne .loop
+        call saveNumber
 
         jmp .loop
 

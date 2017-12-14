@@ -1,6 +1,10 @@
 %include "utils.mac"
 %include "keyboard.mac"
 
+;section .data
+;global g
+;g dd 0
+
 section .text
 
 extern START_DOCUMENT
@@ -17,6 +21,8 @@ extern TOGGLE_CAPS
 
 extern move_cursor_right
 extern move_cursor_left
+extern move_cursor_down
+extern number
 
 ; fix_eol(dword pos)
 ; Metodo que corrige todos los saltos de linea
@@ -322,6 +328,7 @@ global void
 void:
     ret
 
+; Reinicia el documento 
 global reset_doc
 reset_doc:
     pushad 
@@ -341,11 +348,21 @@ reset_doc:
     popad
     ret
 
+; El cursor se coloca en el inicio de la primera linea del documento
 global jumpStart
 jumpStart:
     pushad
     REG_CLEAR
 
+    mov ecx, [number]
+
+    ;cmp dword [g], 0
+    ;jne .continue
+    ;mov dword [g], 1
+    ;jmp .ret
+
+    ;.continue:
+    ;mov dword [g], 0
     mov eax, -1
     mul dword [POS_POINTER]
     push eax
@@ -353,17 +370,31 @@ jumpStart:
 
     .loop:
     cmp dword [POS_DOCUMENT], 0
-    je .ret
+    je .loop1
     mov ebx, -80
     mul dword [POS_POINTER]
     push ebx
     call move_cursor
     jmp .loop
 
+    .loop1:
+    cmp ecx, 1
+    jle .ret
+    mov eax, [POS_DOCUMENT]
+    add eax, [POS_POINTER]
+    add eax, 1
+    cmp dword [START_DOCUMENT + eax], EOF
+    je .ret
+    call move_cursor_down
+    dec ecx
+    jmp .loop1
+   
     .ret:
+    mov dword [number], 0
     popad
     ret
 
+; El cursor se coloca en el inicio de la ultima linea del documento
 global jumpEnd
 jumpEnd:
     pushad
@@ -389,5 +420,73 @@ jumpEnd:
     jmp .loop1
 
     .ret:
+    popad
+    ret
+
+global saveNumber
+saveNumber:
+    pushad
+    REG_CLEAR
+
+    mov eax, [number]
+    mov ecx, 10
+    mul ecx
+    mov ecx, eax
+
+    IN_RANGE [KEY], KEY.ONE.DOWN, KEY.ONE.DOWN
+    cmp eax, 1
+    jne .no1
+    add ecx, 1
+    jmp .ret
+    .no1:
+    IN_RANGE [KEY], KEY.TWO.DOWN, KEY.TWO.DOWN
+    cmp eax, 1
+    jne .no2
+    add ecx, 2
+    jmp .ret
+    .no2:
+    IN_RANGE [KEY], KEY.THREE.DOWN, KEY.THREE.DOWN
+    cmp eax, 1
+    jne .no3
+    add ecx, 3
+    jmp .ret
+    .no3:
+    IN_RANGE [KEY], KEY.FOUR.DOWN, KEY.FOUR.DOWN
+    cmp eax, 1
+    jne .no4
+    add ecx, 4
+    jmp .ret
+    .no4:
+    IN_RANGE [KEY], KEY.FIVE.DOWN, KEY.FIVE.DOWN
+    cmp eax, 1
+    jne .no5
+    add ecx, 5
+    jmp .ret
+    .no5:
+    IN_RANGE [KEY], KEY.SIX.DOWN, KEY.SIX.DOWN
+    cmp eax, 1
+    jne .no6
+    add ecx, 6
+    jmp .ret
+    .no6:
+    IN_RANGE [KEY], KEY.SEVEN.DOWN, KEY.SEVEN.DOWN
+    cmp eax, 1
+    jne .no7
+    add ecx, 7
+    jmp .ret
+    .no7:
+    IN_RANGE [KEY], KEY.EIGHT.DOWN, KEY.EIGHT.DOWN
+    cmp eax, 1
+    jne .no8
+    add ecx, 8
+    jmp .ret
+    .no8:
+    IN_RANGE [KEY], KEY.NINE.DOWN, KEY.NINE.DOWN
+    cmp eax, 1
+    jne .ret
+    add ecx, 9
+
+    .ret:
+    mov dword [number], ecx
     popad
     ret
