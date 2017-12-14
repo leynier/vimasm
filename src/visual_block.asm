@@ -25,6 +25,7 @@ extern shift_up
 extern ctrl_down
 extern ctrl_up
 extern void
+extern caps_down
 
 global visual_block
 visual_block:
@@ -42,6 +43,8 @@ visual_block:
 
         ; Comprueba el ESC
         BIND_NORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.ESC.DOWN, void, .ret
+
+        BIND [KEY], KEY.CAPS.DOWN, caps_down, .loop
 
         ; Comprueba el control
         BIND_NORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.CTRL.DOWN, ctrl_down, .loop

@@ -25,6 +25,7 @@ extern erase
 extern end_line
 extern write
 extern void
+extern caps_down
 
 global insertion
 insertion:
@@ -39,6 +40,8 @@ insertion:
 
         ; Comprueba el ESC
         BIND_NORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.ESC.DOWN, void, .ret
+
+        BIND [KEY], KEY.CAPS.DOWN, caps_down, .loop
 
         ; Comprueba las teclas de direccion
         BIND_NORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.LEFT.DOWN, move_cursor_left, .loop

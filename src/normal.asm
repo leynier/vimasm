@@ -1,6 +1,11 @@
 %include "keyboard.mac"
 %include "utils.mac"
 
+section .data
+
+global number
+number dd 0
+
 section .text
 
 extern KEY
@@ -10,6 +15,7 @@ extern TOGGLE_CTRL
 extern BAR_BOTTOM
 extern NORMAL_MSG
 extern TIMER
+extern TOGGLE_CAPS
 
 extern scan
 extern paint
@@ -28,6 +34,11 @@ extern move_cursor_down
 extern move_cursor_up
 extern void
 extern paste_select
+extern caps_down
+extern jumpStart
+extern jumpEnd
+extern saveNumber
+extern emptyNumber
 
 global normal
 normal:
@@ -44,6 +55,10 @@ normal:
         call paint
         call scan
 
+        call emptyNumber
+       
+        BIND [KEY], KEY.CAPS.DOWN, caps_down, .loop
+
         ; Comprueba el control
         BIND_NORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.CTRL.DOWN, ctrl_down, .loop
         BIND_CTRL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.CTRL.UP, ctrl_up, .loop
@@ -55,9 +70,11 @@ normal:
         BIND_SHIFT [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.RIGHTSHIFT.UP, shift_up, .loop
 
         ; Comprueba la combinacion con 'V' para entrar a los modos visuales
-        BIND_NORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.V.DOWN, visual, .loop
+        BIND_CAPS [KEY], [TOGGLE_CAPS], [TOGGLE_SHIFT], KEY.V.DOWN, visual, .loop
         BIND_CTRL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.V.DOWN, visual_block, .loop
         BIND_SHIFT [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.V.DOWN, visual_line, .loop
+        BIND_SHIFT [KEY], [TOGGLE_SHIFT], [TOGGLE_CAPS], KEY.V.DOWN, visual_line, .loop
+        BIND_NORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.V.DOWN, visual, .loop
 
         ; Comprueba las teclas de direccion
         BIND_NORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.LEFT.DOWN, move_cursor_left, .loop
@@ -76,11 +93,28 @@ normal:
 
         ; Comprueba si es el Shift-R para el modo remplazar
         BIND_SHIFT [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.R.DOWN, replace, .loop
+        BIND_SHIFT [KEY], [TOGGLE_SHIFT], [TOGGLE_CAPS], KEY.R.DOWN, replace, .loop
+
+        ; Comprueba los saltos al comienzo, a una linea especifica y al final del documento (g y  shift+g)
+        BIND_CAPS [KEY], [TOGGLE_CAPS], [TOGGLE_SHIFT], KEY.G.DOWN, jumpStart, .loop
+        cmp dword [number], 0
+        je .toEnd
+        BIND_SHIFT [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.G.DOWN, jumpStart, .loop
+        BIND_SHIFT [KEY], [TOGGLE_SHIFT], [TOGGLE_CAPS], KEY.G.DOWN, jumpStart, .loop
+        .toEnd:
+        BIND_SHIFT [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.G.DOWN, jumpEnd, .loop
+        BIND_SHIFT [KEY], [TOGGLE_SHIFT], [TOGGLE_CAPS], KEY.G.DOWN, jumpEnd, .loop
+        BIND_NORMAL [KEY],[TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.G.DOWN, jumpStart, .loop
 
         ; Comprueba si es el CTRL-C para retornar
         BIND_CTRL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.C.DOWN, void, .ret
 
         BIND_NORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.P.DOWN, paste_select, .loop
+
+        IN_RANGE [KEY], KEY.ONE.DOWN, KEY.ZERO.DOWN
+        cmp eax, 1
+        jne .loop
+        call saveNumber
 
         jmp .loop
 

@@ -19,6 +19,7 @@ extern MODE_COPY
 extern COPY_DOCUMENT
 extern LEN_COPY
 extern MODE
+extern TOGGLE_CAPS
 
 extern traslate
 extern move_cursor
@@ -338,6 +339,19 @@ ctrl_down:
 global ctrl_up
 ctrl_up:
     mov dword [TOGGLE_CTRL], 0
+    ret
+
+global caps_down
+caps_down:
+    cmp dword [TOGGLE_CAPS], 1
+    jne .activate
+    mov dword [TOGGLE_CAPS], 0
+    mov dword [ASCII_CODE], ASCII_NORMAL
+    jmp .ret
+    .activate:
+    mov dword [TOGGLE_CAPS], 1
+    mov dword [ASCII_CODE], ASCII_EXTRA
+    .ret
     ret
 
 ; scan()        

@@ -2,6 +2,11 @@
 %include "keyboard.mac"
 %include "video.mac"
 
+section .data
+
+global g
+g dd 0
+
 section .text
 
 extern START_DOCUMENT
@@ -14,8 +19,12 @@ extern KEY
 extern TOGGLE_SHIFT
 extern TOGGLE_CTRL
 extern POS_SELECT
+extern TOGGLE_CAPS
 
 extern move_cursor_right
+extern move_cursor_left
+extern move_cursor_down
+extern number
 
 ; fix_eol(dword pos)
 ; Metodo que corrige todos los saltos de linea
@@ -48,7 +57,7 @@ fix_eol:
                 inc ecx
                 cmp byte [START_DOCUMENT + edx], 0
                 je .loop2
-            ; En 'ecx'esta la cantidad actual de espacio vacios
+            ; En 'ecx' esta la cantidad actual de espacio vacios
             mov byte [START_DOCUMENT + eax], 0
             mov edx, ebx
             sub edx, ecx
@@ -72,13 +81,38 @@ re_write:
     pushad
 
     REG_CLEAR
+    
+    cmp dword [TOGGLE_CAPS], 1
+    jne .continue
+    mov dword [ASCII_CODE], ASCII_EXTRA
+    cmp dword [TOGGLE_SHIFT], 1
+    jne .continue
+    mov dword [ASCII_CODE], ASCII_NORMAL
+
+    .continue:
 
     ; Comprueba si la tecla es de escritura
     IN_RANGE [KEY], KEY.ONE.DOWN, KEY.EQUAL.DOWN
-    IN_RANGE [KEY], KEY.Q.DOWN, KEY.BRACECLOSE.DOWN
-    IN_RANGE [KEY], KEY.A.DOWN, KEY.ACCENTLOW.DOWN
-    IN_RANGE [KEY], KEY.BACKSLASH.DOWN, KEY.SLASH.DOWN
+    IN_RANGE [KEY], KEY.BACKSLASH.DOWN, KEY.BACKSLASH.DOWN
     IN_RANGE [KEY], KEY.SPACE.DOWN, KEY.SPACE.DOWN
+    IN_RANGE [KEY], KEY.BRACEOPEN.DOWN, KEY.BRACECLOSE.DOWN
+    IN_RANGE [KEY], KEY.SEMICOLON.DOWN, KEY.ACCENTLOW.DOWN
+    IN_RANGE [KEY],KEY.COMMA.DOWN, KEY.SLASH.DOWN
+   
+    cmp eax, 1
+    jne .continue1
+    cmp dword [TOGGLE_CAPS], 1
+    jne .continue1
+    mov dword [ASCII_CODE], ASCII_NORMAL
+    cmp dword [TOGGLE_SHIFT], 1
+    jne .continue1
+    mov dword [ASCII_CODE], ASCII_EXTRA
+    
+    .continue1:
+    
+    IN_RANGE [KEY], KEY.Q.DOWN, KEY.P.DOWN
+    IN_RANGE [KEY], KEY.A.DOWN, KEY.L.DOWN
+    IN_RANGE [KEY], KEY.Z.DOWN, KEY.M.DOWN
 
     cmp eax, 0
     je .ret ; Si no termina el metodo
@@ -114,12 +148,36 @@ write:
 
     REG_CLEAR
 
+    cmp dword [TOGGLE_CAPS], 1
+    jne .continue
+    mov dword [ASCII_CODE], ASCII_EXTRA
+    cmp dword [TOGGLE_SHIFT], 1
+    jne .continue
+    mov dword [ASCII_CODE], ASCII_NORMAL
+
+    .continue:
+
     ; Comprueba si la tecla es de escritura
     IN_RANGE [KEY], KEY.ONE.DOWN, KEY.EQUAL.DOWN
-    IN_RANGE [KEY], KEY.Q.DOWN, KEY.BRACECLOSE.DOWN
-    IN_RANGE [KEY], KEY.A.DOWN, KEY.ACCENTLOW.DOWN
-    IN_RANGE [KEY], KEY.BACKSLASH.DOWN, KEY.SLASH.DOWN
+    IN_RANGE [KEY], KEY.BACKSLASH.DOWN, KEY.BACKSLASH.DOWN
     IN_RANGE [KEY], KEY.SPACE.DOWN, KEY.SPACE.DOWN
+    IN_RANGE [KEY], KEY.BRACEOPEN.DOWN, KEY.BRACECLOSE.DOWN
+    IN_RANGE [KEY], KEY.SEMICOLON.DOWN, KEY.ACCENTLOW.DOWN
+    IN_RANGE [KEY],KEY.COMMA.DOWN, KEY.SLASH.DOWN
+    cmp eax, 1
+    jne .continue1
+    cmp dword [TOGGLE_CAPS], 1
+    jne .continue1
+    mov dword [ASCII_CODE], ASCII_NORMAL
+    cmp dword [TOGGLE_SHIFT], 1
+    jne .continue1
+    mov dword [ASCII_CODE], ASCII_EXTRA
+    
+    .continue1:
+    
+    IN_RANGE [KEY], KEY.Q.DOWN, KEY.P.DOWN
+    IN_RANGE [KEY], KEY.A.DOWN, KEY.L.DOWN
+    IN_RANGE [KEY], KEY.Z.DOWN, KEY.M.DOWN
 
     cmp eax, 0
     je .ret ; Si no termina el metodo
@@ -272,23 +330,197 @@ global void
 void:
     ret
 
+; Reinicia el documento 
 global reset_doc
 reset_doc:
     pushad 
     REG_CLEAR
-    .ciclo:
+   
+    .loop:
     cmp byte [START_DOCUMENT + ecx], EOF
     je .end
     mov byte [START_DOCUMENT + ecx], 0
     inc ecx
-    jmp .ciclo
+    jmp .loop
+    
     .end:
     mov byte [START_DOCUMENT + ecx], 0
-    popad
     mov byte [START_DOCUMENT], EOF
-    mov dword [TOGGLE_CTRL], 0
+    
+    popad
+    ret
+
+; El cursor se coloca en el inicio de la primera linea del documento
+global jumpStart
+jumpStart:
+    pushad
+    REG_CLEAR
+
+    mov ecx, [number]
+
+    cmp dword [TOGGLE_SHIFT], 1
+    je .continue
+
+    cmp dword [g], 0
+    jne .continue
+    mov dword [g], 1
+    je .ret
+    .continue:
+    mov dword [g], 0
     mov dword [TOGGLE_SHIFT], 0
-    mov dword [POS_DOCUMENT], 0
-    mov dword [POS_POINTER], 0
-    mov dword [POS_SELECT], 0
+
+    mov eax, -1
+    mul dword [POS_POINTER]
+    push eax
+    call move_cursor
+
+    .loop:
+    cmp dword [POS_DOCUMENT], 0
+    je .loop1
+    mov ebx, -80
+    mul dword [POS_POINTER]
+    push ebx
+    call move_cursor
+    jmp .loop
+
+    .loop1:
+    cmp ecx, 1
+    jle .continue1
+    mov eax, [POS_DOCUMENT]
+    add eax, [POS_POINTER]
+    add eax, 1
+    cmp dword [START_DOCUMENT + eax], EOF
+    je .continue1
+    call move_cursor_down
+    dec ecx
+    jmp .loop1
+   
+    .continue1:
+    mov dword [number], 0
+
+    .ret:
+    popad
+    ret
+
+; El cursor se coloca en el inicio de la ultima linea del documento
+global jumpEnd
+jumpEnd:
+    pushad
+    REG_CLEAR
+
+    .loop:
+    mov eax, START_DOCUMENT
+    add eax, [POS_DOCUMENT]
+    add eax, [POS_POINTER]
+    cmp byte [eax], EOF
+    je .loop1
+    call move_cursor_right
+    jmp .loop
+
+    .loop1:
+    mov edx, 0
+    mov eax, [POS_POINTER]
+    mov ebx, 80
+    div ebx
+    cmp edx, 0
+    je .ret
+    call move_cursor_left
+    jmp .loop1
+
+    .ret:
+    popad
+    ret
+
+global saveNumber
+saveNumber:
+    pushad
+    REG_CLEAR
+
+    mov eax, [number]
+    mov ecx, 10
+    mul ecx
+    mov ecx, eax
+
+    IN_RANGE [KEY], KEY.ONE.DOWN, KEY.ONE.DOWN
+    cmp eax, 1
+    jne .no1
+    add ecx, 1
+    jmp .ret
+    .no1:
+    IN_RANGE [KEY], KEY.TWO.DOWN, KEY.TWO.DOWN
+    cmp eax, 1
+    jne .no2
+    add ecx, 2
+    jmp .ret
+    .no2:
+    IN_RANGE [KEY], KEY.THREE.DOWN, KEY.THREE.DOWN
+    cmp eax, 1
+    jne .no3
+    add ecx, 3
+    jmp .ret
+    .no3:
+    IN_RANGE [KEY], KEY.FOUR.DOWN, KEY.FOUR.DOWN
+    cmp eax, 1
+    jne .no4
+    add ecx, 4
+    jmp .ret
+    .no4:
+    IN_RANGE [KEY], KEY.FIVE.DOWN, KEY.FIVE.DOWN
+    cmp eax, 1
+    jne .no5
+    add ecx, 5
+    jmp .ret
+    .no5:
+    IN_RANGE [KEY], KEY.SIX.DOWN, KEY.SIX.DOWN
+    cmp eax, 1
+    jne .no6
+    add ecx, 6
+    jmp .ret
+    .no6:
+    IN_RANGE [KEY], KEY.SEVEN.DOWN, KEY.SEVEN.DOWN
+    cmp eax, 1
+    jne .no7
+    add ecx, 7
+    jmp .ret
+    .no7:
+    IN_RANGE [KEY], KEY.EIGHT.DOWN, KEY.EIGHT.DOWN
+    cmp eax, 1
+    jne .no8
+    add ecx, 8
+    jmp .ret
+    .no8:
+    IN_RANGE [KEY], KEY.NINE.DOWN, KEY.NINE.DOWN
+    cmp eax, 1
+    jne .ret
+    add ecx, 9
+
+    .ret:
+    mov dword [number], ecx
+    popad
+    ret
+
+global emptyNumber
+emptyNumber:
+    pushad
+    REG_CLEAR  
+
+    IN_RANGE [KEY], KEY.ONE.DOWN, KEY.ZERO.DOWN
+    IN_RANGE [KEY], KEY.ONE.UP, KEY.ZERO.UP
+    IN_RANGE [KEY], KEY.G.DOWN, KEY.G.DOWN
+    IN_RANGE [KEY], KEY.G.UP, KEY.G.UP
+    IN_RANGE [KEY], KEY.CAPS.DOWN, KEY.CAPS.DOWN
+    IN_RANGE [KEY], KEY.CAPS.UP, KEY.CAPS.UP
+    IN_RANGE [KEY], KEY.LEFTSHIFT.DOWN, KEY.LEFTSHIFT.DOWN
+    IN_RANGE [KEY], KEY.LEFTSHIFT.UP, KEY.LEFTSHIFT.UP
+    IN_RANGE [KEY], KEY.RIGHTSHIFT.DOWN, KEY.RIGHTSHIFT.DOWN
+    IN_RANGE [KEY], KEY.RIGHTSHIFT.UP, KEY.RIGHTSHIFT.UP
+    IN_RANGE [KEY], KEY.CTRL.DOWN, KEY.CTRL.DOWN
+    IN_RANGE [KEY], KEY.CTRL.UP, KEY.CTRL.UP   
+    
+    cmp eax, 1
+    je .ret
+    mov dword [number], 0
+
+    .ret:
+    popad
     ret

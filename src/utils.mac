@@ -89,6 +89,21 @@
     pop eax
 %endmacro
 
+%macro BIND_CAPS 6
+push eax
+    mov eax, %2
+    add eax, %3
+    cmp eax, 2
+    jne %%next
+    cmp dword %1, %4
+    jne %%next
+    pop eax
+    call %5
+    jmp %6
+    %%next:
+    pop eax
+%endmacro
+
 %macro FILL_SCREEN 1
     extern clear
     push word %1

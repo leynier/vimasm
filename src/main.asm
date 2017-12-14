@@ -23,6 +23,10 @@ TOGGLE_SHIFT dd 0
 global TOGGLE_CTRL
 TOGGLE_CTRL dd 0
 
+; Contiene 0 si el caps no esta precionado, 1 si lo esta
+global TOGGLE_CAPS
+TOGGLE_CAPS dd 0
+
 ; Posicion del documento donde se esta presentando en pantalla
 global POS_DOCUMENT
 POS_DOCUMENT dd 0
@@ -96,6 +100,7 @@ extern shift_up
 extern ctrl_down
 extern ctrl_up
 extern reset_doc
+extern caps_down
 
 global main
 main:
@@ -133,6 +138,8 @@ main:
         BIND_NORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.RIGHTSHIFT.DOWN, shift_down, .loop
         BIND_SHIFT [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.LEFTSHIFT.UP, shift_up, .loop
         BIND_SHIFT [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.RIGHTSHIFT.UP, shift_up, .loop
+
+        BIND [KEY], KEY.CAPS.DOWN, caps_down, .loop
 
         ; Comprueba el enter para comenzar
         BIND_NORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.ENTER.DOWN, normal, .loop
