@@ -347,6 +347,13 @@ reset_doc:
     mov byte [START_DOCUMENT + ecx], 0
     mov byte [START_DOCUMENT], EOF
     
+    mov dword [POS_DOCUMENT], 0
+    mov dword [POS_POINTER], 0
+    mov dword [POS_SELECT], 0
+    mov dword [TOGGLE_SHIFT], 0
+    mov dword [TOGGLE_CTRL], 0
+    mov dword [TOGGLE_CTRL], 0
+
     popad
     ret
 

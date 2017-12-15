@@ -44,6 +44,58 @@ paste_line:
     pushad
     REG_CLEAR
 
+    mov eax, [POS_DOCUMENT]
+    add eax, [POS_POINTER]
+    push eax
+    mov ebx, 80
+    div ebx
+    sub ebx, edx
+    pop eax
+    add ebx, eax
+
+    .find_right:
+    cmp byte [START_DOCUMENT + eax], EOL
+    jne .not_eol
+        inc eax
+        jmp .continue
+    .not_eol:
+    cmp byte [START_DOCUMENT + eax], EOF
+    jne .not_eof
+        push eax
+        push dword 1
+        call traslate
+        mov byte [START_DOCUMENT + eax], EOL
+        inc eax
+        jmp .continue
+    .not_eof:
+    cmp eax, ebx
+    jne .not_end
+        jmp .continue
+    .not_end:
+        inc eax
+        jmp .find_right
+    .continue:
+
+    mov ebx, [LEN_COPY]
+    inc ebx
+
+    push eax
+    push ebx
+    call traslate
+
+    mov esi, COPY_DOCUMENT
+    mov edi, START_DOCUMENT
+    add edi, eax
+
+    mov ecx, [LEN_COPY]
+    inc ecx
+
+    .loop:
+        movsb
+        loop .loop
+
+    call fix_eol
+
     .ret
         popad
         ret
@@ -97,6 +149,80 @@ copy_line:
     pushad
     REG_CLEAR
 
+    mov dword [MODE_COPY], MODE_VISUAL_LINE
+
+    mov eax, [POS_SELECT]
+    mov ebx, [POS_DOCUMENT]
+    add ebx, [POS_POINTER]
+
+    cmp eax, ebx
+    jle .not_swap
+        mov ecx, ebx
+        mov ebx, eax
+        mov eax, ecx
+    .not_swap:
+
+    push eax
+    push ebx
+        xor edx, edx
+        mov ecx, eax
+        mov ebx, 80
+        div ebx
+        sub ecx, edx
+    pop ebx
+    pop eax
+
+    mov eax, ecx
+
+    push eax
+    push ebx
+        xor edx, edx
+        mov ecx, ebx
+        mov eax, ebx
+        mov ebx, 80
+        div ebx
+        sub ebx, edx
+        add ecx, ebx
+    pop ebx
+    pop eax
+
+    mov ebx, ecx
+
+    mov esi, START_DOCUMENT
+    mov edi, COPY_DOCUMENT
+
+    add esi, eax
+ 
+    inc ebx
+
+    .find_left:
+    dec ebx
+    cmp byte [START_DOCUMENT + ebx], 0
+    je .find_left
+
+    cmp byte [START_DOCUMENT + ebx], EOF
+    jne .not_eof
+    inc ebx
+    .not_eof:
+
+    mov ecx, ebx
+    sub ecx, eax
+
+    dec ecx
+    mov [LEN_COPY], ecx
+    inc ecx
+
+    .loop:
+        movsb
+        loop .loop
+
+    mov ecx, COPY_DOCUMENT
+    add ecx, [LEN_COPY]
+    cmp byte [ecx], EOF
+    jne .not_equal
+        mov byte [ecx], EOL
+    .not_equal:
+
     .ret:
         popad
         ret
@@ -106,10 +232,10 @@ copy:
     pushad
     REG_CLEAR
 
+    mov dword [MODE_COPY], MODE_VISUAL
+
     mov esi, START_DOCUMENT
     mov edi, COPY_DOCUMENT
-
-    mov dword [MODE_COPY], MODE_VISUAL
 
     mov ebx, [POS_DOCUMENT]
     add ebx, [POS_POINTER]
