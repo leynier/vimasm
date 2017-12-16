@@ -115,12 +115,11 @@ main:
     mov al, 0xFF
     out dx, al
 
-    ; Calibrate the timing
-    call calibrate
-    
     mov byte [START_DOCUMENT], EOF
 
     .loop:
+        call calibrate
+    
         call reset_doc
         
         mov dword [MODE], MODE_START

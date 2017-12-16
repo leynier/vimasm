@@ -477,6 +477,70 @@ end_line:
         popad
         ret
 
+global erase_startline
+erase_startline:
+    pushad
+    REG_CLEAR
+
+    add eax, [POS_DOCUMENT]
+    add eax, [POS_POINTER]
+    dec eax
+    mov ecx, eax
+    mov ebx, 80
+    div ebx
+    mov eax, ecx
+    sub eax, edx
+
+    push eax
+    sub eax, ecx
+    dec eax
+    push eax
+    call traslate
+    push eax
+    call move_cursor
+    call fix_eol
+
+    .ret:
+        popad
+        ret
+
+global erase_startword
+erase_startword:
+    pushad
+    REG_CLEAR
+
+    add eax, [POS_DOCUMENT]
+    add eax, [POS_POINTER]
+    mov ebx, eax
+    dec eax
+
+    .loop:
+    cmp eax, 0
+    jl .continue
+        cmp byte [START_DOCUMENT + eax], ' '
+        je .continue
+        cmp byte [START_DOCUMENT + eax], 0
+        je .continue
+        cmp byte [START_DOCUMENT + eax], EOF
+        je .continue
+        cmp byte [START_DOCUMENT + eax], EOL
+        je .continue
+        dec eax
+        jmp .loop
+    .continue:
+    inc eax
+    push eax
+    sub eax, ebx
+    push eax
+    call traslate
+    push eax
+    call move_cursor
+    call fix_eol
+
+    .ret:
+        popad
+        ret
+
 ; erase()
 ; Metodo que cumple la funcion de borrar con el BACKSPACE
 global erase
