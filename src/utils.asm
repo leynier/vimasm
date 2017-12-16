@@ -10,6 +10,7 @@ g dd 0
 section .text
 
 extern START_DOCUMENT
+extern COPY_DOCUMENT
 extern POS_DOCUMENT
 extern POS_POINTER
 extern ASCII_NORMAL
@@ -20,6 +21,7 @@ extern TOGGLE_SHIFT
 extern TOGGLE_CTRL
 extern POS_SELECT
 extern TOGGLE_CAPS
+extern PARTITION_COPY
 
 extern move_cursor_right
 extern move_cursor_left
@@ -531,3 +533,113 @@ emptyNumber:
     .ret:
     popad
     ret
+
+global paste_partition
+paste_partition:
+    push ebp
+    mov ebp, esp
+    pushad
+    REG_CLEAR
+
+    mov edi, [ebp + 12]
+    mov esi, [ebp + 8]
+
+    mov ecx, [PARTITION_COPY]
+
+    push edi
+    push ecx
+    call traslate
+
+    add esi, COPY_DOCUMENT
+    add edi, START_DOCUMENT
+
+    .loop:
+        movsb
+        loop .loop
+
+    call fix_eol
+
+    .ret:
+        popad
+        pop ebp
+        ret 8
+
+global fix_block
+fix_block:
+    push ebp
+    mov ebp, esp
+    pushad
+    REG_CLEAR
+
+    mov eax, [ebp + 12]
+    mov ebx, [ebp + 8]
+
+    push eax
+    push ebx
+
+    mov ebx, 80
+    div ebx
+    sub ebx, edx
+    mov edx, ebx
+
+    pop ebx
+    pop eax
+
+    add edx, eax
+
+    .loop:
+    cmp eax, edx
+    jge .continue
+        cmp byte [START_DOCUMENT + eax], EOL
+        jne .not_eol
+            mov eax, edx
+            jmp .continue
+        .not_eol:
+        cmp byte [START_DOCUMENT + eax], EOF
+        jne .not_eof
+            mov byte [START_DOCUMENT + eax], EOL
+            mov eax, edx
+            mov byte [START_DOCUMENT + eax], EOF
+            jmp .continue
+        .not_eof:
+        inc eax
+        jmp .loop
+    .continue:
+
+    .loop2:
+    cmp eax, ebx
+    jge .continue2
+        cmp byte [START_DOCUMENT + eax], EOL
+        jne .not_eol2
+            mov ecx, ebx
+            sub ecx, eax
+            push eax
+            push ecx
+            call traslate
+            .loop_1:
+                mov byte [START_DOCUMENT + eax], ' '
+                inc eax
+                loop .loop_1
+            jmp .continue2
+        .not_eol2:
+        cmp byte [START_DOCUMENT + eax], EOF
+        jne .not_eof2
+            mov ecx, ebx
+            sub ecx, eax
+            push eax
+            push ecx
+            call traslate
+            .loop_2:
+                mov byte [START_DOCUMENT + eax], ' '
+                inc eax
+                loop .loop_2
+            jmp .continue2
+        .not_eof2:
+        inc eax
+        jmp .loop2
+    .continue2:
+
+    .ret:
+        popad
+        pop ebp
+        ret 8

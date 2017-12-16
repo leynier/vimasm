@@ -27,6 +27,8 @@ extern move_cursor
 extern fix_eol
 extern interval
 extern paint_cursor
+extern paste_partition
+extern fix_block
 
 ; paste_select()
 ; Metodo que detecta el modo de pegar, segun el modo en quese haya copiado.
@@ -37,6 +39,41 @@ paste_select:
 
     BIND [MODE_COPY], MODE_VISUAL, paste, .ret
     BIND [MODE_COPY], MODE_VISUAL_LINE, paste_line, .ret
+    BIND [MODE_COPY], MODE_VISUAL_BLOCK, paste_block, .ret
+
+    .ret:
+        popad
+        ret
+
+; paste_block()
+; Metodo que pega lo copiado en el modo visual block
+global paste_block
+paste_block:
+    pushad
+    REG_CLEAR
+
+    mov eax, [POS_DOCUMENT]
+    add eax, [POS_POINTER]
+
+    mov ecx, [LEN_COPY]
+
+    jmp .start
+
+    .loop:
+        push eax
+        add eax, 80
+        push eax
+        call fix_block
+
+        .start:
+
+        push eax
+        push ebx
+        call paste_partition
+
+        add ebx, [PARTITION_COPY]
+        cmp ebx, ecx
+        jl .loop
 
     .ret:
         popad
@@ -161,7 +198,7 @@ copy_block:
     pushad
     REG_CLEAR
 
-    mov dword [MODE_COPY], MODE_VISUAL
+    mov dword [MODE_COPY], MODE_VISUAL_BLOCK
 
     mov eax, [POS_SELECT]
     mov ebx, [POS_DOCUMENT]
