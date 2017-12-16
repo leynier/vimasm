@@ -20,6 +20,7 @@ extern COPY_DOCUMENT
 extern LEN_COPY
 extern MODE
 extern TOGGLE_CAPS
+extern PARTITION_COPY
 
 extern traslate
 extern move_cursor
@@ -27,6 +28,8 @@ extern fix_eol
 extern interval
 extern paint_cursor
 
+; paste_select()
+; Metodo que detecta el modo de pegar, segun el modo en quese haya copiado.
 global paste_select
 paste_select:
     pushad
@@ -39,6 +42,8 @@ paste_select:
         popad
         ret
 
+; paste_line()
+; Metodo que pega lo copiado en el modo visual line
 global paste_line
 paste_line:
     pushad
@@ -96,10 +101,12 @@ paste_line:
 
     call fix_eol
 
-    .ret
+    .ret:
         popad
         ret
 
+; paste()
+; Metodo que pega lo copiado en el modo visual
 global paste
 paste:
     pushad
@@ -132,6 +139,8 @@ paste:
         popad
         ret
 
+; copy_select()
+; Metodo que detecta el modo de copiar, segun el modo en el que se este.
 global copy_select
 copy_select:
     pushad
@@ -139,11 +148,137 @@ copy_select:
 
     BIND [MODE], MODE_VISUAL, copy, .ret
     BIND [MODE], MODE_VISUAL_LINE, copy_line, .ret
+    BIND [MODE], MODE_VISUAL_BLOCK, copy_block, .ret
 
     .ret:
         popad
         ret
 
+; copy_block()
+; Metodo que copia en el modo visual block
+global copy_block
+copy_block:
+    pushad
+    REG_CLEAR
+
+    mov dword [MODE_COPY], MODE_VISUAL
+
+    mov eax, [POS_SELECT]
+    mov ebx, [POS_DOCUMENT]
+    add ebx, [POS_POINTER]
+
+    cmp eax, ebx
+    jle .not_swap
+        mov ecx, eax
+        mov eax, ebx
+        mov ebx, ecx
+    .not_swap:
+    
+    push eax
+    push ebx
+
+    mov esi, eax
+    mov edi, ebx
+
+    mov ebx, COLS
+
+    xor edx, edx
+    mov eax, esi
+    div ebx
+    mov esi, edx
+
+    xor edx, edx
+    mov eax, edi
+    div ebx
+    mov edi, edx
+
+    pop ebx
+    pop eax
+
+    cmp esi, edi
+    jle .not_swap2
+        mov ecx, esi
+        mov esi, edi
+        mov edi, ecx
+        mov ecx, edi
+        sub ecx, esi
+        sub eax, ecx
+        add ebx, ecx
+    .not_swap2:
+
+    mov ecx, edi
+    sub ecx, esi
+
+    mov ecx, edi
+    sub ecx, esi
+
+    inc ecx
+    mov [PARTITION_COPY], ecx
+
+    push eax
+    push ebx
+    push ecx
+
+    sub ebx, eax
+    mov eax, ebx
+    xor edx, edx
+    mov ebx, 80
+    div ebx
+    inc eax
+    mul ecx
+    mov edx, eax
+
+    pop ecx
+    pop ebx
+    pop eax
+    dec ecx
+
+    mov [LEN_COPY], edx
+
+    sub eax, COLS
+    sub ebx, ecx
+    inc ecx
+    xor edx, edx
+    .start_loop:
+        add eax, COLS
+        push eax
+        push ebx
+        push ecx
+        .main_loop:
+            mov bl, [START_DOCUMENT + eax]
+            mov [COPY_DOCUMENT + edx], bl
+            inc edx
+            inc eax
+            loop .main_loop
+        pop ecx
+        pop ebx
+        pop eax
+        cmp eax, ebx
+        jl .start_loop
+
+    mov eax, COPY_DOCUMENT
+    mov ecx, [LEN_COPY]
+    inc ecx
+    .loop:
+        cmp byte [eax], EOF
+        je .not_valid
+        cmp byte [eax], EOL
+        je .not_valid
+        cmp byte [eax], 0
+        je .not_valid
+        jmp .valid
+        .not_valid:
+            mov byte [eax], ' '
+        .valid:
+        inc eax
+        loop .loop
+
+    .ret:
+        popad
+        ret
+
+; copy_line()
+; Metodo que copia en el modo visual line
 global copy_line
 copy_line:
     pushad
@@ -227,6 +362,8 @@ copy_line:
         popad
         ret
 
+; copy()
+; Metodo que copia en el modo visual
 global copy
 copy:
     pushad
@@ -467,6 +604,8 @@ ctrl_up:
     mov dword [TOGGLE_CTRL], 0
     ret
 
+; caps_down()
+; Activa y desactiva el TOGGLE_CAPS para saber que el estado de la tecla CapsLock
 global caps_down
 caps_down:
     cmp dword [TOGGLE_CAPS], 1
@@ -477,8 +616,8 @@ caps_down:
     .activate:
     mov dword [TOGGLE_CAPS], 1
     mov dword [ASCII_CODE], ASCII_EXTRA
-    .ret
-    ret
+    .ret:
+        ret
 
 ; scan()        
 ; Espera hasta que se presione una tecla y la guarda en KEY

@@ -85,6 +85,9 @@ COPY_DOCUMENT times DOCUMENT_LEN db 0
 global LEN_COPY
 LEN_COPY dd 0
 
+global PARTITION_COPY
+PARTITION_COPY dd 0
+
 ; Array que representa el documento
 global START_DOCUMENT
 START_DOCUMENT times DOCUMENT_LEN db 0
