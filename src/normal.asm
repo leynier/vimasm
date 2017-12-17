@@ -1,11 +1,6 @@
 %include "keyboard.mac"
 %include "utils.mac"
 
-section .data
-
-global number
-number dd 0
-
 section .text
 
 extern KEY
@@ -16,6 +11,7 @@ extern BAR_BOTTOM
 extern NORMAL_MSG
 extern TIMER
 extern TOGGLE_CAPS
+extern number
 
 extern scan
 extern paint

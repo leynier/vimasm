@@ -88,6 +88,9 @@ LEN_COPY dd 0
 global PARTITION_COPY
 PARTITION_COPY dd 0
 
+global number
+number dd 0
+
 ; Array que representa el documento
 global START_DOCUMENT
 START_DOCUMENT times DOCUMENT_LEN db 0
@@ -117,9 +120,9 @@ main:
 
     mov byte [START_DOCUMENT], EOF
 
-    .loop:
-        call calibrate
+    call calibrate
     
+    .loop:
         call reset_doc
         
         mov dword [MODE], MODE_START

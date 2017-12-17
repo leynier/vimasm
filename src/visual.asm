@@ -13,6 +13,8 @@ extern TOGGLE_CTRL
 extern TOGGLE_SHIFT
 extern BAR_BOTTOM
 extern VISUAL_MSG
+extern TOGGLE_CAPS
+extern number
 
 extern scan
 extern paint
@@ -27,6 +29,10 @@ extern ctrl_up
 extern void
 extern copy_select
 extern caps_down
+extern jumpStart
+extern jumpEnd
+extern saveNumber
+extern emptyNumber
 
 global visual
 visual:
@@ -42,6 +48,8 @@ visual:
         call scan
         REG_CLEAR
 
+        call emptyNumber
+       
         ; Comprueba el ESC
         BIND_NORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.ESC.DOWN, void, .ret
 
@@ -64,6 +72,22 @@ visual:
         BIND_NORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.DOWN.DOWN, move_cursor_down, .loop
 
         BIND_NORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.Y.DOWN, copy_select, .ret
+
+        ; Comprueba los saltos al comienzo, a una linea especifica y al final del documento (g y  shift+g)
+        BIND_CAPS [KEY], [TOGGLE_CAPS], [TOGGLE_SHIFT], KEY.G.DOWN, jumpStart, .loop
+        cmp dword [number], 0
+        je .toEnd
+        BIND_SHIFT [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.G.DOWN, jumpStart, .loop
+        BIND_SHIFT [KEY], [TOGGLE_SHIFT], [TOGGLE_CAPS], KEY.G.DOWN, jumpStart, .loop
+        .toEnd:
+        BIND_SHIFT [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.G.DOWN, jumpEnd, .loop
+        BIND_SHIFT [KEY], [TOGGLE_SHIFT], [TOGGLE_CAPS], KEY.G.DOWN, jumpEnd, .loop
+        BIND_NORMAL [KEY],[TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.G.DOWN, jumpStart, .loop
+
+        IN_RANGE [KEY], KEY.ONE.DOWN, KEY.ZERO.DOWN
+        cmp eax, 1
+        jne .loop
+        call saveNumber
 
         jmp .loop
 
