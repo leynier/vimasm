@@ -26,6 +26,7 @@ extern re_write
 extern void
 extern caps_down
 extern paste_select
+extern erase
 extern erase_startword
 extern erase_startline
 
@@ -71,6 +72,8 @@ replace:
         BIND_NORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.ENTER.DOWN, end_line, .loop
         
         BIND_CTRL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.Y.DOWN, paste_select, .loop
+
+        BIND_CTRL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.H.DOWN, erase, .loop
 
         BIND_CTRL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.W.DOWN, erase_startword, .loop
 
