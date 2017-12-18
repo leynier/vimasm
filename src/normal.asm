@@ -11,7 +11,7 @@ extern BAR_BOTTOM
 extern NORMAL_MSG
 extern TIMER
 extern TOGGLE_CAPS
-extern number
+extern NUMBER
 
 extern scan
 extern paint
@@ -31,10 +31,10 @@ extern move_cursor_up
 extern void
 extern paste_select
 extern caps_down
-extern jumpStart
-extern jumpEnd
-extern saveNumber
-extern emptyNumber
+extern jump_start
+extern jump_end
+extern save_number
+extern empty_number
 
 global normal
 normal:
@@ -51,7 +51,7 @@ normal:
         call paint
         call scan
 
-        call emptyNumber
+        call empty_number
        
         BIND [KEY], KEY.CAPS.DOWN, caps_down, .loop
 
@@ -92,15 +92,15 @@ normal:
         BIND_SHIFT [KEY], [TOGGLE_SHIFT], [TOGGLE_CAPS], KEY.R.DOWN, replace, .loop
 
         ; Comprueba los saltos al comienzo, a una linea especifica y al final del documento (g y  shift+g)
-        BIND_CAPS [KEY], [TOGGLE_CAPS], [TOGGLE_SHIFT], KEY.G.DOWN, jumpStart, .loop
-        cmp dword [number], 0
-        je .toEnd
-        BIND_SHIFT [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.G.DOWN, jumpStart, .loop
-        BIND_SHIFT [KEY], [TOGGLE_SHIFT], [TOGGLE_CAPS], KEY.G.DOWN, jumpStart, .loop
-        .toEnd:
-        BIND_SHIFT [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.G.DOWN, jumpEnd, .loop
-        BIND_SHIFT [KEY], [TOGGLE_SHIFT], [TOGGLE_CAPS], KEY.G.DOWN, jumpEnd, .loop
-        BIND_NORMAL [KEY],[TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.G.DOWN, jumpStart, .loop
+        BIND_CAPS [KEY], [TOGGLE_CAPS], [TOGGLE_SHIFT], KEY.G.DOWN, jump_start, .loop
+        cmp dword [NUMBER], 0
+        je .end
+        BIND_SHIFT [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.G.DOWN, jump_start, .loop
+        BIND_SHIFT [KEY], [TOGGLE_SHIFT], [TOGGLE_CAPS], KEY.G.DOWN, jump_start, .loop
+        .end:
+        BIND_SHIFT [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.G.DOWN, jump_end, .loop
+        BIND_SHIFT [KEY], [TOGGLE_SHIFT], [TOGGLE_CAPS], KEY.G.DOWN, jump_end, .loop
+        BIND_NORMAL [KEY],[TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.G.DOWN, jump_start, .loop
 
         ; Comprueba si es el CTRL-C para retornar
         BIND_CTRL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.C.DOWN, void, .ret
@@ -110,7 +110,7 @@ normal:
         IN_RANGE [KEY], KEY.ONE.DOWN, KEY.ZERO.DOWN
         cmp eax, 1
         jne .loop
-        call saveNumber
+        call save_number
 
         jmp .loop
 

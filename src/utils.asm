@@ -22,11 +22,11 @@ extern TOGGLE_CTRL
 extern POS_SELECT
 extern TOGGLE_CAPS
 extern PARTITION_COPY
+extern NUMBER
 
 extern move_cursor_right
 extern move_cursor_left
 extern move_cursor_down
-extern number
 
 ; fix_eol(dword pos)
 ; Metodo que corrige todos los saltos de linea
@@ -360,12 +360,12 @@ reset_doc:
     ret
 
 ; El cursor se coloca en el inicio de la primera linea del documento
-global jumpStart
-jumpStart:
+global jump_start
+jump_start:
     pushad
     REG_CLEAR
 
-    mov ecx, [number]
+    mov ecx, [NUMBER]
 
     cmp dword [TOGGLE_SHIFT], 1
     je .continue
@@ -405,15 +405,15 @@ jumpStart:
     jmp .loop1
    
     .continue1:
-    mov dword [number], 0
+    mov dword [NUMBER], 0
 
     .ret:
     popad
     ret
 
 ; El cursor se coloca en el inicio de la ultima linea del documento
-global jumpEnd
-jumpEnd:
+global jump_end
+jump_end:
     pushad
     REG_CLEAR
 
@@ -440,12 +440,12 @@ jumpEnd:
     popad
     ret
 
-global saveNumber
-saveNumber:
+global save_number
+save_number:
     pushad
     REG_CLEAR
 
-    mov eax, [number]
+    mov eax, [NUMBER]
     mov ecx, 10
     mul ecx
     mov ecx, eax
@@ -504,12 +504,12 @@ saveNumber:
     add ecx, 9
 
     .ret:
-    mov dword [number], ecx
+    mov dword [NUMBER], ecx
     popad
     ret
 
-global emptyNumber
-emptyNumber:
+global empty_number
+empty_number:
     pushad
     REG_CLEAR  
 
@@ -528,7 +528,7 @@ emptyNumber:
     
     cmp eax, 1
     je .ret
-    mov dword [number], 0
+    mov dword [NUMBER], 0
 
     .ret:
     popad

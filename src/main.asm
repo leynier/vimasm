@@ -88,8 +88,8 @@ LEN_COPY dd 0
 global PARTITION_COPY
 PARTITION_COPY dd 0
 
-global number
-number dd 0
+global NUMBER
+NUMBER dd 0
 
 ; Array que representa el documento
 global START_DOCUMENT
