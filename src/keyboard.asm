@@ -752,3 +752,9 @@ scan:
     .ret:
         pop eax
         ret
+
+global delete
+delete:
+    call move_cursor_right
+    call erase
+    ret
