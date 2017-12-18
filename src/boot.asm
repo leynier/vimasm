@@ -1,4 +1,4 @@
-%define stack.SIZE 0x100
+%define stack.SIZE 0x10000
 
 section .bss
 
