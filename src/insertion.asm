@@ -29,6 +29,7 @@ extern caps_down
 extern paste_select
 extern erase_startword
 extern erase_startline
+extern delete
 
 global insertion
 insertion:
@@ -64,6 +65,8 @@ insertion:
 
         ; Comprueba el BACKSPACE
         BIND_NORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.BACK.DOWN, erase, .loop
+
+        BIND_NORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.DEL.DOWN, delete, .loop
 
         ; Comprueba el ENTER
         BIND_NORMAL [KEY], [TOGGLE_CTRL], [TOGGLE_SHIFT], KEY.ENTER.DOWN, end_line, .loop
